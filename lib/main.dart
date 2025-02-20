@@ -150,7 +150,7 @@ void _showBottomPopup(context){
       height: 3000,
       child:
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           child: Row(spacing: 10,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
