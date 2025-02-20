@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Text("Date"),
             SizedBox(height: 5),
             TextField(
+              controller: datePickerController,
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.calendar_month),
@@ -66,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 contentPadding: EdgeInsets.all(10),
               ),
+              onTap: () => onTapFunction(context: context),
             ),
             SizedBox(height: 20),
 
@@ -82,11 +85,55 @@ class _MyHomePageState extends State<MyHomePage> {
                 contentPadding: EdgeInsets.all(10),
               ),
             ),
+            SizedBox(height: 20),
+
+            Text("Mobile Number"),
+            SizedBox(height: 5),
+            TextField(
+              textAlign: TextAlign.left,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.phone),
+                labelText: "Mobile Number",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: EdgeInsets.all(10),
+              ),
+            ),
+
+            SizedBox(height: 40),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
+                  onPressed: () {
+
+              }, child: Text("Add Item")),
+            ),
+            SizedBox(height: 30),
+            Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(minimumSize: Size(200, 40)),
+                  onPressed: () {}, child: Text('Submit')),
+            ),
           ],
         ),
       ),
     );
-
-
   }
+}
+
+//This part of code will generate the date picker whenever you call onTapFunction
+//DatePicker will execute.
+TextEditingController datePickerController = TextEditingController();
+
+onTapFunction({required BuildContext context}) async {
+  DateTime? pickedDate = await showDatePicker(
+    context: context,
+    lastDate: DateTime(2050),
+    firstDate: DateTime(1970),
+    initialDate: DateTime.now(),
+  );
+  if (pickedDate == null) return;
+  datePickerController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
 }
