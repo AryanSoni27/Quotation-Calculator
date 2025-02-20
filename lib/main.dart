@@ -35,98 +35,102 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: Container(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Customer"),
-            SizedBox(height: 5),
-            TextField(
-              textAlign: TextAlign.left,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.person),
-                labelText: "Customer Name",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Customer"),
+              SizedBox(height: 5),
+              TextField(
+                textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.person),
+                  labelText: "Customer Name",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: EdgeInsets.all(10),
                 ),
-                contentPadding: EdgeInsets.all(10),
               ),
-            ),
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            Text("Date"),
-            SizedBox(height: 5),
-            TextField(
-              controller: datePickerController,
-              textAlign: TextAlign.left,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.calendar_month),
-                labelText: "Date",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+              Text("Date"),
+              SizedBox(height: 5),
+              TextField(
+                controller: datePickerController,
+                textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.calendar_month),
+                  labelText: "Date",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: EdgeInsets.all(10),
                 ),
-                contentPadding: EdgeInsets.all(10),
+                onTap: () => onTapFunction(context: context),
               ),
-              onTap: () => onTapFunction(context: context),
-            ),
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            Text("Project"),
-            SizedBox(height: 5),
-            TextField(
-              textAlign: TextAlign.left,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.shopping_bag_sharp),
-                labelText: "Project Name",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+              Text("Project"),
+              SizedBox(height: 5),
+              TextField(
+                textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.shopping_bag_sharp),
+                  labelText: "Project Name",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: EdgeInsets.all(10),
                 ),
-                contentPadding: EdgeInsets.all(10),
               ),
-            ),
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            Text("Mobile Number"),
-            SizedBox(height: 5),
-            TextField(
-              textAlign: TextAlign.left,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.phone),
-                labelText: "Mobile Number",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+              Text("Mobile Number"),
+              SizedBox(height: 5),
+              TextField(
+                textAlign: TextAlign.left,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.phone),
+                  labelText: "Mobile Number",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: EdgeInsets.all(10),
                 ),
-                contentPadding: EdgeInsets.all(10),
               ),
-            ),
 
-            SizedBox(height: 40),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
+              SizedBox(height: 40),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
                   onPressed: () {
-
-              }, child: Text("Add Item")),
-            ),
-            SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
+                    _showBottomPopup(context);
+                  },
+                  child: Text("Add Item"),
+                ),
+              ),
+              SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
                   style: ElevatedButton.styleFrom(minimumSize: Size(200, 40)),
-                  onPressed: () {}, child: Text('Submit')),
-            ),
-          ],
+                  onPressed: () {},
+                  child: Text('Submit'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-//This part of code will generate the date picker whenever you call onTapFunction
-//DatePicker will execute.
+//This method will generate the date picker when user tab on date field
 TextEditingController datePickerController = TextEditingController();
-
 onTapFunction({required BuildContext context}) async {
   DateTime? pickedDate = await showDatePicker(
     context: context,
@@ -136,4 +140,25 @@ onTapFunction({required BuildContext context}) async {
   );
   if (pickedDate == null) return;
   datePickerController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+}
+
+//This Method will generate the bottom popup menu when user tap on Add Item button and
+//it gives user options to enter the details
+void _showBottomPopup(context){
+  showModalBottomSheet(context: context, builder: (BuildContext buildContext){
+    return SizedBox(
+      height: 3000,
+      child:
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(spacing: 10,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+
+            ],
+          ),
+        ),
+
+    );
+  });
 }
