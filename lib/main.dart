@@ -131,6 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //This method will generate the date picker when user tab on date field
 TextEditingController datePickerController = TextEditingController();
+
 onTapFunction({required BuildContext context}) async {
   DateTime? pickedDate = await showDatePicker(
     context: context,
@@ -144,21 +145,118 @@ onTapFunction({required BuildContext context}) async {
 
 //This Method will generate the bottom popup menu when user tap on Add Item button and
 //it gives user options to enter the details
-void _showBottomPopup(context){
-  showModalBottomSheet(context: context, builder: (BuildContext buildContext){
-    return SizedBox(
-      height: 3000,
-      child:
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(spacing: 10,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-            ],
-          ),
+void _showBottomPopup(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 16,
         ),
-
-    );
-  });
+        child: Wrap(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  "Enter Item Details",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Text("Item"),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.shopping_bag_sharp),
+                    labelText: "Item Name",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text("Unit"),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.construction),
+                    labelText: "Unit",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text("Measurement"),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.construction),
+                    labelText: "Measurement",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 10),
+                Text("Square Foot"),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.square_foot),
+                    labelText: "Sq Foot",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 10),
+                Text("Rate"),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.currency_rupee),
+                    labelText: "Rate",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text("Total Cost"),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.currency_rupee),
+                    labelText: "Total Cost",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Add Item"),
+                ),
+                SizedBox(height: 10),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
