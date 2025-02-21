@@ -43,8 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Customer"),
-              SizedBox(height: 5),
+
+              //Customer Name Field
               TextField(
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
@@ -58,8 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 20),
 
-              Text("Date"),
-              SizedBox(height: 5),
+              //Date Picker Field
               TextField(
                 controller: datePickerController,
                 textAlign: TextAlign.left,
@@ -75,8 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 20),
 
-              Text("Project"),
-              SizedBox(height: 5),
+              // Project Name Field
               TextField(
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
@@ -90,8 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 20),
 
-              Text("Mobile Number"),
-              SizedBox(height: 5),
+              // Mobile Number Field
               TextField(
                 textAlign: TextAlign.left,
                 keyboardType: TextInputType.phone,
@@ -106,6 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
 
               SizedBox(height: 40),
+
+              //Button to add items
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
@@ -116,6 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               SizedBox(height: 30),
+
+              //Submit Button
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(minimumSize: Size(200, 40)),
@@ -200,8 +201,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    Text("Item", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 5),
+                    // Item Name Field
                     TextField(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.shopping_bag_sharp),
@@ -214,8 +214,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    Text("Unit", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 5),
+                    // Unit of Measurement Field
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.straighten),
@@ -237,10 +236,9 @@ void _showBottomPopup(BuildContext context) {
                         });
                       },
                     ),
-
                     SizedBox(height: 10),
-                    Text("Measurement", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 5),
+
+                    // Field to select the shape
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.category),
@@ -296,32 +294,33 @@ void _showBottomPopup(BuildContext context) {
                             keyboardType: TextInputType.number,
                           ),
                         ),
+                        if (selectedShape == "Cubic") ...[
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: heightController,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.height),
+                                labelText: "Height",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                contentPadding: EdgeInsets.all(10),
+                              ),
+                              keyboardType: TextInputType.number,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     SizedBox(height: 10),
 
-                    if (selectedShape == "Cubic")
-                      TextField(
-                        controller: heightController,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.height),
-                          labelText: "Height",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          contentPadding: EdgeInsets.all(10),
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                    SizedBox(height: 10),
-
-                    Text("Square Foot", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 5),
+                    // Square Foot Field
                     TextField(
                       controller: squareFootController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.square_foot),
-                        labelText: "Sq Foot",
+                        labelText: "Square Foot",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -331,8 +330,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    Text("Rate", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 5),
+                    // Rate Field, here we are going to insert the rate per square foot
                     TextField(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.currency_rupee),
@@ -346,8 +344,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    Text("Total Cost", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 5),
+                    // Total Cost field, here total cost will be calculated
                     TextField(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.currency_rupee),
