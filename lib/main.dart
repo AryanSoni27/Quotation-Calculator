@@ -148,41 +148,73 @@ onTapFunction({required BuildContext context}) async {
 
 //This Method will generate the bottom popup menu when user tap on Add Item button and
 //it gives user options to enter the details
+// This function shows a bottom sheet popup with measurement input fields
+// and handles all calculations for area and volume measurements
 void _showBottomPopup(BuildContext context) {
+  // Controllers for handling text input fields
   TextEditingController lengthController = TextEditingController();
   TextEditingController widthController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController squareFootController = TextEditingController();
+  // Default values for unit and shape selections
   String selectedUnit = "Feet";
   String selectedShape = "Area";
+
   showModalBottomSheet(
     context: context,
-    isScrollControlled: true,
+    isScrollControlled: true, // Allows the sheet to take full height if needed
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          // Calculate the square footage based on input values and selected options
+          // Now properly uses the calculateMeasurement function for all calculations
           void calculateSquareFoot() {
+            // Parse input values, default to 0 if parsing fails
             double length = double.tryParse(lengthController.text) ?? 0;
             double width = double.tryParse(widthController.text) ?? 0;
             double height = double.tryParse(heightController.text) ?? 0;
-            double result = 0;
 
-            if (selectedShape == "Area") {
-              result = length * width;
-            } else if (selectedShape == "Cubic") {
-              result = length * width * height;
-            }
+            // Calculate result using the unified calculation method
+            // This ensures consistent unit conversion regardless of input unit
+            double result = calculateMeasurement(
+              length: length,
+              width: width,
+              height: height,
+              unit: selectedUnit,
+              shape: selectedShape,
+            );
 
             setState(() {
               squareFootController.text = result.toStringAsFixed(2);
             });
           }
+
+          //Add listeners to text controllers for real-time calculation updates
+          void addCalculationListeners() {
+            lengthController.addListener(calculateSquareFoot);
+            widthController.addListener(calculateSquareFoot);
+            // Only add height listener if we're calculating volume
+            if (selectedShape == "Cubic") {
+              heightController.addListener(calculateSquareFoot);
+            }
+          }
+
+          //Clean up listeners to prevent memory leaks and unexpected behavior
+          void removeCalculationListeners() {
+            lengthController.removeListener(calculateSquareFoot);
+            widthController.removeListener(calculateSquareFoot);
+            heightController.removeListener(calculateSquareFoot);
+          }
+
+          //Initialize listeners when building the widget
+          addCalculationListeners();
+
           return Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
+              bottom: MediaQuery.of(context).viewInsets.bottom, // Adjusts for keyboard
               left: 16,
               right: 16,
               top: 16,
@@ -193,6 +225,7 @@ void _showBottomPopup(BuildContext context) {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Title of the popup
                     Center(
                       child: Text(
                         "Enter Item Details",
@@ -201,10 +234,10 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    // Item Name Field
+                    // Item Name input field
                     TextField(
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.shopping_bag_sharp),
+                        prefixIcon: Icon(Icons.shopping_bag_rounded),
                         labelText: "Item Name",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -214,7 +247,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    // Unit of Measurement Field
+                    // Unit selection dropdown
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.straighten),
@@ -230,15 +263,17 @@ void _showBottomPopup(BuildContext context) {
                           child: Text(unit),
                         );
                       }).toList(),
+                      // NEW: Updated to recalculate when unit changes
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedUnit = newValue!;
+                          calculateSquareFoot(); // Recalculate with new unit
                         });
                       },
                     ),
                     SizedBox(height: 10),
 
-                    // Field to select the shape
+                    // Shape selection dropdown (Area or Cubic)
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.category),
@@ -255,14 +290,17 @@ void _showBottomPopup(BuildContext context) {
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
+                        removeCalculationListeners();
                         setState(() {
                           selectedShape = newValue!;
                           calculateSquareFoot();
                         });
+                        addCalculationListeners();
                       },
                     ),
                     SizedBox(height: 10),
 
+                    // Measurement input fields (length, width, and conditional height)
                     Row(
                       children: [
                         Expanded(
@@ -294,6 +332,7 @@ void _showBottomPopup(BuildContext context) {
                             keyboardType: TextInputType.number,
                           ),
                         ),
+                        // Conditional height field for cubic measurements
                         if (selectedShape == "Cubic") ...[
                           SizedBox(width: 10),
                           Expanded(
@@ -315,7 +354,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    // Square Foot Field
+                    // Result field showing calculated square footage
                     TextField(
                       controller: squareFootController,
                       decoration: InputDecoration(
@@ -326,11 +365,11 @@ void _showBottomPopup(BuildContext context) {
                         ),
                       ),
                       keyboardType: TextInputType.number,
-                      readOnly: true,
+                      readOnly: true, // User can't edit the result
                     ),
                     SizedBox(height: 10),
 
-                    // Rate Field, here we are going to insert the rate per square foot
+                    // Rate input field for price per square foot
                     TextField(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.currency_rupee),
@@ -344,7 +383,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    // Total Cost field, here total cost will be calculated
+                    // Total cost field (calculated from rate * square footage)
                     TextField(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.currency_rupee),
@@ -358,6 +397,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 20),
 
+                    // Add item button
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
@@ -378,6 +418,8 @@ void _showBottomPopup(BuildContext context) {
   );
 }
 
+// Calculates the final measurement based on input values and selected options
+// Returns the result in square feet (for area) or cubic feet (for volume)
 double calculateMeasurement({
   required double length,
   required double width,
@@ -385,29 +427,30 @@ double calculateMeasurement({
   required String unit,
   required String shape,
 }) {
+  // Convert all measurements to feet before calculating
   double lengthInFeet = convertToFeet(length, unit);
   double widthInFeet = convertToFeet(width, unit);
   double heightInFeet = convertToFeet(height, unit);
 
+  // Calculate based on selected shape
   if (shape == "Area") {
-    return lengthInFeet * widthInFeet;
+    return lengthInFeet * widthInFeet; // Returns square feet
   } else if (shape == "Cubic") {
-    return lengthInFeet * widthInFeet * heightInFeet;
+    return lengthInFeet * widthInFeet * heightInFeet; // Returns cubic feet
   }
-
   return 0;
 }
 
+// Converts any input measurement to feet based on the selected unit
 double convertToFeet(double length, String unit) {
-  double result = 0;
   if (unit == "Feet") {
-    result = length;
+    return length; // Already in feet
   } else if (unit == "Inch") {
-    result = length * 12;
-  } else if (unit == "Meter"){
-    result = length * 3.28084;
+    return length / 12; // Convert inches to feet
+  } else if (unit == "Meter") {
+    return length * 3.28084; // Convert meters to feet
   }
-  return result;
+  return length; // Default return if unit is not recognized
 }
 
 
