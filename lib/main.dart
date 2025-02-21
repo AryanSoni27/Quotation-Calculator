@@ -31,6 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String? selectedShape;
+  String? selectedUnit;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,6 +148,12 @@ onTapFunction({required BuildContext context}) async {
 //This Method will generate the bottom popup menu when user tap on Add Item button and
 //it gives user options to enter the details
 void _showBottomPopup(BuildContext context) {
+  TextEditingController lengthController = TextEditingController();
+  TextEditingController widthController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
+  TextEditingController squareFootController = TextEditingController();
+  String selectedUnit = "Feet";
+  String selectedShape = "Area";
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -153,110 +161,258 @@ void _showBottomPopup(BuildContext context) {
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) {
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
-        ),
-        child: Wrap(
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
+      return StatefulBuilder(
+        builder: (context, setState) {
+          void calculateSquareFoot() {
+            double length = double.tryParse(lengthController.text) ?? 0;
+            double width = double.tryParse(widthController.text) ?? 0;
+            double height = double.tryParse(heightController.text) ?? 0;
+            double result = 0;
+
+            if (selectedShape == "Area") {
+              result = length * width;
+            } else if (selectedShape == "Cubic") {
+              result = length * width * height;
+            }
+
+            setState(() {
+              squareFootController.text = result.toStringAsFixed(2);
+            });
+          }
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16,
+              right: 16,
+              top: 16,
+            ),
+            child: Wrap(
               children: [
-                Text(
-                  "Enter Item Details",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Text("Item"),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.shopping_bag_sharp),
-                    labelText: "Item Name",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        "Enter Item Details",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text("Unit"),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.construction),
-                    labelText: "Unit",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    SizedBox(height: 10),
+
+                    Text("Item", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 5),
+                    TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.shopping_bag_sharp),
+                        labelText: "Item Name",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        contentPadding: EdgeInsets.all(10),
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text("Measurement"),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.construction),
-                    labelText: "Measurement",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    SizedBox(height: 10),
+
+                    Text("Unit", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 5),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.straighten),
+                        labelText: "Unit of Measurement",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      value: selectedUnit,
+                      items: ["Inch", "Feet", "Meter"].map((String unit) {
+                        return DropdownMenuItem<String>(
+                          value: unit,
+                          child: Text(unit),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedUnit = newValue!;
+                        });
+                      },
                     ),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(height: 10),
-                Text("Square Foot"),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.square_foot),
-                    labelText: "Sq Foot",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+
+                    SizedBox(height: 10),
+                    Text("Measurement", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 5),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.category),
+                        labelText: "Select Shape",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      value: selectedShape,
+                      items: ["Area", "Cubic"].map((String shape) {
+                        return DropdownMenuItem<String>(
+                          value: shape,
+                          child: Text(shape),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedShape = newValue!;
+                          calculateSquareFoot();
+                        });
+                      },
                     ),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(height: 10),
-                Text("Rate"),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.currency_rupee),
-                    labelText: "Rate",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    SizedBox(height: 10),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: lengthController,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.straighten),
+                              labelText: "Length",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: widthController,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.straighten),
+                              labelText: "Width",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text("Total Cost"),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.currency_rupee),
-                    labelText: "Total Cost",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    SizedBox(height: 10),
+
+                    if (selectedShape == "Cubic")
+                      TextField(
+                        controller: heightController,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.height),
+                          labelText: "Height",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          contentPadding: EdgeInsets.all(10),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                    SizedBox(height: 10),
+
+                    Text("Square Foot", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 5),
+                    TextField(
+                      controller: squareFootController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.square_foot),
+                        labelText: "Sq Foot",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      readOnly: true,
                     ),
-                  ),
+                    SizedBox(height: 10),
+
+                    Text("Rate", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 5),
+                    TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.currency_rupee),
+                        labelText: "Rate",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        contentPadding: EdgeInsets.all(10),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: 10),
+
+                    Text("Total Cost", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 5),
+                    TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.currency_rupee),
+                        labelText: "Total Cost",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        contentPadding: EdgeInsets.all(10),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: 20),
+
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("Add Item"),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("Add Item"),
-                ),
-                SizedBox(height: 10),
               ],
             ),
-          ],
-        ),
+          );
+        },
       );
     },
   );
 }
+
+double calculateMeasurement({
+  required double length,
+  required double width,
+  required double height,
+  required String unit,
+  required String shape,
+}) {
+  double lengthInFeet = convertToFeet(length, unit);
+  double widthInFeet = convertToFeet(width, unit);
+  double heightInFeet = convertToFeet(height, unit);
+
+  if (shape == "Area") {
+    return lengthInFeet * widthInFeet;
+  } else if (shape == "Cubic") {
+    return lengthInFeet * widthInFeet * heightInFeet;
+  }
+
+  return 0;
+}
+
+double convertToFeet(double length, String unit) {
+  double result = 0;
+  if (unit == "Feet") {
+    result = length;
+  } else if (unit == "Inch") {
+    result = length * 12;
+  } else if (unit == "Meter"){
+    result = length * 3.28084;
+  }
+  return result;
+}
+
+
+
+
