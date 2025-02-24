@@ -21,6 +21,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class QuotationItem {
+  final String itemName;
+  final String unit;
+  final String shape;
+  final double length;
+  final double width;
+  final double? height;
+  final double squareFeet;
+  final double rate;
+  final double totalCost;
+
+  QuotationItem({
+    required this.itemName,
+    required this.unit,
+    required this.shape,
+    required this.length,
+    required this.width,
+    this.height,
+    required this.squareFeet,
+    required this.rate,
+    required this.totalCost,
+  });
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -33,6 +57,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String? selectedShape;
   String? selectedUnit;
+  List<QuotationItem> items = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,14 +127,61 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
 
+              if (items.isNotEmpty) ...[
+                SizedBox(height: 20),
+                Text(
+                  "Added Items:",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 5),
+                      child: ListTile(
+                        title: Text(item.itemName),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Measurements: ${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}'),
+                            Text('Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'),
+                            Text('Rate: ${item.rate.toStringAsFixed(2)}'),
+                            Text('Total: ${item.totalCost.toStringAsFixed(2)}'),
+                          ],
+                        ),
+                        //Added delete button for each item
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            setState(() {
+                              items.removeAt(index);
+                            });
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+
               SizedBox(height: 40),
 
               //Button to add items
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
-                  onPressed: () {
-                    _showBottomPopup(context);
+                  onPressed: () async {
+                    //Wait for and handle the result from bottom popup
+                    final result = await _showBottomPopup(context);
+                    if (result != null) {
+                      setState(() {
+                        items.add(result);
+                      });
+                    }
                   },
                   child: Text("Add Item"),
                 ),
@@ -149,7 +221,7 @@ onTapFunction({required BuildContext context}) async {
 //This Method will generate the bottom popup menu when user tap on Add Item button and
 //it gives user options to enter the details
 // and handles all calculations for area and volume measurements
-void _showBottomPopup(BuildContext context) {
+Future<QuotationItem?> _showBottomPopup(BuildContext context) async {
   // Controllers for handling text input fields
   TextEditingController lengthController = TextEditingController();
   TextEditingController widthController = TextEditingController();
@@ -157,6 +229,7 @@ void _showBottomPopup(BuildContext context) {
   TextEditingController squareFootController = TextEditingController();
   TextEditingController rateController = TextEditingController();
   TextEditingController totalCostController = TextEditingController();
+  TextEditingController itemNameController = TextEditingController();
   // Default values for unit and shape selections
   String selectedUnit = "Feet";
   String selectedShape = "Area";
@@ -251,6 +324,7 @@ void _showBottomPopup(BuildContext context) {
 
                     // Item Name input field
                     TextField(
+                      controller: itemNameController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.shopping_bag_rounded),
                         labelText: "Item Name",
@@ -419,7 +493,31 @@ void _showBottomPopup(BuildContext context) {
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          // Validate required fields
+                          if (itemNameController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Please enter item name')),
+                            );
+                            return;
+                          }
+
+                          // Create the QuotationItem with all entered data
+                          final item = QuotationItem(
+                            itemName: itemNameController.text, // Use the controller value
+                            unit: selectedUnit,
+                            shape: selectedShape,
+                            length: double.tryParse(lengthController.text) ?? 0,
+                            width: double.tryParse(widthController.text) ?? 0,
+                            height: selectedShape == "Cubic"
+                                ? double.tryParse(heightController.text)
+                                : null,
+                            squareFeet: double.tryParse(squareFootController.text) ?? 0,
+                            rate: double.tryParse(rateController.text) ?? 0,
+                            totalCost: double.tryParse(totalCostController.text) ?? 0,
+                          );
+
+                          // Close the popup and return the item
+                          Navigator.pop(context, item);
                         },
                         child: Text("Add Item"),
                       ),
