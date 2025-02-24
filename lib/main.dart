@@ -84,8 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
+                  prefixIconColor: Colors.blue,
                   labelText: "Customer Name",
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 2, color: Colors.blue),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.all(10),
@@ -100,8 +106,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.calendar_month),
+                  prefixIconColor: Colors.blue,
                   labelText: "Date",
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 2, color: Colors.blue),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.all(10),
@@ -116,8 +128,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.shopping_bag_sharp),
+                  prefixIconColor: Colors.blue,
                   labelText: "Project Name",
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 2, color: Colors.blue),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.all(10),
@@ -132,8 +150,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
+                  prefixIconColor: Colors.blue,
                   labelText: "Mobile Number",
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 2, color: Colors.blue),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.all(10),
@@ -154,6 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (context, index) {
                     final item = items[index];
                     return Card(
+                      color: Colors.lightBlueAccent,
                       margin: EdgeInsets.symmetric(vertical: 5),
                       child: ListTile(
                         title: Text(item.itemName),
@@ -172,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           children: [
                             //Edit Button
                             IconButton(
-                              icon: Icon(Icons.edit),
+                              icon: Icon(Icons.edit, color: Colors.black),
                               onPressed: () async {
                                 final updatedItem = await _showBottomPopup(context);
                                 if (updatedItem != null) {
@@ -184,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             //Delete Button
                             IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: Icon(Icons.delete, color: Colors.red),
                               onPressed: () {
                                 setState(() {
                                   items.removeAt(index);
