@@ -178,14 +178,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (context, index) {
                     final item = items[index];
                     return Card(
-                      color: Colors.lightBlueAccent,
                       margin: EdgeInsets.symmetric(vertical: 5),
                       child: ListTile(
                         title: Text(item.itemName),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Measurements: ${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}'),
+                            Text('${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}'),
                             Text('Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'),
                             Text('Rate: ${item.rate.toStringAsFixed(2)}'),
                             Text('Total: ${item.totalCost.toStringAsFixed(2)}'),
@@ -195,11 +194,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            //Edit Button
+                            // Edit Button
                             IconButton(
                               icon: Icon(Icons.edit, color: Colors.black),
                               onPressed: () async {
-                                final updatedItem = await _showBottomPopup(context);
+                                final updatedItem = await _showBottomPopup(context, existingItem: items[index]); // Pass existing item details
                                 if (updatedItem != null) {
                                   setState(() {
                                     items[index] = updatedItem;
@@ -207,6 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 }
                               },
                             ),
+
                             //Delete Button
                             IconButton(
                               icon: Icon(Icons.delete, color: Colors.red),
@@ -290,15 +290,16 @@ onTapFunction({required BuildContext context, required FormController formContro
 //This Method will generate the bottom popup menu when user tap on Add Item button and
 //it gives user options to enter the details
 // and handles all calculations for area and volume measurements
-Future<QuotationItem?> _showBottomPopup(BuildContext context) async {
+Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? existingItem}) async {
   // Controllers for handling text input fields
-  TextEditingController lengthController = TextEditingController();
-  TextEditingController widthController = TextEditingController();
-  TextEditingController heightController = TextEditingController();
+  TextEditingController lengthController = TextEditingController(text: existingItem?.length.toString() ?? "");
+  TextEditingController widthController = TextEditingController(text: existingItem?.width.toString() ?? "");
+  TextEditingController heightController = TextEditingController(text: existingItem?.height?.toString() ?? "");
   TextEditingController squareFootController = TextEditingController();
-  TextEditingController rateController = TextEditingController();
+  TextEditingController rateController = TextEditingController(text: existingItem?.rate.toString() ?? "");
   TextEditingController totalCostController = TextEditingController();
-  TextEditingController itemNameController = TextEditingController();
+  TextEditingController itemNameController = TextEditingController(text: existingItem?.itemName ?? "");
+
   // Default values for unit and shape selections
   String selectedUnit = "Feet";
   String selectedShape = "Area";
