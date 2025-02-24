@@ -234,7 +234,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context) async {
   String selectedUnit = "Feet";
   String selectedShape = "Area";
 
-  showModalBottomSheet(
+  return showModalBottomSheet<QuotationItem>(
     context: context,
     isScrollControlled: true, // Allows the sheet to take full height if needed
     shape: RoundedRectangleBorder(
@@ -517,7 +517,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context) async {
                           );
 
                           // Close the popup and return the item
-                          Navigator.pop(context, item);
+                          Navigator.of(context).pop(item);
                         },
                         child: Text("Add Item"),
                       ),
