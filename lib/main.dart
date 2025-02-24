@@ -300,6 +300,8 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
   TextEditingController totalCostController = TextEditingController();
   TextEditingController itemNameController = TextEditingController(text: existingItem?.itemName ?? "");
 
+
+
   // Default values for unit and shape selections
   String selectedUnit = "Feet";
   String selectedShape = "Area";
@@ -311,6 +313,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) {
+      bool isItemNameEmpty = false;
       return StatefulBuilder(
         builder: (context, setState) {
 
@@ -396,13 +399,21 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                     TextField(
                       controller: itemNameController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.shopping_bag_rounded),
                         labelText: "Item Name",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        contentPadding: EdgeInsets.all(10),
+                        errorText: isItemNameEmpty ? "Item Name is required" : null,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: isItemNameEmpty ? Colors.red : Colors.blue),
+                        ),
                       ),
+                      onChanged: (value) {
+                        setState(() {
+                          isItemNameEmpty = value.isEmpty;
+                        });
+                      },
                     ),
                     SizedBox(height: 10),
 
@@ -563,11 +574,10 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
-                          // Validate required fields
                           if (itemNameController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Please enter item name')),
-                            );
+                            setState(() {
+                              isItemNameEmpty = true;
+                            });
                             return;
                           }
 
