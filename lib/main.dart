@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'pdf_generator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,9 +56,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final FormController formController = FormController();
   String? selectedShape;
   String? selectedUnit;
   List<QuotationItem> items = [];
+
+  @override
+  void dispose() {
+    formController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               //Customer Name Field
               TextField(
+                controller: formController.customerNameController,
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
@@ -85,7 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
               //Date Picker Field
               TextField(
-                controller: datePickerController,
+                controller: formController.dateController,
+                // controller: datePickerController,
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.calendar_month),
@@ -95,12 +106,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   contentPadding: EdgeInsets.all(10),
                 ),
-                onTap: () => onTapFunction(context: context),
+                onTap: () => onTapFunction(context: context, formController: formController),
               ),
               SizedBox(height: 20),
 
               // Project Name Field
               TextField(
+                controller: formController.projectNameController,
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.shopping_bag_sharp),
@@ -115,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               // Mobile Number Field
               TextField(
+                controller: formController.mobileNumberController,
                 textAlign: TextAlign.left,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
@@ -192,7 +205,16 @@ class _MyHomePageState extends State<MyHomePage> {
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(minimumSize: Size(200, 40)),
-                  onPressed: () {},
+                  onPressed: () {
+                    generatePdf(
+                      customerName: formController.customerNameController.text,
+                      date: formController.dateController.text,
+                      projectName: formController.projectNameController.text,
+                      mobileNumber: formController.mobileNumberController.text,
+                      items: items,
+                    );
+                  },
+
                   child: Text('Submit'),
                 ),
               ),
@@ -207,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //This method will generate the date picker when user tab on date field
 TextEditingController datePickerController = TextEditingController();
 
-onTapFunction({required BuildContext context}) async {
+onTapFunction({required BuildContext context, required FormController formController}) async {
   DateTime? pickedDate = await showDatePicker(
     context: context,
     lastDate: DateTime(2050),
@@ -215,7 +237,11 @@ onTapFunction({required BuildContext context}) async {
     initialDate: DateTime.now(),
   );
   if (pickedDate == null) return;
-  datePickerController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+  String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+
+  formController.dateController.text = formattedDate;
+
+  (context as Element).markNeedsBuild();
 }
 
 //This Method will generate the bottom popup menu when user tap on Add Item button and
