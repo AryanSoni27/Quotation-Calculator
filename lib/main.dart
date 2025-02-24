@@ -166,14 +166,32 @@ class _MyHomePageState extends State<MyHomePage> {
                             Text('Total: ${item.totalCost.toStringAsFixed(2)}'),
                           ],
                         ),
-                        //Added delete button for each item
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              items.removeAt(index);
-                            });
-                          },
+                        //Added delete and edit button for each item
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            //Edit Button
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () async {
+                                final updatedItem = await _showBottomPopup(context);
+                                if (updatedItem != null) {
+                                  setState(() {
+                                    items[index] = updatedItem;
+                                  });
+                                }
+                              },
+                            ),
+                            //Delete Button
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() {
+                                  items.removeAt(index);
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     );
