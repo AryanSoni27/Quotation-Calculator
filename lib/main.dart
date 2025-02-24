@@ -148,7 +148,6 @@ onTapFunction({required BuildContext context}) async {
 
 //This Method will generate the bottom popup menu when user tap on Add Item button and
 //it gives user options to enter the details
-// This function shows a bottom sheet popup with measurement input fields
 // and handles all calculations for area and volume measurements
 void _showBottomPopup(BuildContext context) {
   // Controllers for handling text input fields
@@ -156,6 +155,8 @@ void _showBottomPopup(BuildContext context) {
   TextEditingController widthController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController squareFootController = TextEditingController();
+  TextEditingController rateController = TextEditingController();
+  TextEditingController totalCostController = TextEditingController();
   // Default values for unit and shape selections
   String selectedUnit = "Feet";
   String selectedShape = "Area";
@@ -169,8 +170,18 @@ void _showBottomPopup(BuildContext context) {
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
+
+          //This Function will calculate the total cost based on rate and square foot
+          void calculateTotalCost() {
+            double squareFeet = double.tryParse(squareFootController.text) ?? 0;
+            double rate = double.tryParse(rateController.text) ?? 0;
+            double totalCost = squareFeet * rate;
+
+            setState(() {
+              totalCostController.text = totalCost.toStringAsFixed(2);
+            });
+          }
           // Calculate the square footage based on input values and selected options
-          // Now properly uses the calculateMeasurement function for all calculations
           void calculateSquareFoot() {
             // Parse input values, default to 0 if parsing fails
             double length = double.tryParse(lengthController.text) ?? 0;
@@ -187,8 +198,10 @@ void _showBottomPopup(BuildContext context) {
               shape: selectedShape,
             );
 
+
             setState(() {
               squareFootController.text = result.toStringAsFixed(2);
+              calculateTotalCost();
             });
           }
 
@@ -200,6 +213,7 @@ void _showBottomPopup(BuildContext context) {
             if (selectedShape == "Cubic") {
               heightController.addListener(calculateSquareFoot);
             }
+            rateController.addListener(calculateTotalCost);
           }
 
           //Clean up listeners to prevent memory leaks and unexpected behavior
@@ -207,6 +221,7 @@ void _showBottomPopup(BuildContext context) {
             lengthController.removeListener(calculateSquareFoot);
             widthController.removeListener(calculateSquareFoot);
             heightController.removeListener(calculateSquareFoot);
+            rateController.removeListener(calculateTotalCost);
           }
 
           //Initialize listeners when building the widget
@@ -263,7 +278,7 @@ void _showBottomPopup(BuildContext context) {
                           child: Text(unit),
                         );
                       }).toList(),
-                      // NEW: Updated to recalculate when unit changes
+                      //Updated to recalculate when unit changes
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedUnit = newValue!;
@@ -273,7 +288,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    // Shape selection dropdown (Area or Cubic)
+                    // Shape selection dropdown
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.category),
@@ -300,7 +315,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    // Measurement input fields (length, width, and conditional height)
+                    // Measurement input fields
                     Row(
                       children: [
                         Expanded(
@@ -354,7 +369,7 @@ void _showBottomPopup(BuildContext context) {
                     ),
                     SizedBox(height: 10),
 
-                    // Result field showing calculated square footage
+                    // Result field showing calculated square foot
                     TextField(
                       controller: squareFootController,
                       decoration: InputDecoration(
@@ -371,6 +386,7 @@ void _showBottomPopup(BuildContext context) {
 
                     // Rate input field for price per square foot
                     TextField(
+                      controller: rateController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.currency_rupee),
                         labelText: "Rate",
@@ -385,6 +401,8 @@ void _showBottomPopup(BuildContext context) {
 
                     // Total cost field (calculated from rate * square footage)
                     TextField(
+                      controller: totalCostController,
+                      readOnly: true,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.currency_rupee),
                         labelText: "Total Cost",
@@ -452,6 +470,7 @@ double convertToFeet(double length, String unit) {
   }
   return length; // Default return if unit is not recognized
 }
+
 
 
 
