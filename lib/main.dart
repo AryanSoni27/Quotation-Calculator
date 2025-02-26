@@ -61,6 +61,34 @@ class _MyHomePageState extends State<MyHomePage> {
   String? selectedUnit;
   List<QuotationItem> items = [];
 
+  bool _customerNameValid = true;
+  bool _dateValid = true;
+  bool _projectNameValid = true;
+  bool _mobileNumberValid = true;
+
+  Future<bool> validateFields() async {
+    setState(() {
+      _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
+      _dateValid = formController.dateController.text.trim().isNotEmpty;
+      _projectNameValid = formController.projectNameController.text.trim().isNotEmpty;
+      _mobileNumberValid = formController.mobileNumberController.text.trim().isNotEmpty;
+    });
+
+    if (items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please add at least one item to the quotation'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return false;
+    }
+
+    return _customerNameValid && _dateValid && _projectNameValid && _mobileNumberValid;
+  }
+
+
   @override
   void dispose() {
     formController.dispose();
@@ -87,38 +115,53 @@ class _MyHomePageState extends State<MyHomePage> {
                   prefixIconColor: Colors.blue,
                   labelText: "Customer Name",
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
+                    borderSide: BorderSide(color: _customerNameValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: Colors.blue),
+                    borderSide: BorderSide(width: 2, color: _customerNameValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  errorText: _customerNameValid ? null : "Customer name is required",
                   contentPadding: EdgeInsets.all(10),
                 ),
+                onChanged: (value) {
+                  if (!_customerNameValid) {
+                    setState(() {
+                      _customerNameValid = value.trim().isNotEmpty;
+                    });
+                  }
+                },
               ),
               SizedBox(height: 20),
 
               //Date Picker Field
               TextField(
                 controller: formController.dateController,
-                // controller: datePickerController,
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.calendar_month),
                   prefixIconColor: Colors.blue,
-                  labelText: "Date",
+                  labelText: "Date *", // Added asterisk to show it's required
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
+                    borderSide: BorderSide(color: _dateValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: Colors.blue),
+                    borderSide: BorderSide(width: 2, color: _dateValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  errorText: _dateValid ? null : "Date is required",
                   contentPadding: EdgeInsets.all(10),
                 ),
-                onTap: () => onTapFunction(context: context, formController: formController),
+                onTap: () async {
+                  await onTapFunction(context: context, formController: formController);
+                  if (!_dateValid && formController.dateController.text.trim().isNotEmpty) {
+                    setState(() {
+                      _dateValid = true;
+                    });
+                  }
+                },
               ),
               SizedBox(height: 20),
 
@@ -131,15 +174,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   prefixIconColor: Colors.blue,
                   labelText: "Project Name",
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
+                    borderSide: BorderSide(color: _projectNameValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: Colors.blue),
+                    borderSide: BorderSide(width: 2, color: _projectNameValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  errorText: _projectNameValid ? null : "Project name is required",
                   contentPadding: EdgeInsets.all(10),
                 ),
+                onChanged: (value) {
+                  if (!_projectNameValid) {
+                    setState(() {
+                      _projectNameValid = value.trim().isNotEmpty;
+                    });
+                  }
+                },
               ),
               SizedBox(height: 20),
 
@@ -151,17 +202,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
                   prefixIconColor: Colors.blue,
-                  labelText: "Mobile Number",
+                  labelText: "Mobile Number *", // Added asterisk to show it's required
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
+                    borderSide: BorderSide(color: _mobileNumberValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: Colors.blue),
+                    borderSide: BorderSide(width: 2, color: _mobileNumberValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  errorText: _mobileNumberValid ? null : "Mobile number is required",
                   contentPadding: EdgeInsets.all(10),
                 ),
+                onChanged: (value) {
+                  if (!_mobileNumberValid) {
+                    setState(() {
+                      _mobileNumberValid = value.trim().isNotEmpty;
+                    });
+                  }
+                },
               ),
 
               if (items.isNotEmpty) ...[
@@ -248,16 +307,26 @@ class _MyHomePageState extends State<MyHomePage> {
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(minimumSize: Size(200, 40)),
-                  onPressed: () {
-                    generatePdf(
-                      customerName: formController.customerNameController.text,
-                      date: formController.dateController.text,
-                      projectName: formController.projectNameController.text,
-                      mobileNumber: formController.mobileNumberController.text,
-                      items: items,
-                    );
+                  onPressed: () async {
+                    // Validate all fields before generating PDF
+                    if (await validateFields()) {
+                      generatePdf(
+                        customerName: formController.customerNameController.text,
+                        date: formController.dateController.text,
+                        projectName: formController.projectNameController.text,
+                        mobileNumber: formController.mobileNumberController.text,
+                        items: items,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please fill all required fields'),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    }
                   },
-
                   child: Text('Submit'),
                 ),
               ),
