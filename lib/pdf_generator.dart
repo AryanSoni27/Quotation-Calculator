@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -27,52 +28,98 @@ Future<void> generatePdf({
   required String projectName,
   required String mobileNumber,
   required List<QuotationItem> items,
-})async {
-  // Create a PDF document
-  final pdf = pw.Document();
-  pdf.addPage(
-    pw.Page(
-      pageFormat: PdfPageFormat.a4,
-      build: (pw.Context context) {
-        return pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Text("Quotation", style: pw.TextStyle(
-                fontSize: 24, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 20),
+}) async {
+  try {
+    final pdf = pw.Document();
 
-            pw.Text("Customer Name: $customerName"),
-            pw.Text("Date: $date"),
-            pw.Text("Project Name: $projectName"),
-            pw.Text("Mobile Number: $mobileNumber"),
-            pw.SizedBox(height: 20),
+    // Load custom font (if available)
+    pw.Font? ttf;
+    try {
+      final fontData = await rootBundle.load("assets/fonts/OpenSans-Regular.ttf");
+      ttf = pw.Font.ttf(fontData.buffer.asByteData());
+    } catch (e) {
+      print("Error loading font: $e");
+    }
 
-            pw.Text("Added Items:", style: pw.TextStyle(
-                fontSize: 18, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 10),
+    // Calculate grand total
+    double grandTotal = items.fold(0.0, (sum, item) => sum + item.totalCost);
 
-            pw.TableHelper.fromTextArray(
-              headers: ["Item Name", "Measurements", "Rate", "Total Cost"],
-              data: items.map((item) =>
-              [
-                item.itemName,
-                "${item.length} × ${item.width}${item.height != null
-                    ? ' × ${item.height}'
-                    : ''} ${item.unit}",
-                item.rate.toStringAsFixed(2),
-                item.totalCost.toStringAsFixed(2)
-              ]).toList(),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-  final pdfBytes = await pdf.save();
-  final directory = await getApplicationDocumentsDirectory();
-  final filePath = "${directory.path}/quotation.pdf";
-  final file = File(filePath);
-  await file.writeAsBytes(pdfBytes);
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.all(30),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              // Title
+              pw.Text(
+                "QUOTATION",
+                style: pw.TextStyle(
+                  fontSize: 28,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue900,
+                ),
+              ),
+              pw.Divider(thickness: 2, color: PdfColors.blue),
+              pw.SizedBox(height: 10),
 
-  OpenFile.open(filePath);
+              // Customer Details
+              pw.Text("Customer Name: $customerName", style: pw.TextStyle(fontSize: 12, font: ttf)),
+              pw.Text("Date: $date", style: pw.TextStyle(fontSize: 12, font: ttf)),
+              pw.Text("Project Name: $projectName", style: pw.TextStyle(fontSize: 12, font: ttf)),
+              pw.Text("Mobile Number: $mobileNumber", style: pw.TextStyle(fontSize: 12, font: ttf)),
+              pw.SizedBox(height: 20),
+
+              // Quotation Table
+              pw.TableHelper.fromTextArray(
+                headers: ["Item", "Measurements", "Rate", "Total Cost"],
+                headerStyle: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.white,
+                ),
+                headerDecoration: pw.BoxDecoration(color: PdfColors.blue),
+                data: items.map((item) => [
+                  item.itemName,
+                  "${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}",
+                  (item.rate.toStringAsFixed(2)),
+                  (item.totalCost.toStringAsFixed(2))
+                ]).toList(),
+                border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
+                cellStyle: pw.TextStyle(fontSize: 12, font: ttf),
+              ),
+
+              pw.SizedBox(height: 10),
+
+              // Grand Total
+              pw.Container(
+                padding: pw.EdgeInsets.all(8),
+                alignment: pw.Alignment.centerRight,
+                child: pw.Text(
+                  "Grand Total: ${grandTotal.toStringAsFixed(2)}",
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.blue900,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Save PDF
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = "${directory.path}/quotation.pdf";
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+
+    // Open PDF
+    OpenFile.open(filePath);
+  } catch (e) {
+    print("Error generating PDF: $e");
+  }
 }
