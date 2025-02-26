@@ -32,13 +32,13 @@ Future<void> generatePdf({
   try {
     final pdf = pw.Document();
 
-    // Load custom font (if available)
+    // Load custom font
     pw.Font? ttf;
     try {
       final fontData = await rootBundle.load("assets/fonts/OpenSans-Regular.ttf");
       ttf = pw.Font.ttf(fontData.buffer.asByteData());
     } catch (e) {
-      print("Error loading font: $e");
+      print("Error fetching font");
     }
 
     // Calculate grand total
