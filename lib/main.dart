@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
       _dateValid = formController.dateController.text.trim().isNotEmpty;
       _projectNameValid = formController.projectNameController.text.trim().isNotEmpty;
-      _mobileNumberValid = formController.mobileNumberController.text.trim().isNotEmpty;
+      _mobileNumberValid = formController.mobileNumberController.text.trim().length == 10;
     });
 
     // If any text field is empty, set hasErrors to true
@@ -241,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _mobileNumberValid = value.trim().length == 10; // Ensures exactly 10 digits
+                    _mobileNumberValid = value.trim().length == 10; // Valid only if exactly 10 digits
                   });
                 },
               ),
