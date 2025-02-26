@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter, LengthLimitingTextInputFormatter;
 import 'package:intl/intl.dart';
 import 'pdf_generator.dart';
 
@@ -67,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _mobileNumberValid = true;
 
   Future<bool> validateFields() async {
-    bool hasErrors = false; // Track validation errors
+    bool hasErrors = false;
 
     setState(() {
       _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
@@ -83,26 +84,26 @@ class _MyHomePageState extends State<MyHomePage> {
         SnackBar(
           content: Text('Please fill all required fields'),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 1),
+          duration: Duration(seconds: 2),
         ),
       );
     }
 
     // Check if item list is empty
     if (items.isEmpty) {
-      if (!hasErrors) { // Show this error only if no other errors exist
+      if (!hasErrors) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Please add at least one item to the quotation'),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 1),
+            duration: Duration(seconds: 2),
           ),
         );
       }
       hasErrors = true;
     }
 
-    return !hasErrors; // Return false if there were any errors
+    return !hasErrors;
   }
 
 
@@ -219,6 +220,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller: formController.mobileNumberController,
                 textAlign: TextAlign.left,
                 keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(10),
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
                   prefixIconColor: Colors.blue,
@@ -235,13 +240,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   contentPadding: EdgeInsets.all(10),
                 ),
                 onChanged: (value) {
-                  if (!_mobileNumberValid) {
-                    setState(() {
-                      _mobileNumberValid = value.trim().isNotEmpty;
-                    });
-                  }
+                  setState(() {
+                    _mobileNumberValid = value.trim().length == 10; // Ensures exactly 10 digits
+                  });
                 },
               ),
+
 
               if (items.isNotEmpty) ...[
                 SizedBox(height: 20),
