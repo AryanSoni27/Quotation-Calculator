@@ -67,6 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _mobileNumberValid = true;
 
   Future<bool> validateFields() async {
+    bool hasErrors = false; // Track validation errors
+
     setState(() {
       _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
       _dateValid = formController.dateController.text.trim().isNotEmpty;
@@ -74,19 +76,37 @@ class _MyHomePageState extends State<MyHomePage> {
       _mobileNumberValid = formController.mobileNumberController.text.trim().isNotEmpty;
     });
 
-    if (items.isEmpty) {
+    // If any text field is empty, set hasErrors to true
+    if (!_customerNameValid || !_dateValid || !_projectNameValid || !_mobileNumberValid) {
+      hasErrors = true;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please add at least one item to the quotation'),
+          content: Text('Please fill all required fields'),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 1),
         ),
       );
-      return false;
     }
 
-    return _customerNameValid && _dateValid && _projectNameValid && _mobileNumberValid;
+    // Check if item list is empty
+    if (items.isEmpty) {
+      if (!hasErrors) { // Show this error only if no other errors exist
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please add at least one item to the quotation'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+      hasErrors = true;
+    }
+
+    return !hasErrors; // Return false if there were any errors
   }
+
+
+
 
 
   @override
@@ -142,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.calendar_month),
                   prefixIconColor: Colors.blue,
-                  labelText: "Date *", // Added asterisk to show it's required
+                  labelText: "Date",
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: _dateValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
@@ -202,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
                   prefixIconColor: Colors.blue,
-                  labelText: "Mobile Number *", // Added asterisk to show it's required
+                  labelText: "Mobile Number",
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: _mobileNumberValid ? Colors.blue : Colors.red),
                     borderRadius: BorderRadius.circular(10),
@@ -316,14 +336,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         projectName: formController.projectNameController.text,
                         mobileNumber: formController.mobileNumberController.text,
                         items: items,
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Please fill all required fields'),
-                          backgroundColor: Colors.red,
-                          duration: Duration(seconds: 3),
-                        ),
                       );
                     }
                   },
