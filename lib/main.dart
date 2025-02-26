@@ -67,6 +67,46 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _projectNameValid = true;
   bool _mobileNumberValid = true;
 
+  FocusNode _customerNameFocusNode = FocusNode();
+  FocusNode _dateFocusNode = FocusNode();
+  FocusNode _projectNameFocusNode = FocusNode();
+  FocusNode _mobileNumberFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _customerNameFocusNode.addListener(() {
+      if (!_customerNameFocusNode.hasFocus) {
+        setState(() {
+          _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
+        });
+      }
+    });
+    _dateFocusNode.addListener(() {
+      if (!_dateFocusNode.hasFocus) {
+        setState(() {
+          _dateValid = formController.dateController.text.trim().isNotEmpty;
+        });
+      }
+    });
+    _projectNameFocusNode.addListener(() {
+      if (!_projectNameFocusNode.hasFocus) {
+        setState(() {
+          _projectNameValid = formController.projectNameController.text.trim().isNotEmpty;
+        });
+      }
+    });
+    _mobileNumberFocusNode.addListener(() {
+      if (!_mobileNumberFocusNode.hasFocus) {
+        setState(() {
+          _mobileNumberValid = formController.mobileNumberController.text.trim().length == 10;
+        });
+      }
+    });
+  }
+
+
+
   Future<bool> validateFields() async {
     bool hasErrors = false;
 
@@ -106,10 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return !hasErrors;
   }
 
-
-
-
-
   @override
   void dispose() {
     formController.dispose();
@@ -131,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: formController.customerNameController,
                 textAlign: TextAlign.left,
+                focusNode: _customerNameFocusNode,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   prefixIconColor: Colors.blue,
@@ -160,6 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: formController.dateController,
                 textAlign: TextAlign.left,
+                focusNode: _dateFocusNode,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.calendar_month),
                   prefixIconColor: Colors.blue,
@@ -190,6 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: formController.projectNameController,
                 textAlign: TextAlign.left,
+                focusNode: _projectNameFocusNode,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.shopping_bag_sharp),
                   prefixIconColor: Colors.blue,
@@ -219,6 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
               TextField(
                 controller: formController.mobileNumberController,
                 textAlign: TextAlign.left,
+                focusNode: _mobileNumberFocusNode,
                 keyboardType: TextInputType.phone,
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(10),
