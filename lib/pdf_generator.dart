@@ -35,7 +35,9 @@ Future<void> generatePdf({
     // Load custom font
     pw.Font? ttf;
     try {
-      final fontData = await rootBundle.load("assets/fonts/OpenSans-Regular.ttf");
+      final fontData = await rootBundle.load(
+        "assets/fonts/OpenSans-Regular.ttf",
+      );
       ttf = pw.Font.ttf(fontData.buffer.asByteData());
     } catch (e) {
       print("Error fetching font");
@@ -50,11 +52,11 @@ Future<void> generatePdf({
         margin: pw.EdgeInsets.all(30),
         build: (pw.Context context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
               // Title
               pw.Text(
-                "QUOTATION",
+                "ESTIMATE",
                 style: pw.TextStyle(
                   fontSize: 28,
                   fontWeight: pw.FontWeight.bold,
@@ -64,28 +66,63 @@ Future<void> generatePdf({
               pw.Divider(thickness: 2, color: PdfColors.blue),
               pw.SizedBox(height: 10),
 
-              // Customer Details
-              pw.Text("Customer Name: $customerName", style: pw.TextStyle(fontSize: 12, font: ttf)),
-              pw.Text("Date: $date", style: pw.TextStyle(fontSize: 12, font: ttf)),
-              pw.Text("Project Name: $projectName", style: pw.TextStyle(fontSize: 12, font: ttf)),
-              pw.Text("Mobile Number: $mobileNumber", style: pw.TextStyle(fontSize: 12, font: ttf)),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        "Customer Name: $customerName",
+                        style: pw.TextStyle(fontSize: 12, font: ttf),
+                      ),
+                      pw.Text(
+                        "Project Name: $projectName",
+                        style: pw.TextStyle(fontSize: 12, font: ttf),
+                      ),
+                      pw.Text(
+                        "Mobile: $mobileNumber",
+                        style: pw.TextStyle(fontSize: 12, font: ttf),
+                      ),
+                    ],
+                  ),
+
+                  pw.Text(
+                    "Date: $date",
+                    style: pw.TextStyle(fontSize: 12, font: ttf),
+                  ),
+                ],
+              ),
               pw.SizedBox(height: 20),
 
-              // Quotation Table
+              //Quotation Table
               pw.TableHelper.fromTextArray(
-                headers: ["Item", "Measurements", "Rate", "Total Cost"],
+                headers: [
+                  "Item",
+                  "Measurements",
+                  "Square Feet",
+                  "Rate",
+                  "Total",
+                ],
                 headerStyle: pw.TextStyle(
                   fontSize: 12,
                   fontWeight: pw.FontWeight.bold,
                   color: PdfColors.white,
                 ),
                 headerDecoration: pw.BoxDecoration(color: PdfColors.blue),
-                data: items.map((item) => [
-                  item.itemName,
-                  "${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}",
-                  (item.rate.toStringAsFixed(2)),
-                  (item.totalCost.toStringAsFixed(2))
-                ]).toList(),
+                data:
+                items
+                    .map(
+                      (item) => [
+                    item.itemName,
+                    "${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}",
+                    (item.squareFeet.toStringAsFixed(2)),
+                    (item.rate.toStringAsFixed(2)),
+                    (item.totalCost.toStringAsFixed(2)),
+                  ],
+                )
+                    .toList(),
                 border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
                 cellStyle: pw.TextStyle(fontSize: 12, font: ttf),
               ),
