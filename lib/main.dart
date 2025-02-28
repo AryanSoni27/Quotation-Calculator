@@ -424,7 +424,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
   TextEditingController rateController = TextEditingController(text: existingItem?.rate.toString() ?? "");
   TextEditingController totalCostController = TextEditingController();
   TextEditingController itemNameController = TextEditingController(text: existingItem?.itemName ?? "");
-
+  TextEditingController quantityController = TextEditingController(text: existingItem?.rate.toString() ?? "");
 
 
   // Default values for unit and shape selections
@@ -446,7 +446,8 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
           void calculateTotalCost() {
             double squareFeet = double.tryParse(squareFootController.text) ?? 0;
             double rate = double.tryParse(rateController.text) ?? 0;
-            double totalCost = squareFeet * rate;
+            double quantity = double.tryParse(quantityController.text) ?? 0;
+            double totalCost = squareFeet * rate * quantity;
 
             setState(() {
               totalCostController.text = totalCost.toStringAsFixed(2);
@@ -546,7 +547,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.straighten),
-                        labelText: "Unit of Measurement",
+                        labelText: "Measurement Unit",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -669,6 +670,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                         SizedBox(width: 10),
                         Expanded(
                           child: TextField(
+                            controller: quantityController,
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.build),
                               labelText: "Quantity",
