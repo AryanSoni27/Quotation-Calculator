@@ -88,17 +88,20 @@ Future<void> generatePdf({
                     ],
                   ),
 
+
                   pw.Text(
                     "Date: $date",
                     style: pw.TextStyle(fontSize: 12, font: ttf),
                   ),
                 ],
               ),
+
               pw.SizedBox(height: 20),
 
               //Quotation Table
               pw.TableHelper.fromTextArray(
                 headers: [
+                  "S.No.",
                   "Item",
                   "Measurements",
                   "Square Feet",
@@ -111,20 +114,22 @@ Future<void> generatePdf({
                   color: PdfColors.white,
                 ),
                 headerDecoration: pw.BoxDecoration(color: PdfColors.blue),
-                data:
-                items
-                    .map(
-                      (item) => [
-                    item.itemName,
-                    "${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}",
-                    (item.squareFeet.toStringAsFixed(2)),
-                    (item.rate.toStringAsFixed(2)),
-                    (item.totalCost.toStringAsFixed(2)),
+                data: List.generate(
+                  items.length,
+                  (index) => [
+                    ("${index + 1}"),
+                    items[index].itemName,
+                    "${items[index].length} × ${items[index].width}${items[index].height != null ? ' × ${items[index].height}' : ''} ${items[index].unit}",
+                    "${(items[index].squareFeet.toStringAsFixed(2))} sq ft",
+                    (items[index].rate.toStringAsFixed(2)),
+                    (items[index].totalCost.toStringAsFixed(2)),
                   ],
-                )
-                    .toList(),
+                ),
                 border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
                 cellStyle: pw.TextStyle(fontSize: 12, font: ttf),
+                // cellAlignment: <int, pw.Alignment>{
+                //   0: pw.Alignment.center,
+                // },
               ),
 
               pw.SizedBox(height: 10),

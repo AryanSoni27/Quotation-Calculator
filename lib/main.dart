@@ -31,6 +31,7 @@ class QuotationItem {
   final double width;
   final double? height;
   final double squareFeet;
+  final int quantity;
   final double rate;
   final double totalCost;
 
@@ -42,6 +43,7 @@ class QuotationItem {
     required this.width,
     this.height,
     required this.squareFeet,
+    required this.quantity,
     required this.rate,
     required this.totalCost,
   });
@@ -309,6 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           children: [
                             Text('${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}'),
                             Text('Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'),
+                            Text('Quantity: ${item.quantity}'),
                             Text('Rate: ${item.rate.toStringAsFixed(2)}'),
                             Text('Total: ${item.totalCost.toStringAsFixed(2)}'),
                           ],
@@ -321,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             IconButton(
                               icon: Icon(Icons.edit, color: Colors.black),
                               onPressed: () async {
-                                final updatedItem = await _showBottomPopup(context, existingItem: items[index]); // Pass existing item details
+                                final updatedItem = await _showBottomPopup(context, existingItem: items[index]);
                                 if (updatedItem != null) {
                                   setState(() {
                                     items[index] = updatedItem;
@@ -424,7 +427,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
   TextEditingController rateController = TextEditingController(text: existingItem?.rate.toString() ?? "");
   TextEditingController totalCostController = TextEditingController();
   TextEditingController itemNameController = TextEditingController(text: existingItem?.itemName ?? "");
-  TextEditingController quantityController = TextEditingController(text: existingItem?.rate.toString() ?? "");
+  TextEditingController quantityController = TextEditingController(text: existingItem?.quantity.toString() ?? "");
 
 
   // Default values for unit and shape selections
@@ -730,7 +733,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
 
                           // Create the QuotationItem with all entered data
                           final item = QuotationItem(
-                            itemName: itemNameController.text, // Use the controller value
+                            itemName: itemNameController.text,
                             unit: selectedUnit,
                             shape: selectedShape,
                             length: double.tryParse(lengthController.text) ?? 0,
@@ -739,6 +742,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                                 ? double.tryParse(heightController.text)
                                 : null,
                             squareFeet: double.tryParse(squareFootController.text) ?? 0,
+                            quantity: int.tryParse(quantityController.text) ?? 0,
                             rate: double.tryParse(rateController.text) ?? 0,
                             totalCost: double.tryParse(totalCostController.text) ?? 0,
                           );
