@@ -650,17 +650,37 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                     SizedBox(height: 10),
 
                     // Result field showing calculated square foot
-                    TextField(
-                      controller: squareFootController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.square_foot),
-                        labelText: "Square Foot",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: squareFootController,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.square_foot),
+                              labelText: "Square Foot",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            readOnly: true, // User can't edit the result
+                          ),
                         ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      readOnly: true, // User can't edit the result
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.build),
+                              labelText: "Quantity",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              // contentPadding: EdgeInsets.all(10),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 10),
 
@@ -771,7 +791,7 @@ double convertToFeet(double length, String unit) {
   } else if (unit == "Meter") {
     return length * 3.28084; // Convert meters to feet
   }
-  return length; // Default return if unit is not recognized
+  return length;
 }
 
 
