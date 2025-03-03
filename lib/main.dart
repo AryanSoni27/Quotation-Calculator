@@ -675,7 +675,7 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                           child: TextField(
                             controller: quantityController,
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.build),
+                              prefixIcon: Icon(Icons.numbers),
                               labelText: "Quantity",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
