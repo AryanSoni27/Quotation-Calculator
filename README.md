@@ -6,10 +6,6 @@ Quotation Calculator is a Flutter-based application that calculates quotations b
 ## 🚀 Features
 - 📏 Measurement-based quotation calculations
 - 📄 PDF generation for quotations
-- 💾 Save quotations for future reference
-- 💰 Custom tax & discount options
-- 📤 Share quotations via email, WhatsApp, and other platforms
-- 🌍 Multi-currency support
 - 🔒 Secure access with authentication (planned feature)
 - ☁️ Cloud backup & sync (planned feature)
 
