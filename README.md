@@ -61,9 +61,6 @@ quotation-calculator/
 ## 🤝 Contributing
 Contributions are welcome! Feel free to fork this repository and submit pull requests.
 
-## 📜 License
-This project is licensed under the **MIT License**.
-
 ## 📧 Contact
-For any queries or feedback, reach out to me at [your-email@example.com].
+For any queries or feedback, reach out to me at [aryansoni33635@gmail.com].
 
