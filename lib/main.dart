@@ -69,10 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _projectNameValid = true;
   bool _mobileNumberValid = true;
 
-  FocusNode _customerNameFocusNode = FocusNode();
-  FocusNode _dateFocusNode = FocusNode();
-  FocusNode _projectNameFocusNode = FocusNode();
-  FocusNode _mobileNumberFocusNode = FocusNode();
+  final FocusNode _customerNameFocusNode = FocusNode();
+  final FocusNode _dateFocusNode = FocusNode();
+  final FocusNode _projectNameFocusNode = FocusNode();
+  final FocusNode _mobileNumberFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -660,11 +660,15 @@ Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? ex
                           child: TextField(
                             controller: squareFootController,
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.square_foot),
-                              labelText: "Square Foot",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
+                              // prefixIcon: Icon(Icons.square_foot),
+                              prefixText: "SquareFoot: ",
+                              prefixStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                              // labelText: "Square Foot",
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
                             ),
                             keyboardType: TextInputType.number,
                             readOnly: true, // User can't edit the result
@@ -799,7 +803,6 @@ double convertToFeet(double length, String unit) {
   }
   return length;
 }
-
 
 
 
