@@ -41,6 +41,7 @@ dependencies:
   flutter_to_pdf: ^0.3.0
   open_file: ^3.5.10
   path_provider: ^2.1.5
+  shared_preferences: ^2.5.2
 
 
 dev_dependencies:

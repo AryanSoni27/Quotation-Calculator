@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show FilteringTextInputFormatter, LengthLimitingTextInputFormatter;
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'pdf_generator.dart';
+import 'models/quotation_item.dart';
+import 'package:quotation/util/date_picker.dart';
+import 'widgets/bottom_popup.dart';
+import 'services/pdf_generator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,32 +26,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class QuotationItem {
-  final String itemName;
-  final String unit;
-  final String shape;
-  final double length;
-  final double width;
-  final double? height;
-  final double squareFeet;
-  final int quantity;
-  final double rate;
-  final double totalCost;
-
-  QuotationItem({
-    required this.itemName,
-    required this.unit,
-    required this.shape,
-    required this.length,
-    required this.width,
-    this.height,
-    required this.squareFeet,
-    required this.quantity,
-    required this.rate,
-    required this.totalCost,
-  });
-}
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -60,8 +37,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final FormController formController = FormController();
-  String? selectedShape;
-  String? selectedUnit;
   List<QuotationItem> items = [];
 
   bool _customerNameValid = true;
@@ -77,6 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    _setupFocusListeners();
+  }
+
+  void _setupFocusListeners() {
     _customerNameFocusNode.addListener(() {
       if (!_customerNameFocusNode.hasFocus) {
         setState(() {
@@ -84,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+
     _dateFocusNode.addListener(() {
       if (!_dateFocusNode.hasFocus) {
         setState(() {
@@ -91,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+
     _projectNameFocusNode.addListener(() {
       if (!_projectNameFocusNode.hasFocus) {
         setState(() {
@@ -98,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+
     _mobileNumberFocusNode.addListener(() {
       if (!_mobileNumberFocusNode.hasFocus) {
         setState(() {
@@ -107,11 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
-
   Future<bool> validateFields() async {
-    bool hasErrors = false;
-
     setState(() {
       _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
       _dateValid = formController.dateController.text.trim().isNotEmpty;
@@ -119,7 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
       _mobileNumberValid = formController.mobileNumberController.text.trim().length == 10;
     });
 
-    // If any text field is empty, set hasErrors to true
+    bool hasErrors = false;
+
     if (!_customerNameValid || !_dateValid || !_projectNameValid || !_mobileNumberValid) {
       hasErrors = true;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    // Check if item list is empty
     if (items.isEmpty) {
       if (!hasErrors) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -151,8 +129,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     formController.dispose();
+    _customerNameFocusNode.dispose();
+    _dateFocusNode.dispose();
+    _projectNameFocusNode.dispose();
+    _mobileNumberFocusNode.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -324,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             IconButton(
                               icon: Icon(Icons.edit, color: Colors.black),
                               onPressed: () async {
-                                final updatedItem = await _showBottomPopup(context, existingItem: items[index]);
+                                final updatedItem = await showBottomPopup(context, existingItem: items[index]);
                                 if (updatedItem != null) {
                                   setState(() {
                                     items[index] = updatedItem;
@@ -358,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
                   onPressed: () async {
                     //Wait for and handle the result from bottom popup
-                    final result = await _showBottomPopup(context);
+                    final result = await showBottomPopup(context);
                     if (result != null) {
                       setState(() {
                         items.add(result);
@@ -397,412 +380,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-//This method will generate the date picker when user tab on date field
-TextEditingController datePickerController = TextEditingController();
-
-onTapFunction({required BuildContext context, required FormController formController}) async {
-  DateTime? pickedDate = await showDatePicker(
-    context: context,
-    lastDate: DateTime(2050),
-    firstDate: DateTime(1970),
-    initialDate: DateTime.now(),
-  );
-  if (pickedDate == null) return;
-  String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
-
-  formController.dateController.text = formattedDate;
-
-  (context as Element).markNeedsBuild();
-}
-
-//This Method will generate the bottom popup menu when user tap on Add Item button and
-//it gives user options to enter the details
-// and handles all calculations for area and volume measurements
-Future<QuotationItem?> _showBottomPopup(BuildContext context, {QuotationItem? existingItem}) async {
-  // Controllers for handling text input fields
-  TextEditingController lengthController = TextEditingController(text: existingItem?.length.toString() ?? "");
-  TextEditingController widthController = TextEditingController(text: existingItem?.width.toString() ?? "");
-  TextEditingController heightController = TextEditingController(text: existingItem?.height?.toString() ?? "");
-  TextEditingController squareFootController = TextEditingController();
-  TextEditingController rateController = TextEditingController(text: existingItem?.rate.toString() ?? "");
-  TextEditingController totalCostController = TextEditingController();
-  TextEditingController itemNameController = TextEditingController(text: existingItem?.itemName ?? "");
-  TextEditingController quantityController = TextEditingController(text: existingItem?.quantity.toString() ?? "");
 
 
-  // Default values for unit and shape selections
-  String selectedUnit = "Feet";
-  String selectedShape = "Area";
-
-  return showModalBottomSheet<QuotationItem>(
-    context: context,
-    isScrollControlled: true, // Allows the sheet to take full height if needed
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (context) {
-      bool isItemNameEmpty = false;
-      return StatefulBuilder(
-        builder: (context, setState) {
-
-          //This Function will calculate the total cost based on rate and square foot
-          void calculateTotalCost() {
-            double squareFeet = double.tryParse(squareFootController.text) ?? 0;
-            double rate = double.tryParse(rateController.text) ?? 0;
-            double quantity = double.tryParse(quantityController.text) ?? 0;
-            double totalCost = squareFeet * rate * quantity;
-
-            setState(() {
-              totalCostController.text = totalCost.toStringAsFixed(2);
-            });
-          }
-          // Calculate the square footage based on input values and selected options
-          void calculateSquareFoot() {
-            // Parse input values, default to 0 if parsing fails
-            double length = double.tryParse(lengthController.text) ?? 0;
-            double width = double.tryParse(widthController.text) ?? 0;
-            double height = double.tryParse(heightController.text) ?? 0;
-
-            // Calculate result using the unified calculation method
-            // This ensures consistent unit conversion regardless of input unit
-            double result = calculateMeasurement(
-              length: length,
-              width: width,
-              height: height,
-              unit: selectedUnit,
-              shape: selectedShape,
-            );
-
-
-            setState(() {
-              squareFootController.text = result.toStringAsFixed(2);
-              calculateTotalCost();
-            });
-          }
-
-          //Add listeners to text controllers for real-time calculation updates
-          void addCalculationListeners() {
-            lengthController.addListener(calculateSquareFoot);
-            widthController.addListener(calculateSquareFoot);
-            // Only add height listener if we're calculating volume
-            if (selectedShape == "Cubic") {
-              heightController.addListener(calculateSquareFoot);
-            }
-            rateController.addListener(calculateTotalCost);
-          }
-
-          //Clean up listeners to prevent memory leaks and unexpected behavior
-          void removeCalculationListeners() {
-            lengthController.removeListener(calculateSquareFoot);
-            widthController.removeListener(calculateSquareFoot);
-            heightController.removeListener(calculateSquareFoot);
-            rateController.removeListener(calculateTotalCost);
-          }
-
-          //Initialize listeners when building the widget
-          addCalculationListeners();
-
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom, // Adjusts for keyboard
-              left: 16,
-              right: 16,
-              top: 16,
-            ),
-            child: Wrap(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title of the popup
-                    Center(
-                      child: Text(
-                        "Enter Item Details",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-
-                    // Item Name input field
-                    TextField(
-                      controller: itemNameController,
-                      decoration: InputDecoration(
-                        labelText: "Item Name",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        errorText: isItemNameEmpty ? "Item Name is required" : null,
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(color: isItemNameEmpty ? Colors.red : Colors.blue),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          isItemNameEmpty = value.isEmpty;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 10),
-
-                    // Unit selection dropdown
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.straighten),
-                        labelText: "Measurement Unit",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      value: selectedUnit,
-                      items: ["Inch", "Feet", "Meter"].map((String unit) {
-                        return DropdownMenuItem<String>(
-                          value: unit,
-                          child: Text(unit),
-                        );
-                      }).toList(),
-                      //Updated to recalculate when unit changes
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedUnit = newValue!;
-                          calculateSquareFoot(); // Recalculate with new unit
-                        });
-                      },
-                    ),
-                    SizedBox(height: 10),
-
-                    // Shape selection dropdown
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.category),
-                        labelText: "Select Shape",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      value: selectedShape,
-                      items: ["Area", "Cubic"].map((String shape) {
-                        return DropdownMenuItem<String>(
-                          value: shape,
-                          child: Text(shape),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        removeCalculationListeners();
-                        setState(() {
-                          selectedShape = newValue!;
-                          calculateSquareFoot();
-                        });
-                        addCalculationListeners();
-                      },
-                    ),
-                    SizedBox(height: 10),
-
-                    // Measurement input fields
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: lengthController,
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.straighten),
-                              labelText: "Length",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              contentPadding: EdgeInsets.all(10),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: widthController,
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.straighten),
-                              labelText: "Width",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              contentPadding: EdgeInsets.all(10),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                        // Conditional height field for cubic measurements
-                        if (selectedShape == "Cubic") ...[
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              controller: heightController,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.height),
-                                labelText: "Height",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                contentPadding: EdgeInsets.all(10),
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    SizedBox(height: 10),
-
-                    // Result field showing calculated square foot
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: squareFootController,
-                            decoration: InputDecoration(
-                              // prefixIcon: Icon(Icons.square_foot),
-                              prefixText: "SquareFoot: ",
-                              prefixStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                              // labelText: "Square Foot",
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                            ),
-                            keyboardType: TextInputType.number,
-                            readOnly: true, // User can't edit the result
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: quantityController,
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.numbers),
-                              labelText: "Quantity",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              // contentPadding: EdgeInsets.all(10),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-
-                    // Rate input field for price per square foot
-                    TextField(
-                      controller: rateController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.currency_rupee),
-                        labelText: "Rate",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        contentPadding: EdgeInsets.all(10),
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 10),
-
-                    // Total cost field (calculated from rate * square footage)
-                    TextField(
-                      controller: totalCostController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.currency_rupee),
-                        labelText: "Total Cost",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        contentPadding: EdgeInsets.all(10),
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 20),
-
-                    // Add item button
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (itemNameController.text.isEmpty) {
-                            setState(() {
-                              isItemNameEmpty = true;
-                            });
-                            return;
-                          }
-
-                          // Create the QuotationItem with all entered data
-                          final item = QuotationItem(
-                            itemName: itemNameController.text,
-                            unit: selectedUnit,
-                            shape: selectedShape,
-                            length: double.tryParse(lengthController.text) ?? 0,
-                            width: double.tryParse(widthController.text) ?? 0,
-                            height: selectedShape == "Cubic"
-                                ? double.tryParse(heightController.text)
-                                : null,
-                            squareFeet: double.tryParse(squareFootController.text) ?? 0,
-                            quantity: int.tryParse(quantityController.text) ?? 0,
-                            rate: double.tryParse(rateController.text) ?? 0,
-                            totalCost: double.tryParse(totalCostController.text) ?? 0,
-                          );
-
-                          // Close the popup and return the item
-                          Navigator.of(context).pop(item);
-                        },
-                        child: Text("Add Item"),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
-// Calculates the final measurement based on input values and selected options
-// Returns the result in square feet (for area) or cubic feet (for volume)
-double calculateMeasurement({
-  required double length,
-  required double width,
-  required double height,
-  required String unit,
-  required String shape,
-}) {
-  // Convert all measurements to feet before calculating
-  double lengthInFeet = convertToFeet(length, unit);
-  double widthInFeet = convertToFeet(width, unit);
-  double heightInFeet = convertToFeet(height, unit);
-
-  // Calculate based on selected shape
-  if (shape == "Area") {
-    return lengthInFeet * widthInFeet; // Returns square feet
-  } else if (shape == "Cubic") {
-    return lengthInFeet * widthInFeet * heightInFeet; // Returns cubic feet
-  }
-  return 0;
-}
-
-// Converts any input measurement to feet based on the selected unit
-double convertToFeet(double length, String unit) {
-  if (unit == "Feet") {
-    return length; // Already in feet
-  } else if (unit == "Inch") {
-    return length / 12; // Convert inches to feet
-  } else if (unit == "Meter") {
-    return length * 3.28084; // Convert meters to feet
-  }
-  return length;
-}
 
 
 
