@@ -22,7 +22,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       buttonBackgroundColor: Colors.white,
       backgroundColor: Colors.transparent,
       animationCurve: Curves.easeInOut,
-      animationDuration: Duration(milliseconds: 600),
+      animationDuration: Duration(milliseconds: 200),
       items: const [
         CurvedNavigationBarItem(
           child: Icon(Icons.home_outlined),
