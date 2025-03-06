@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 5),
                     child: ListTile(
-                      title: Text(item.itemName),
+                      title: Text(item.itemName, style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -310,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Text('Quantity: ${item.quantity}'),
                           Text('Rate: ${item.rate.toStringAsFixed(2)}'),
-                          Text('Total: ${item.totalCost.toStringAsFixed(2)}'),
+                          Text('Total: ${item.totalCost.toStringAsFixed(2)}',style: TextStyle(fontWeight: FontWeight.bold)),
                         ],
                       ),
                       //Added delete and edit button for each item
@@ -354,8 +354,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
             //Button to add items
             Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    minimumSize: Size(100, 40),
+                    foregroundColor: Colors.black
+                ),
+                // style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
                 onPressed: () async {
                   //Wait for and handle the result from bottom popup
                   final result = await showBottomPopup(context);
@@ -365,15 +369,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   }
                 },
-                child: Text("Add Item"),
+                label: const Text("Add Item"),
+                icon: const Icon(Icons.add_circle_outline_rounded, color: Colors.black),
               ),
             ),
             SizedBox(height: 30),
 
             //Submit Button
             Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: Size(200, 40)),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    minimumSize: Size(200, 40),
+                    foregroundColor: Colors.black
+                ),
                 onPressed: () async {
                   // Validate all fields before generating PDF
                   if (await validateFields()) {
@@ -388,7 +396,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 },
-                child: Text('Submit'),
+                label: const Text("Submit"),
+                // icon: const Icon(Icons.add_circle_outline_rounded, color: Colors.black),
               ),
             ),
           ],
