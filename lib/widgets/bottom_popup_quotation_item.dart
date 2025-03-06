@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../main.dart';
 import '../models/quotation_item.dart';
 import '../util/calculation_utilities.dart';
 

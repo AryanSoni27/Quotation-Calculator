@@ -8,7 +8,7 @@ import 'package:quotation/screens/settings.dart';
 import 'package:quotation/widgets/bottom_navigation_bar.dart';
 import 'models/quotation_item.dart';
 import 'package:quotation/util/date_picker.dart';
-import 'widgets/bottom_popup.dart';
+import 'widgets/bottom_popup_quotation_item.dart';
 import 'services/pdf_generator.dart';
 
 void main() {
@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     HomeScreen(),
     Quotations(),
-    Clients(),
+    ClientScreen(),
     Settings(),
   ];
 
