@@ -6,9 +6,9 @@ class Clients extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: const Text("Clients")
-      ),
+      // appBar: AppBar(
+      //     title: const Text("Clients")
+      // ),
       body: Center(child: Text("Clients Screen")),
     );
   }

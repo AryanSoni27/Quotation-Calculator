@@ -6,9 +6,9 @@ class Quotations extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: const Text("Quotations")
-      ),
+      // appBar: AppBar(
+      //     title: const Text("Quotations")
+      // ),
       body: Center(child: Text("Quotations Screen")),
     );
   }
