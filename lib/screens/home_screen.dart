@@ -296,7 +296,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return Card(
-                    margin: EdgeInsets.symmetric(vertical: 5),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: EdgeInsets.symmetric(
+                      vertical: 8,
+                    ),
                     child: ListTile(
                       title: Text(item.itemName, style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Column(

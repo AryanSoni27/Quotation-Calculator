@@ -43,7 +43,7 @@ class ClientScreenState extends State<ClientScreen> {
                         child: Icon(
                           Icons.person,
                           color: Colors.white,
-                        ), // User icon
+                        ),
                       ),
                       title: Text(
                         "${client.firstName} ${client.lastName}",
@@ -77,8 +77,7 @@ class ClientScreenState extends State<ClientScreen> {
                               SizedBox(width: 5),
                               Expanded(
                                 // Prevent overflow
-                                child: Text(
-                                  client.address,
+                                child: Text('${client.streetAddress}, ${client.city}, ${client.state}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.black54,

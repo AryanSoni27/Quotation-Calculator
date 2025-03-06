@@ -7,7 +7,9 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController mobileNumberController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
+  TextEditingController streetAddressController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController stateController = TextEditingController();
   return showModalBottomSheet<ClientDetails>(
     context: context,
     isScrollControlled: true,
@@ -91,16 +93,50 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                           ],
                         ),
                         SizedBox(height: 10),
-
-                        //Address Field
+                        Text("Address:-"),
+                        //Street Address Field
                         TextField(
                           textAlign: TextAlign.left,
-                          controller: addressController,
+                          controller: streetAddressController,
                           keyboardType: TextInputType.streetAddress,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.home_filled),
                             prefixIconColor: Colors.blue,
-                            labelText: "Address",
+                            labelText: "Street Address",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            contentPadding: EdgeInsets.all(10),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+
+                        //City Field
+                        TextField(
+                          textAlign: TextAlign.left,
+                          controller: cityController,
+                          keyboardType: TextInputType.streetAddress,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.home_filled),
+                            prefixIconColor: Colors.blue,
+                            labelText: "City",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            contentPadding: EdgeInsets.all(10),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+
+                        //State Field
+                        TextField(
+                          textAlign: TextAlign.left,
+                          controller: stateController,
+                          keyboardType: TextInputType.streetAddress,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.home_filled),
+                            prefixIconColor: Colors.blue,
+                            labelText: "State",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -117,7 +153,9 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                                     firstName: firstNameController.text,
                                     lastName: lastNameController.text,
                                     mobileNumber: mobileNumberController.text,
-                                    address: addressController.text
+                                    streetAddress: streetAddressController.text,
+                                    city: cityController.text,
+                                    state: stateController.text,
                                 );
                                 Navigator.of(context).pop(client);
                               },
