@@ -42,6 +42,7 @@ dependencies:
   open_file: ^3.5.10
   path_provider: ^2.1.5
   shared_preferences: ^2.5.2
+  curved_labeled_navigation_bar: ^2.0.6
 
 
 dev_dependencies:
