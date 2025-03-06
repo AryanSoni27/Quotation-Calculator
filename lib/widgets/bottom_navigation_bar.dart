@@ -33,11 +33,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
           label: 'Quotations',
         ),
         CurvedNavigationBarItem(
-          child: Icon(Icons.people_alt_sharp),
+          child: Icon(Icons.people_alt_outlined),
           label: 'Clients',
         ),
         CurvedNavigationBarItem(
-          child: Icon(Icons.settings),
+          child: Icon(Icons.settings_outlined),
           label: 'Settings',
         ),
       ],
