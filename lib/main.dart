@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:quotation/screens/clients.dart';
+import 'package:quotation/screens/quotations.dart';
+import 'package:quotation/screens/settings.dart';
+import 'package:quotation/widgets/bottom_navigation_bar.dart';
 import 'models/quotation_item.dart';
 import 'package:quotation/util/date_picker.dart';
 import 'widgets/bottom_popup.dart';
@@ -38,6 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final FormController formController = FormController();
   List<QuotationItem> items = [];
+  int _selectedIndex = 0;
 
   bool _customerNameValid = true;
   bool _dateValid = true;
@@ -134,6 +139,36 @@ class _MyHomePageState extends State<MyHomePage> {
     _projectNameFocusNode.dispose();
     _mobileNumberFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index != 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            switch (index) {
+              case 1:
+                return const Quotations();
+              case 2:
+                return const Clients();
+              case 3:
+                return const Settings();
+              default:
+                return const Quotations(); // Fallback
+            }
+          },
+        ),
+      ).then((value) {
+        setState(() {
+          _selectedIndex = 0; // Reset to home when returning
+        });
+      });
+    }
   }
 
 
@@ -375,6 +410,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
