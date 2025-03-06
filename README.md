@@ -41,8 +41,21 @@ Quotation Calculator is a Flutter-based application that calculates quotations b
 ```
 quotation-calculator/
 │-- lib/
-│   │-- main.dart
-│   │-- pdf_generator.dart
+   |-- models/
+      |--quotation_item.dart
+   |--screens/
+      |--clients.dart
+      |--quotations.dart
+      |--settings.dart
+   |--services/
+      |--pdf_generator.dart
+   |util/
+      |--calculation_utilities.dart
+      |--date_picker.dart
+   |widgets/
+      |--bottom_navigation_bar.dart
+      |--bottom_popup.dart
+   │-- main.dart
 │-- assets/
 │-- pubspec.yaml
 │-- README.md
