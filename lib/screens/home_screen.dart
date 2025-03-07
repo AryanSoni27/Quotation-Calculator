@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quotation/data/db_helper_quotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/quotation_item.dart';
 import '../util/date_picker.dart';
 import '../services/pdf_generator.dart';
@@ -15,6 +17,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FormController formController = FormController();
   List<QuotationItem> items = [];
+  List<Map<String, dynamic>> allQuotationItems = [];
+  DBHelper dbRef = DBHelper.instance;
+
+
 
   bool _customerNameValid = true;
   bool _dateValid = true;
@@ -29,8 +35,133 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    getQuotationItems();
+    loadCustomerDetails();
+    setupTextFieldListeners();
     _setupFocusListeners();
   }
+
+  Future<void> loadCustomerDetails() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      formController.customerNameController.text = prefs.getString('customer_name') ?? '';
+      formController.mobileNumberController.text = prefs.getString('mobile_number') ?? '';
+      formController.projectNameController.text = prefs.getString('project_name') ?? '';
+      formController.dateController.text = prefs.getString('date') ?? '';
+    });
+  }
+
+  Future<void> saveCustomerDetails(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+  }
+
+  void setupTextFieldListeners() {
+    formController.customerNameController.addListener(() {
+      saveCustomerDetails('customer_name', formController.customerNameController.text);
+    });
+
+    formController.mobileNumberController.addListener(() {
+      saveCustomerDetails('mobile_number', formController.mobileNumberController.text);
+    });
+
+    formController.projectNameController.addListener(() {
+      saveCustomerDetails('project_name', formController.projectNameController.text);
+    });
+
+    formController.dateController.addListener(() {
+      saveCustomerDetails('date', formController.dateController.text);
+    });
+  }
+
+
+  void getQuotationItems() async {
+    // Get all items from database
+    allQuotationItems = await dbRef.getAllQuotationItems();
+
+    // Convert database items to QuotationItem model objects
+    items = allQuotationItems.map((item) {
+      int sNo = item[DBHelper.COLUMN_SNO] as int;
+      return QuotationItem(
+         // Use sNo instead of id if that's what your model expects
+        itemName: item[DBHelper.COLUMN_ITEM_NAME] as String,
+        unit: item[DBHelper.COLUMN_UNIT] as String,
+        shape: item[DBHelper.COLUMN_SHAPE] as String,
+        length: item[DBHelper.COLUMN_LENGTH] as double,
+        width: item[DBHelper.COLUMN_WIDTH] as double,
+        height: item[DBHelper.COLUMN_HEIGHT] as double?,
+        squareFeet: item[DBHelper.COLUMN_SQUARE_FEET] as double,
+        quantity: item[DBHelper.COLUMN_QUANTITY] as int,
+        rate: item[DBHelper.COLUMN_RATE] as double,
+        totalCost: item[DBHelper.COLUMN_TOTAL_COST] as double,
+      );
+    }).toList();
+
+    setState(() {});
+  }
+
+  // Add a quotation item to database
+  Future<void> addQuotationItem(QuotationItem item) async {
+    // Convert QuotationItem to a Map
+    Map<String, dynamic> row = {
+      DBHelper.COLUMN_ITEM_NAME: item.itemName,
+      DBHelper.COLUMN_UNIT: item.unit,
+      DBHelper.COLUMN_SHAPE: item.shape,
+      DBHelper.COLUMN_LENGTH: item.length,
+      DBHelper.COLUMN_WIDTH: item.width,
+      // Only include height if it's not null
+      if (item.height != null) DBHelper.COLUMN_HEIGHT: item.height,
+      DBHelper.COLUMN_SQUARE_FEET: item.squareFeet,
+      DBHelper.COLUMN_QUANTITY: item.quantity,
+      DBHelper.COLUMN_RATE: item.rate,
+      DBHelper.COLUMN_TOTAL_COST: item.totalCost,
+    };
+
+    // Insert into database
+    int id = await dbRef.insertQuotationItem(row);
+
+
+
+    // Refresh the list
+    getQuotationItems();
+  }
+
+  // Update a quotation item in database
+  Future<void> updateQuotationItem(QuotationItem oldItem, QuotationItem newItem) async {
+    Map<String, dynamic> updatedValues = {
+      DBHelper.COLUMN_ITEM_NAME: newItem.itemName,
+      DBHelper.COLUMN_UNIT: newItem.unit,
+      DBHelper.COLUMN_SHAPE: newItem.shape,
+      DBHelper.COLUMN_LENGTH: newItem.length,
+      DBHelper.COLUMN_WIDTH: newItem.width,
+      if (newItem.height != null) DBHelper.COLUMN_HEIGHT: newItem.height,
+      DBHelper.COLUMN_SQUARE_FEET: newItem.squareFeet,
+      DBHelper.COLUMN_QUANTITY: newItem.quantity,
+      DBHelper.COLUMN_RATE: newItem.rate,
+      DBHelper.COLUMN_TOTAL_COST: newItem.totalCost,
+    };
+
+    await dbRef.updateQuotationItem(
+      oldItem.itemName,
+      oldItem.unit,
+      oldItem.shape,
+      oldItem.length,
+      oldItem.width,
+      oldItem.height,
+      updatedValues,
+    );
+
+    getQuotationItems(); // Refresh UI
+  }
+
+
+  // Delete a quotation item from database
+  Future<void> deleteQuotationItem(String itemName, String unit, String shape, double length, double width, double? height) async {
+    await dbRef.deleteQuotationItem(itemName, unit, shape, length, width, height);
+    getQuotationItems(); // Refresh UI after deletion
+  }
+
 
   void _setupFocusListeners() {
     _customerNameFocusNode.addListener(() {
@@ -329,12 +460,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               final updatedItem = await showBottomPopup(
                                 context,
-                                existingItem: items[index],
+                                existingItem: item,
                               );
                               if (updatedItem != null) {
-                                setState(() {
-                                  items[index] = updatedItem;
-                                });
+                                await updateQuotationItem(item, updatedItem); // Pass old and new item
                               }
                             },
                           ),
@@ -342,12 +471,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           //Delete Button
                           IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              setState(() {
-                                items.removeAt(index);
-                              });
+                            onPressed: () async {
+                              await deleteQuotationItem(
+                                item.itemName,
+                                item.unit,
+                                item.shape,
+                                item.length,
+                                item.width,
+                                item.height,
+                              );
                             },
                           ),
+
                         ],
                       ),
                     ),
@@ -365,14 +500,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     minimumSize: Size(100, 40),
                     foregroundColor: Colors.black
                 ),
-                // style: ElevatedButton.styleFrom(minimumSize: Size(40, 40)),
                 onPressed: () async {
                   //Wait for and handle the result from bottom popup
                   final result = await showBottomPopup(context);
                   if (result != null) {
-                    setState(() {
-                      items.add(result);
-                    });
+                    // Add the item to the database
+                    await addQuotationItem(result);
                   }
                 },
                 label: const Text("Add Item"),
@@ -403,7 +536,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
                 label: const Text("Submit"),
-                // icon: const Icon(Icons.add_circle_outline_rounded, color: Colors.black),
+                icon: const Icon(Icons.check_circle_outline, color: Colors.black),
               ),
             ),
           ],

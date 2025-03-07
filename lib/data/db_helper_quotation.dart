@@ -93,25 +93,34 @@ class DBHelper {
   }
 
   //Update a quotation item
-  Future<int> updateQuotationItem(int id, Map<String, dynamic> row) async {
+  Future<int> updateQuotationItem(
+      String oldItemName,
+      String oldUnit,
+      String oldShape,
+      double oldLength,
+      double oldWidth,
+      double? oldHeight,
+      Map<String, dynamic> newValues) async {
     Database db = await getDB();
     return await db.update(
       QUOTATION_TABLE,
-      row,
-      where: "$COLUMN_SNO = ?",
-      whereArgs: [id],
+      newValues,
+      where: "$COLUMN_ITEM_NAME = ? AND $COLUMN_UNIT = ? AND $COLUMN_SHAPE = ? AND $COLUMN_LENGTH = ? AND $COLUMN_WIDTH = ? AND ($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ?)",
+      whereArgs: [oldItemName, oldUnit, oldShape, oldLength, oldWidth, oldHeight, oldHeight],
     );
   }
 
+
   //Delete a quotation item
-  Future<int> deleteQuotationItem(int id) async {
+  Future<int> deleteQuotationItem(String itemName, String unit, String shape, double length, double width, double? height) async {
     Database db = await getDB();
     return await db.delete(
       QUOTATION_TABLE,
-      where: "$COLUMN_SNO = ?",
-      whereArgs: [id],
+      where: "$COLUMN_ITEM_NAME = ? AND $COLUMN_UNIT = ? AND $COLUMN_SHAPE = ? AND $COLUMN_LENGTH = ? AND $COLUMN_WIDTH = ? AND ($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ?)",
+      whereArgs: [itemName, unit, shape, length, width, height, height],
     );
   }
+
 
   //Delete all quotation items
   Future<int> deleteAllQuotationItems() async {

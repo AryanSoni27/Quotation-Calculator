@@ -126,6 +126,7 @@ class ClientScreenState extends State<ClientScreen> {
               ),
       // FloatingActionButton at the bottom right
       floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         onPressed: () async {
           //Wait for and handle the result from bottom popup
           final result = await showClientForm(context);
