@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-
+  //Get all quotation items from database
   void getQuotationItems() async {
     // Get all items from database
     allQuotationItems = await dbRef.getAllQuotationItems();
@@ -120,8 +120,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Insert into database
     int id = await dbRef.insertQuotationItem(row);
-
-
 
     // Refresh the list
     getQuotationItems();
