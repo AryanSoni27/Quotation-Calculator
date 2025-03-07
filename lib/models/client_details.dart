@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class ClientDetails {
@@ -16,6 +18,30 @@ class ClientDetails {
     required this.city,
     required this.state,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'firstName': firstName,
+      'lastName': lastName,
+      'mobileNumber': mobileNumber,
+      'streetAddress': streetAddress,
+      'city': city,
+      'state': state,
+    };
+  }
+
+  // Convert from JSON
+  factory ClientDetails.fromJson(Map<String, dynamic> json) {
+    return ClientDetails(
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      mobileNumber: json['mobileNumber'],
+      streetAddress: json['streetAddress'],
+      city: json['city'],
+      state: json['state'],
+    );
+  }
+
 }
 
 class ClientDetailsFormController {

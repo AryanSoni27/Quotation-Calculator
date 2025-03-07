@@ -1,16 +1,56 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/models/client_details.dart';
+import 'package:quotation/models/quotation_item.dart';
 import 'package:quotation/widgets/bottom_popup_client_details.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/client_details.dart';
 
 class ClientScreen extends StatefulWidget {
   const ClientScreen({super.key});
+
 
   @override
   ClientScreenState createState() => ClientScreenState();
 }
 
 class ClientScreenState extends State<ClientScreen> {
+  final ClientDetailsFormController formController = ClientDetailsFormController();
   List<ClientDetails> clients = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadClientDetails();
+  }
+
+  Future<void> loadClientDetails() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? clientJsonList = prefs.getStringList('client_list');
+
+    if (clientJsonList != null) {
+      setState(() {
+        clients = clientJsonList.map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString))).toList();
+      });
+    }
+  }
+
+  Future<void> saveClientList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> clientJsonList = clients.map((client) => jsonEncode(client.toJson())).toList();
+    await prefs.setStringList('client_list', clientJsonList);
+  }
+
+  void setupTextFieldListeners() {
+    formController.firstNameController.addListener(saveClientList);
+    formController.lastNameController.addListener(saveClientList);
+    formController.mobileNumberController.addListener(saveClientList);
+    formController.streetAddressController.addListener(saveClientList);
+    formController.cityController.addListener(saveClientList);
+    formController.stateController.addListener(saveClientList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +155,10 @@ class ClientScreenState extends State<ClientScreen> {
                             onPressed: () {
                               setState(() {
                                 clients.removeAt(index);
+                                saveClientList(); // Save updated list
                               });
                             },
+
                           ),
                         ],
                       ),
@@ -128,11 +170,11 @@ class ClientScreenState extends State<ClientScreen> {
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         onPressed: () async {
-          //Wait for and handle the result from bottom popup
           final result = await showClientForm(context);
           if (result != null) {
             setState(() {
               clients.add(result);
+              saveClientList(); // Save updated list
             });
           }
         },
