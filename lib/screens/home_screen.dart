@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/data/db_helper_quotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../data/db_helper_quotation_screen.dart';
 import '../models/quotation_item.dart';
+import '../models/quotation_screen.dart';
 import '../util/date_picker.dart';
 import '../services/pdf_generator.dart';
 import '../widgets/bottom_popup_quotation_item.dart';
+import 'package:uuid/uuid.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   final FormController formController = FormController();
   List<QuotationItem> items = [];
   List<Map<String, dynamic>> allQuotationItems = [];
@@ -76,41 +80,40 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   //Get all quotation items from database
+  //Updated method to get all quotation items from database
   void getQuotationItems() async {
-    // Get all items from database
-    allQuotationItems = await dbRef.getAllQuotationItems();
+    List<Map<String, dynamic>> data = await dbRef.getAllQuotationItems();
 
-    // Convert database items to QuotationItem model objects
-    items = allQuotationItems.map((item) {
-      int sNo = item[DBHelper.COLUMN_SNO] as int;
+    List<QuotationItem> fetchedItems = data.map((item) {
       return QuotationItem(
-         // Use sNo instead of id if that's what your model expects
-        itemName: item[DBHelper.COLUMN_ITEM_NAME] as String,
-        unit: item[DBHelper.COLUMN_UNIT] as String,
-        shape: item[DBHelper.COLUMN_SHAPE] as String,
-        length: item[DBHelper.COLUMN_LENGTH] as double,
-        width: item[DBHelper.COLUMN_WIDTH] as double,
-        height: item[DBHelper.COLUMN_HEIGHT] as double?,
-        squareFeet: item[DBHelper.COLUMN_SQUARE_FEET] as double,
-        quantity: item[DBHelper.COLUMN_QUANTITY] as int,
-        rate: item[DBHelper.COLUMN_RATE] as double,
-        totalCost: item[DBHelper.COLUMN_TOTAL_COST] as double,
+        id: item['s_no'], // Ensure correct column name
+        itemName: item['item_name'],
+        unit: item['unit'],
+        shape: item['shape'],
+        length: (item['length'] as num).toDouble(),
+        width: (item['width'] as num).toDouble(),
+        height: item['height'] != null ? (item['height'] as num).toDouble() : null,
+        squareFeet: (item['square_feet'] as num).toDouble(),
+        quantity: item['quantity'] as int,
+        rate: (item['rate'] as num).toDouble(),
+        totalCost: (item['total_cost'] as num).toDouble(),
       );
     }).toList();
 
-    setState(() {});
+    setState(() {
+      items = fetchedItems; // Ensure UI updates with latest items
+    });
   }
+
 
   // Add a quotation item to database
   Future<void> addQuotationItem(QuotationItem item) async {
-    // Convert QuotationItem to a Map
     Map<String, dynamic> row = {
       DBHelper.COLUMN_ITEM_NAME: item.itemName,
       DBHelper.COLUMN_UNIT: item.unit,
       DBHelper.COLUMN_SHAPE: item.shape,
       DBHelper.COLUMN_LENGTH: item.length,
       DBHelper.COLUMN_WIDTH: item.width,
-      // Only include height if it's not null
       if (item.height != null) DBHelper.COLUMN_HEIGHT: item.height,
       DBHelper.COLUMN_SQUARE_FEET: item.squareFeet,
       DBHelper.COLUMN_QUANTITY: item.quantity,
@@ -118,12 +121,17 @@ class _HomeScreenState extends State<HomeScreen> {
       DBHelper.COLUMN_TOTAL_COST: item.totalCost,
     };
 
-    // Insert into database
-    int id = await dbRef.insertQuotationItem(row);
+    await dbRef.insertQuotationItem(row);
 
-    // Refresh the list
+    // Refresh UI immediately after adding the item
+    setState(() {
+      items.add(item);
+    });
+
+    // Fetch items again from database to ensure consistency
     getQuotationItems();
   }
+
 
   // Update a quotation item in database
   Future<void> updateQuotationItem(QuotationItem oldItem, QuotationItem newItem) async {
@@ -519,18 +527,59 @@ class _HomeScreenState extends State<HomeScreen> {
                     minimumSize: Size(200, 40),
                     foregroundColor: Colors.black
                 ),
+                // Replace your submit button's onPressed function with this updated version
                 onPressed: () async {
                   // Validate all fields before generating PDF
                   if (await validateFields()) {
+                    // Generate PDF
                     generatePdf(
-                      customerName:
-                      formController.customerNameController.text,
+                      customerName: formController.customerNameController.text,
                       date: formController.dateController.text,
                       projectName: formController.projectNameController.text,
-                      mobileNumber:
-                      formController.mobileNumberController.text,
+                      mobileNumber: formController.mobileNumberController.text,
                       items: items,
                     );
+
+                    // Calculate total amount
+                    double totalAmount = items.fold(0, (sum, item) => sum + item.totalCost);
+
+                    // Create quotation object
+                    final quotation = Quotation(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(), // Simple unique ID
+                      customerName: formController.customerNameController.text,
+                      date: formController.dateController.text,
+                      projectName: formController.projectNameController.text,
+                      mobileNumber: formController.mobileNumberController.text,
+                      items: List.from(items), // Create a copy of the items list
+                      totalAmount: totalAmount,
+                    );
+
+                    // Save to database
+                    await DBHelperQuotation.instance.saveQuotation(quotation);
+
+                    // Show success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Quotation saved successfully!'),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+
+                    // First clear database items (IMPORTANT: do this before clearing the UI state)
+                    // await dbRef.clearAllQuotationItems();
+
+                    // Then clear the UI state
+                    setState(() {
+                      formController.customerNameController.clear();
+                      formController.dateController.clear();
+                      formController.projectNameController.clear();
+                      formController.mobileNumberController.clear();
+                      items.clear(); // Clear the items list
+                    });
+
+                    // Force refresh items from database to ensure UI is in sync
+                    // getQuotationItems();
                   }
                 },
                 label: const Text("Submit"),
@@ -541,5 +590,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+  void clearForm() {
+    setState(() {
+      formController.customerNameController.clear();
+      formController.dateController.clear();
+      formController.projectNameController.clear();
+      formController.mobileNumberController.clear();
+      items = [];
+    });
+
+    // Reset validation states
+    setState(() {
+      _customerNameValid = true;
+      _dateValid = true;
+      _projectNameValid = true;
+      _mobileNumberValid = true;
+    });
   }
 }

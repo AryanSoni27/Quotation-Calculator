@@ -155,4 +155,9 @@ class DBHelper {
       myDb = null;
     }
   }
+
+  Future<void> clearAllQuotationItems() async {
+    final db = await myDb!;
+    await db.delete('quotation_items');
+  }
 }
