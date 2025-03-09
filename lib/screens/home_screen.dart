@@ -18,13 +18,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   final FormController formController = FormController();
   List<QuotationItem> items = [];
   List<Map<String, dynamic>> allQuotationItems = [];
   DBHelper dbRef = DBHelper.instance;
-
-
 
   bool _customerNameValid = true;
   bool _dateValid = true;
@@ -49,9 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      formController.customerNameController.text = prefs.getString('customer_name') ?? '';
-      formController.mobileNumberController.text = prefs.getString('mobile_number') ?? '';
-      formController.projectNameController.text = prefs.getString('project_name') ?? '';
+      formController.customerNameController.text =
+          prefs.getString('customer_name') ?? '';
+      formController.mobileNumberController.text =
+          prefs.getString('mobile_number') ?? '';
+      formController.projectNameController.text =
+          prefs.getString('project_name') ?? '';
       formController.dateController.text = prefs.getString('date') ?? '';
     });
   }
@@ -63,15 +63,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void setupTextFieldListeners() {
     formController.customerNameController.addListener(() {
-      saveCustomerDetails('customer_name', formController.customerNameController.text);
+      saveCustomerDetails(
+        'customer_name',
+        formController.customerNameController.text,
+      );
     });
 
     formController.mobileNumberController.addListener(() {
-      saveCustomerDetails('mobile_number', formController.mobileNumberController.text);
+      saveCustomerDetails(
+        'mobile_number',
+        formController.mobileNumberController.text,
+      );
     });
 
     formController.projectNameController.addListener(() {
-      saveCustomerDetails('project_name', formController.projectNameController.text);
+      saveCustomerDetails(
+        'project_name',
+        formController.projectNameController.text,
+      );
     });
 
     formController.dateController.addListener(() {
@@ -84,27 +93,31 @@ class _HomeScreenState extends State<HomeScreen> {
   void getQuotationItems() async {
     List<Map<String, dynamic>> data = await dbRef.getAllQuotationItems();
 
-    List<QuotationItem> fetchedItems = data.map((item) {
-      return QuotationItem(
-        id: item['s_no'], // Ensure correct column name
-        itemName: item['item_name'],
-        unit: item['unit'],
-        shape: item['shape'],
-        length: (item['length'] as num).toDouble(),
-        width: (item['width'] as num).toDouble(),
-        height: item['height'] != null ? (item['height'] as num).toDouble() : null,
-        squareFeet: (item['square_feet'] as num).toDouble(),
-        quantity: item['quantity'] as int,
-        rate: (item['rate'] as num).toDouble(),
-        totalCost: (item['total_cost'] as num).toDouble(),
-      );
-    }).toList();
+    List<QuotationItem> fetchedItems =
+        data.map((item) {
+          return QuotationItem(
+            id: item['s_no'],
+            // Ensure correct column name
+            itemName: item['item_name'],
+            unit: item['unit'],
+            shape: item['shape'],
+            length: (item['length'] as num).toDouble(),
+            width: (item['width'] as num).toDouble(),
+            height:
+                item['height'] != null
+                    ? (item['height'] as num).toDouble()
+                    : null,
+            squareFeet: (item['square_feet'] as num).toDouble(),
+            quantity: item['quantity'] as int,
+            rate: (item['rate'] as num).toDouble(),
+            totalCost: (item['total_cost'] as num).toDouble(),
+          );
+        }).toList();
 
     setState(() {
       items = fetchedItems; // Ensure UI updates with latest items
     });
   }
-
 
   // Add a quotation item to database
   Future<void> addQuotationItem(QuotationItem item) async {
@@ -132,9 +145,11 @@ class _HomeScreenState extends State<HomeScreen> {
     getQuotationItems();
   }
 
-
   // Update a quotation item in database
-  Future<void> updateQuotationItem(QuotationItem oldItem, QuotationItem newItem) async {
+  Future<void> updateQuotationItem(
+    QuotationItem oldItem,
+    QuotationItem newItem,
+  ) async {
     Map<String, dynamic> updatedValues = {
       DBHelper.COLUMN_ITEM_NAME: newItem.itemName,
       DBHelper.COLUMN_UNIT: newItem.unit,
@@ -161,13 +176,25 @@ class _HomeScreenState extends State<HomeScreen> {
     getQuotationItems(); // Refresh UI
   }
 
-
   // Delete a quotation item from database
-  Future<void> deleteQuotationItem(String itemName, String unit, String shape, double length, double width, double? height) async {
-    await dbRef.deleteQuotationItem(itemName, unit, shape, length, width, height);
+  Future<void> deleteQuotationItem(
+    String itemName,
+    String unit,
+    String shape,
+    double length,
+    double width,
+    double? height,
+  ) async {
+    await dbRef.deleteQuotationItem(
+      itemName,
+      unit,
+      shape,
+      length,
+      width,
+      height,
+    );
     getQuotationItems(); // Refresh UI after deletion
   }
-
 
   void _setupFocusListeners() {
     _customerNameFocusNode.addListener(() {
@@ -290,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                _customerNameValid ? null : "Customer name is required",
+                    _customerNameValid ? null : "Customer name is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
@@ -366,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                _projectNameValid ? null : "Project name is required",
+                    _projectNameValid ? null : "Project name is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
@@ -407,14 +434,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                _mobileNumberValid ? null : "Mobile number is required",
+                    _mobileNumberValid ? null : "Mobile number is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
                 setState(() {
                   _mobileNumberValid =
                       value.trim().length ==
-                          10; // Valid only if exactly 10 digits
+                      10; // Valid only if exactly 10 digits
                 });
               },
             ),
@@ -437,11 +464,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    margin: EdgeInsets.symmetric(
-                      vertical: 8,
-                    ),
+                    margin: EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
-                      title: Text(item.itemName, style: TextStyle(fontWeight: FontWeight.bold)),
+                      title: Text(
+                        item.itemName,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -453,7 +481,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Text('Quantity: ${item.quantity}'),
                           Text('Rate: ${item.rate.toStringAsFixed(2)}'),
-                          Text('Total: ${item.totalCost.toStringAsFixed(2)}',style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                            'Total: ${item.totalCost.toStringAsFixed(2)}',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                       //Added delete and edit button for each item
@@ -469,7 +500,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 existingItem: item,
                               );
                               if (updatedItem != null) {
-                                await updateQuotationItem(item, updatedItem); // Pass old and new item
+                                await updateQuotationItem(
+                                  item,
+                                  updatedItem,
+                                ); // Pass old and new item
                               }
                             },
                           ),
@@ -488,7 +522,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             },
                           ),
-
                         ],
                       ),
                     ),
@@ -503,8 +536,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Center(
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                    minimumSize: Size(100, 40),
-                    foregroundColor: Colors.black
+                  minimumSize: Size(100, 40),
+                  foregroundColor: Colors.black,
                 ),
                 onPressed: () async {
                   //Wait for and handle the result from bottom popup
@@ -515,7 +548,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
                 label: const Text("Add Item"),
-                icon: const Icon(Icons.add_circle_outline_rounded, color: Colors.black),
+                icon: const Icon(
+                  Icons.add_circle_outline_rounded,
+                  color: Colors.black,
+                ),
               ),
             ),
             SizedBox(height: 30),
@@ -524,8 +560,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Center(
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                    minimumSize: Size(200, 40),
-                    foregroundColor: Colors.black
+                  minimumSize: Size(200, 40),
+                  foregroundColor: Colors.black,
                 ),
                 // Replace your submit button's onPressed function with this updated version
                 onPressed: () async {
@@ -541,16 +577,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
 
                     // Calculate total amount
-                    double totalAmount = items.fold(0, (sum, item) => sum + item.totalCost);
+                    double totalAmount = items.fold(
+                      0,
+                      (sum, item) => sum + item.totalCost,
+                    );
 
                     // Create quotation object
                     final quotation = Quotation(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(), // Simple unique ID
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      // Simple unique ID
                       customerName: formController.customerNameController.text,
                       date: formController.dateController.text,
                       projectName: formController.projectNameController.text,
                       mobileNumber: formController.mobileNumberController.text,
-                      items: List.from(items), // Create a copy of the items list
+                      items: List.from(items),
+                      // Create a copy of the items list
                       totalAmount: totalAmount,
                     );
 
@@ -567,7 +608,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
 
                     // First clear database items (IMPORTANT: do this before clearing the UI state)
-                    // await dbRef.clearAllQuotationItems();
+                    await dbRef.deleteAllQuotationItems();
 
                     // Then clear the UI state
                     setState(() {
@@ -579,11 +620,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
 
                     // Force refresh items from database to ensure UI is in sync
-                    // getQuotationItems();
+                    getQuotationItems();
                   }
                 },
                 label: const Text("Submit"),
-                icon: const Icon(Icons.check_circle_outline, color: Colors.black),
+                icon: const Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.black,
+                ),
               ),
             ),
           ],
@@ -591,6 +635,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   void clearForm() {
     setState(() {
       formController.customerNameController.clear();

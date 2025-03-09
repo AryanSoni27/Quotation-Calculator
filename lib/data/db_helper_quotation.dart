@@ -156,8 +156,9 @@ class DBHelper {
     }
   }
 
-  Future<void> clearAllQuotationItems() async {
-    final db = await myDb!;
-    await db.delete('quotation_items');
-  }
+  // Future<int> deleteAllQuotationItems() async {
+  //   Database db = await getDB();
+  //   return await db.delete(QUOTATION_TABLE); // Ensure correct table name
+  // }
+
 }

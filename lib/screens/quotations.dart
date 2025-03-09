@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../models/quotation_screen.dart';
 import '../models/quotation_item.dart';
 import '../data/db_helper_quotation_screen.dart';
+import '../services/pdf_generator.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class Quotations extends StatefulWidget {
   const Quotations({super.key});
@@ -11,7 +15,9 @@ class Quotations extends StatefulWidget {
 }
 
 class _QuotationsState extends State<Quotations> {
+  final FormController formController = FormController();
   List<Quotation> _quotations = [];
+  List<QuotationItem> items = [];
   bool _isLoading = true;
 
   @override
@@ -19,6 +25,13 @@ class _QuotationsState extends State<Quotations> {
     super.initState();
     _loadQuotations();
   }
+
+  Future<String> getPdfPath(String quotationId) async {
+    final directory = await getApplicationDocumentsDirectory();
+    return "${directory.path}/Quotation_${DateTime.now().millisecondsSinceEpoch}.pdf"; // Ensure it matches the saved filename
+  }
+
+
 
   Future<void> _loadQuotations() async {
     setState(() {
@@ -117,8 +130,17 @@ class _QuotationsState extends State<Quotations> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () {
-                              // Implement view PDF functionality if needed
+                            onPressed: () async {
+                              String pdfPath = await getPdfPath(quotation.id);
+                              File pdfFile = File(pdfPath);
+
+                              if (await pdfFile.exists()) {
+                                await OpenFile.open(pdfPath); // Open the saved PDF file
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("PDF not found!")),
+                                );
+                              }
                             },
                             icon: const Icon(Icons.visibility),
                             label: const Text("View PDF"),
