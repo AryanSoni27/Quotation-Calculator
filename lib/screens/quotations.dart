@@ -129,22 +129,14 @@ class _QuotationsState extends State<Quotations> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              String pdfPath = await getPdfPath(quotation.id);
-                              File pdfFile = File(pdfPath);
+                          // ElevatedButton.icon(
+                          //   onPressed: () async {
+                          //
+                          //   },
+                          //   icon: const Icon(Icons.visibility),
+                          //   label: const Text("View PDF"),
+                          // ),
 
-                              if (await pdfFile.exists()) {
-                                await OpenFile.open(pdfPath); // Open the saved PDF file
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("PDF not found!")),
-                                );
-                              }
-                            },
-                            icon: const Icon(Icons.visibility),
-                            label: const Text("View PDF"),
-                          ),
                           ElevatedButton.icon(
                             onPressed: () async {
                               await DBHelperQuotation.instance.deleteQuotation(quotation.id);

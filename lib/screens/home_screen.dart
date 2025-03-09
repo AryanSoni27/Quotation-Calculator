@@ -593,6 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       items: List.from(items),
                       // Create a copy of the items list
                       totalAmount: totalAmount,
+                      // pdfPath: pdfPath,
                     );
 
                     // Save to database

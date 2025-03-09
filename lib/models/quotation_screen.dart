@@ -8,6 +8,7 @@ class Quotation {
   final String mobileNumber;
   final List<QuotationItem> items;
   final double totalAmount;
+  // final String pdfPath; // Store PDF file path
 
   Quotation({
     required this.id,
@@ -17,6 +18,7 @@ class Quotation {
     required this.mobileNumber,
     required this.items,
     required this.totalAmount,
+    // required this.pdfPath,
   });
 
   Map<String, dynamic> toMap() {
@@ -27,6 +29,7 @@ class Quotation {
       'projectName': projectName,
       'mobileNumber': mobileNumber,
       'totalAmount': totalAmount,
+      // 'pdfPath': pdfPath, // Save PDF path in database
     };
   }
 
@@ -39,6 +42,7 @@ class Quotation {
       mobileNumber: map['mobileNumber'],
       items: items,
       totalAmount: map['totalAmount'],
+      // pdfPath: map['pdfPath'] ?? "", // Retrieve PDF path from DB
     );
   }
 }

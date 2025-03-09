@@ -106,7 +106,7 @@ Future<void> generatePdf({
                 headerDecoration: pw.BoxDecoration(color: PdfColors.blue),
                 data: List.generate(
                   items.length,
-                  (index) => [
+                      (index) => [
                     ("${index + 1}"),
                     items[index].itemName,
                     "${items[index].length} × ${items[index].width}${items[index].height != null ? ' × ${items[index].height}' : ''} ${items[index].unit}",
