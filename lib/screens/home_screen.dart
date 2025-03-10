@@ -568,13 +568,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Validate all fields before generating PDF
                   if (await validateFields()) {
                     // Generate PDF
-                    generatePdf(
-                      customerName: formController.customerNameController.text,
-                      date: formController.dateController.text,
-                      projectName: formController.projectNameController.text,
-                      mobileNumber: formController.mobileNumberController.text,
-                      items: items,
-                    );
+                    // generatePdf(
+                    //   customerName: formController.customerNameController.text,
+                    //   date: formController.dateController.text,
+                    //   projectName: formController.projectNameController.text,
+                    //   mobileNumber: formController.mobileNumberController.text,
+                    //   items: items,
+                    // );
 
                     // Calculate total amount
                     double totalAmount = items.fold(

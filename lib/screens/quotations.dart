@@ -31,7 +31,25 @@ class _QuotationsState extends State<Quotations> {
     return "${directory.path}/Quotation_${DateTime.now().millisecondsSinceEpoch}.pdf"; // Ensure it matches the saved filename
   }
 
-
+  Future<String?> generateAndOpenPdf(Quotation quotation) async {
+    try {
+      await generatePdf(
+        customerName: quotation.customerName,
+        date: quotation.date,
+        projectName: quotation.projectName,
+        mobileNumber: quotation.mobileNumber,
+        items: quotation.items,
+      );
+      // PDF is automatically opened by the generatePdf function
+      return null;
+    } catch (e) {
+      print("Error opening PDF: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to open PDF: $e")),
+      );
+      return null;
+    }
+  }
 
   Future<void> _loadQuotations() async {
     setState(() {
@@ -129,13 +147,13 @@ class _QuotationsState extends State<Quotations> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          // ElevatedButton.icon(
-                          //   onPressed: () async {
-                          //
-                          //   },
-                          //   icon: const Icon(Icons.visibility),
-                          //   label: const Text("View PDF"),
-                          // ),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              final pdfPath = await generateAndOpenPdf(quotation);
+                            },
+                            icon: const Icon(Icons.visibility),
+                            label: const Text("View PDF"),
+                          ),
 
                           ElevatedButton.icon(
                             onPressed: () async {
