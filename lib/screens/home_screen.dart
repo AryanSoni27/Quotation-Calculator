@@ -604,7 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Icon(
                               Icons.picture_as_pdf,
                               size: 36,
-                              color: Colors.blue.shade800,
+                              color: Colors.blue,
                             ),
                           ),
                         ),
@@ -684,14 +684,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 70,
                           height: 70,
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade700,
+                            color: Colors.blue.shade50,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Center(
                             child: Icon(
                               Icons.check_circle_outline,
                               size: 36,
-                              color: Colors.white,
+                              color: Colors.blue,
                             ),
                           ),
                         ),
