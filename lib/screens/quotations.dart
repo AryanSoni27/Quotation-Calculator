@@ -116,39 +116,52 @@ class _QuotationsState extends State<Quotations> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8, // Horizontal spacing between cards
-                        runSpacing: 12, // Vertical spacing between rows
+                      //List of items
+                      // Replace the existing Wrap widget with a Column
+                      Column(
                         children: quotation.items.map((item) {
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.42, // Slightly less than half to account for spacing
-                            child: Card(
-                              margin: EdgeInsets.zero,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.itemName,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
-                                    ),
-                                    Text(
-                                      'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
-                                    ),
-                                    Text('Quantity: ${item.quantity}'),
-                                    Text('Rate: ₹${item.rate.toStringAsFixed(2)}'),
-                                    Text(
-                                      'Total: ₹${item.totalCost.toStringAsFixed(2)}',
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // First Row: Item Name on Left, Area (with Dimensions) on Right
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        item.itemName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Area: ${item.squareFeet.toStringAsFixed(2)} sq ft (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})",
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+
+                                  // Second Row: Quantity, Rate, Total in one line
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Qty: ${item.quantity}"),
+                                      Text("Rate: ₹${item.rate.toStringAsFixed(2)}"),
+                                      Text(
+                                        "Total: ₹${item.totalCost.toStringAsFixed(2)}",
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           );

@@ -581,20 +581,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     children: [
                       InkWell(
-                        onTap: () async{
-                          if(await validateFields()){
+                        onTap: () async {
+                          if (await validateFields()) {
                             generatePdf(
-                              customerName:
-                              formController.customerNameController.text,
+                              customerName: formController.customerNameController.text,
                               date: formController.dateController.text,
-                              projectName:
-                              formController.projectNameController.text,
-                              mobileNumber:
-                              formController.mobileNumberController.text,
+                              projectName: formController.projectNameController.text,
+                              mobileNumber: formController.mobileNumberController.text,
                               items: items,
                             );
                           }
-
                         },
                         child: Container(
                           width: 70,
@@ -639,16 +635,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             // Create quotation object
                             final quotation = Quotation(
-                              id:
-                                  DateTime.now().millisecondsSinceEpoch
-                                      .toString(),
-                              customerName:
-                                  formController.customerNameController.text,
+                              id: DateTime.now().millisecondsSinceEpoch.toString(),
+                              customerName: formController.customerNameController.text,
                               date: formController.dateController.text,
-                              projectName:
-                                  formController.projectNameController.text,
-                              mobileNumber:
-                                  formController.mobileNumberController.text,
+                              projectName: formController.projectNameController.text,
+                              mobileNumber: formController.mobileNumberController.text,
                               items: List.from(items),
                               totalAmount: totalAmount,
                             );
@@ -717,23 +708,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  void clearForm() {
-    setState(() {
-      formController.customerNameController.clear();
-      formController.dateController.clear();
-      formController.projectNameController.clear();
-      formController.mobileNumberController.clear();
-      items = [];
-    });
-
-    // Reset validation states
-    setState(() {
-      _customerNameValid = true;
-      _dateValid = true;
-      _projectNameValid = true;
-      _mobileNumberValid = true;
-    });
   }
 }
