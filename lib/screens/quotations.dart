@@ -116,33 +116,44 @@ class _QuotationsState extends State<Quotations> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      ...quotation.items.map((item) => Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.itemName,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                      Wrap(
+                        spacing: 8, // Horizontal spacing between cards
+                        runSpacing: 12, // Vertical spacing between rows
+                        children: quotation.items.map((item) {
+                          return SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.42, // Slightly less than half to account for spacing
+                            child: Card(
+                              margin: EdgeInsets.zero,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.itemName,
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
+                                    ),
+                                    Text(
+                                      'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
+                                    ),
+                                    Text('Quantity: ${item.quantity}'),
+                                    Text('Rate: ₹${item.rate.toStringAsFixed(2)}'),
+                                    Text(
+                                      'Total: ₹${item.totalCost.toStringAsFixed(2)}',
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Text(
-                                '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
-                              ),
-                              Text(
-                                'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
-                              ),
-                              Text('Quantity: ${item.quantity}'),
-                              Text('Rate: ₹${item.rate.toStringAsFixed(2)}'),
-                              Text(
-                                'Total: ₹${item.totalCost.toStringAsFixed(2)}',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
