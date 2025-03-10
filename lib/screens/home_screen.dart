@@ -94,25 +94,25 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Map<String, dynamic>> data = await dbRef.getAllQuotationItems();
 
     List<QuotationItem> fetchedItems =
-        data.map((item) {
-          return QuotationItem(
-            id: item['s_no'],
-            // Ensure correct column name
-            itemName: item['item_name'],
-            unit: item['unit'],
-            shape: item['shape'],
-            length: (item['length'] as num).toDouble(),
-            width: (item['width'] as num).toDouble(),
-            height:
-                item['height'] != null
-                    ? (item['height'] as num).toDouble()
-                    : null,
-            squareFeet: (item['square_feet'] as num).toDouble(),
-            quantity: item['quantity'] as int,
-            rate: (item['rate'] as num).toDouble(),
-            totalCost: (item['total_cost'] as num).toDouble(),
-          );
-        }).toList();
+    data.map((item) {
+      return QuotationItem(
+        id: item['s_no'],
+        // Ensure correct column name
+        itemName: item['item_name'],
+        unit: item['unit'],
+        shape: item['shape'],
+        length: (item['length'] as num).toDouble(),
+        width: (item['width'] as num).toDouble(),
+        height:
+        item['height'] != null
+            ? (item['height'] as num).toDouble()
+            : null,
+        squareFeet: (item['square_feet'] as num).toDouble(),
+        quantity: item['quantity'] as int,
+        rate: (item['rate'] as num).toDouble(),
+        totalCost: (item['total_cost'] as num).toDouble(),
+      );
+    }).toList();
 
     setState(() {
       items = fetchedItems; // Ensure UI updates with latest items
@@ -146,10 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Update a quotation item in database
-  Future<void> updateQuotationItem(
-    QuotationItem oldItem,
-    QuotationItem newItem,
-  ) async {
+  Future<void> updateQuotationItem(QuotationItem oldItem,
+      QuotationItem newItem,) async {
     Map<String, dynamic> updatedValues = {
       DBHelper.COLUMN_ITEM_NAME: newItem.itemName,
       DBHelper.COLUMN_UNIT: newItem.unit,
@@ -177,14 +175,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Delete a quotation item from database
-  Future<void> deleteQuotationItem(
-    String itemName,
-    String unit,
-    String shape,
-    double length,
-    double width,
-    double? height,
-  ) async {
+  Future<void> deleteQuotationItem(String itemName,
+      String unit,
+      String shape,
+      double length,
+      double width,
+      double? height,) async {
     await dbRef.deleteQuotationItem(
       itemName,
       unit,
@@ -201,7 +197,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_customerNameFocusNode.hasFocus) {
         setState(() {
           _customerNameValid =
-              formController.customerNameController.text.trim().isNotEmpty;
+              formController.customerNameController.text
+                  .trim()
+                  .isNotEmpty;
         });
       }
     });
@@ -209,7 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _dateFocusNode.addListener(() {
       if (!_dateFocusNode.hasFocus) {
         setState(() {
-          _dateValid = formController.dateController.text.trim().isNotEmpty;
+          _dateValid = formController.dateController.text
+              .trim()
+              .isNotEmpty;
         });
       }
     });
@@ -218,7 +218,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_projectNameFocusNode.hasFocus) {
         setState(() {
           _projectNameValid =
-              formController.projectNameController.text.trim().isNotEmpty;
+              formController.projectNameController.text
+                  .trim()
+                  .isNotEmpty;
         });
       }
     });
@@ -227,7 +229,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_mobileNumberFocusNode.hasFocus) {
         setState(() {
           _mobileNumberValid =
-              formController.mobileNumberController.text.trim().length == 10;
+              formController.mobileNumberController.text
+                  .trim()
+                  .length == 10;
         });
       }
     });
@@ -236,12 +240,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<bool> validateFields() async {
     setState(() {
       _customerNameValid =
-          formController.customerNameController.text.trim().isNotEmpty;
-      _dateValid = formController.dateController.text.trim().isNotEmpty;
+          formController.customerNameController.text
+              .trim()
+              .isNotEmpty;
+      _dateValid = formController.dateController.text
+          .trim()
+          .isNotEmpty;
       _projectNameValid =
-          formController.projectNameController.text.trim().isNotEmpty;
+          formController.projectNameController.text
+              .trim()
+              .isNotEmpty;
       _mobileNumberValid =
-          formController.mobileNumberController.text.trim().length == 10;
+          formController.mobileNumberController.text
+              .trim()
+              .length == 10;
     });
 
     bool hasErrors = false;
@@ -317,13 +329,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                    _customerNameValid ? null : "Customer name is required",
+                _customerNameValid ? null : "Customer name is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
                 if (!_customerNameValid) {
                   setState(() {
-                    _customerNameValid = value.trim().isNotEmpty;
+                    _customerNameValid = value
+                        .trim()
+                        .isNotEmpty;
                   });
                 }
               },
@@ -361,7 +375,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   formController: formController,
                 );
                 if (!_dateValid &&
-                    formController.dateController.text.trim().isNotEmpty) {
+                    formController.dateController.text
+                        .trim()
+                        .isNotEmpty) {
                   setState(() {
                     _dateValid = true;
                   });
@@ -393,13 +409,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                    _projectNameValid ? null : "Project name is required",
+                _projectNameValid ? null : "Project name is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
                 if (!_projectNameValid) {
                   setState(() {
-                    _projectNameValid = value.trim().isNotEmpty;
+                    _projectNameValid = value
+                        .trim()
+                        .isNotEmpty;
                   });
                 }
               },
@@ -434,14 +452,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                    _mobileNumberValid ? null : "Mobile number is required",
+                _mobileNumberValid ? null : "Mobile number is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
                 setState(() {
                   _mobileNumberValid =
-                      value.trim().length ==
-                      10; // Valid only if exactly 10 digits
+                      value
+                          .trim()
+                          .length ==
+                          10; // Valid only if exactly 10 digits
                 });
               },
             ),
@@ -474,7 +494,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
+                            '${item.length} × ${item.width}${item.height != null
+                                ? ' × ${item.height}'
+                                : ''} ${item.unit}',
                           ),
                           Text(
                             'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
@@ -533,102 +555,174 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 40),
 
             //Button to add items
+            // Add Item Button
             Center(
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(100, 40),
-                  foregroundColor: Colors.black,
-                ),
-                onPressed: () async {
-                  //Wait for and handle the result from bottom popup
-                  final result = await showBottomPopup(context);
-                  if (result != null) {
-                    // Add the item to the database
-                    await addQuotationItem(result);
-                  }
-                },
-                label: const Text("Add Item"),
-                icon: const Icon(
-                  Icons.add_circle_outline_rounded,
-                  color: Colors.black,
+              child: Container(
+                margin: const EdgeInsets.only(top: 10),
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(150, 45),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  onPressed: () async {
+                    //Wait for and handle the result from bottom popup
+                    final result = await showBottomPopup(context);
+                    if (result != null) {
+                      // Add the item to the database
+                      await addQuotationItem(result);
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.add_circle_outline_rounded,
+                    color: Colors.blue,
+                    size: 24,
+                  ),
+                  label: const Text(
+                    "Add Item",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 30),
 
-            //Submit Button
-            Center(
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(200, 40),
-                  foregroundColor: Colors.black,
-                ),
-                // Replace your submit button's onPressed function with this updated version
-                onPressed: () async {
-                  // Validate all fields before generating PDF
-                  if (await validateFields()) {
-                    // Generate PDF
-                    // generatePdf(
-                    //   customerName: formController.customerNameController.text,
-                    //   date: formController.dateController.text,
-                    //   projectName: formController.projectNameController.text,
-                    //   mobileNumber: formController.mobileNumberController.text,
-                    //   items: items,
-                    // );
+            const SizedBox(height: 20),
 
-                    // Calculate total amount
-                    double totalAmount = items.fold(
-                      0,
-                      (sum, item) => sum + item.totalCost,
-                    );
-
-                    // Create quotation object
-                    final quotation = Quotation(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      // Simple unique ID
-                      customerName: formController.customerNameController.text,
-                      date: formController.dateController.text,
-                      projectName: formController.projectNameController.text,
-                      mobileNumber: formController.mobileNumberController.text,
-                      items: List.from(items),
-                      // Create a copy of the items list
-                      totalAmount: totalAmount,
-                      // pdfPath: pdfPath,
-                    );
-
-                    // Save to database
-                    await DBHelperQuotation.instance.saveQuotation(quotation);
-
-                    // Show success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Quotation saved successfully!'),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 2),
+            // Preview PDF Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Preview PDF Button - Square with icon above text
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          generatePdf(
+                            customerName: formController.customerNameController.text,
+                            date: formController.dateController.text,
+                            projectName: formController.projectNameController.text,
+                            mobileNumber: formController.mobileNumberController.text,
+                            items: items,
+                          );
+                        },
+                        child: Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.picture_as_pdf,
+                              size: 36,
+                              color: Colors.blue.shade800,
+                            ),
+                          ),
+                        ),
                       ),
-                    );
+                      const SizedBox(height: 8),
+                      Text(
+                        "Preview",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
 
-                    // First clear database items (IMPORTANT: do this before clearing the UI state)
-                    await dbRef.deleteAllQuotationItems();
+                  // Save Quotation Button - Square with icon above text
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: () async {
+                          // Validate all fields before generating PDF
+                          if (await validateFields()) {
+                            // Calculate total amount
+                            double totalAmount = items.fold(
+                              0,
+                                  (sum, item) => sum + item.totalCost,
+                            );
 
-                    // Then clear the UI state
-                    setState(() {
-                      formController.customerNameController.clear();
-                      formController.dateController.clear();
-                      formController.projectNameController.clear();
-                      formController.mobileNumberController.clear();
-                      items.clear(); // Clear the items list
-                    });
+                            // Create quotation object
+                            final quotation = Quotation(
+                              id: DateTime.now().millisecondsSinceEpoch.toString(),
+                              customerName: formController.customerNameController.text,
+                              date: formController.dateController.text,
+                              projectName: formController.projectNameController.text,
+                              mobileNumber: formController.mobileNumberController.text,
+                              items: List.from(items),
+                              totalAmount: totalAmount,
+                            );
 
-                    // Force refresh items from database to ensure UI is in sync
-                    getQuotationItems();
-                  }
-                },
-                label: const Text("Submit"),
-                icon: const Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.black,
-                ),
+                            // Save to database
+                            await DBHelperQuotation.instance.saveQuotation(quotation);
+
+                            // Show success message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Quotation saved successfully!'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+
+                            // First clear database items
+                            await dbRef.deleteAllQuotationItems();
+
+                            // Then clear the UI state
+                            setState(() {
+                              formController.customerNameController.clear();
+                              formController.dateController.clear();
+                              formController.projectNameController.clear();
+                              formController.mobileNumberController.clear();
+                              items.clear(); // Clear the items list
+                            });
+
+                            // Force refresh items from database to ensure UI is in sync
+                            getQuotationItems();
+                          }
+                        },
+                        child: Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade700,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.check_circle_outline,
+                              size: 36,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Save Quotation",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
