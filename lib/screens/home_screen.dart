@@ -581,17 +581,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     children: [
                       InkWell(
-                        onTap: () {
-                          generatePdf(
-                            customerName:
-                                formController.customerNameController.text,
-                            date: formController.dateController.text,
-                            projectName:
-                                formController.projectNameController.text,
-                            mobileNumber:
-                                formController.mobileNumberController.text,
-                            items: items,
-                          );
+                        onTap: () async{
+                          if(await validateFields()){
+                            generatePdf(
+                              customerName:
+                              formController.customerNameController.text,
+                              date: formController.dateController.text,
+                              projectName:
+                              formController.projectNameController.text,
+                              mobileNumber:
+                              formController.mobileNumberController.text,
+                              items: items,
+                            );
+                          }
+
                         },
                         child: Container(
                           width: 70,
@@ -689,7 +692,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: const Center(
                             child: Icon(
-                              Icons.check_circle_outline,
+                              Icons.save,
                               size: 36,
                               color: Colors.blue,
                             ),
