@@ -26,6 +26,8 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
+
+
           bool isItemNameEmpty = false;
 
           void calculateTotalCost() {
@@ -57,6 +59,10 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
               calculateTotalCost();
             });
           }
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            calculateSquareFoot();
+          });
 
           void addCalculationListeners() {
             lengthController.addListener(calculateSquareFoot);

@@ -94,25 +94,25 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Map<String, dynamic>> data = await dbRef.getAllQuotationItems();
 
     List<QuotationItem> fetchedItems =
-    data.map((item) {
-      return QuotationItem(
-        id: item['s_no'],
-        // Ensure correct column name
-        itemName: item['item_name'],
-        unit: item['unit'],
-        shape: item['shape'],
-        length: (item['length'] as num).toDouble(),
-        width: (item['width'] as num).toDouble(),
-        height:
-        item['height'] != null
-            ? (item['height'] as num).toDouble()
-            : null,
-        squareFeet: (item['square_feet'] as num).toDouble(),
-        quantity: item['quantity'] as int,
-        rate: (item['rate'] as num).toDouble(),
-        totalCost: (item['total_cost'] as num).toDouble(),
-      );
-    }).toList();
+        data.map((item) {
+          return QuotationItem(
+            id: item['s_no'],
+            // Ensure correct column name
+            itemName: item['item_name'],
+            unit: item['unit'],
+            shape: item['shape'],
+            length: (item['length'] as num).toDouble(),
+            width: (item['width'] as num).toDouble(),
+            height:
+                item['height'] != null
+                    ? (item['height'] as num).toDouble()
+                    : null,
+            squareFeet: (item['square_feet'] as num).toDouble(),
+            quantity: item['quantity'] as int,
+            rate: (item['rate'] as num).toDouble(),
+            totalCost: (item['total_cost'] as num).toDouble(),
+          );
+        }).toList();
 
     setState(() {
       items = fetchedItems; // Ensure UI updates with latest items
@@ -146,8 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Update a quotation item in database
-  Future<void> updateQuotationItem(QuotationItem oldItem,
-      QuotationItem newItem,) async {
+  Future<void> updateQuotationItem(
+    QuotationItem oldItem,
+    QuotationItem newItem,
+  ) async {
     Map<String, dynamic> updatedValues = {
       DBHelper.COLUMN_ITEM_NAME: newItem.itemName,
       DBHelper.COLUMN_UNIT: newItem.unit,
@@ -175,12 +177,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Delete a quotation item from database
-  Future<void> deleteQuotationItem(String itemName,
-      String unit,
-      String shape,
-      double length,
-      double width,
-      double? height,) async {
+  Future<void> deleteQuotationItem(
+    String itemName,
+    String unit,
+    String shape,
+    double length,
+    double width,
+    double? height,
+  ) async {
     await dbRef.deleteQuotationItem(
       itemName,
       unit,
@@ -197,9 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_customerNameFocusNode.hasFocus) {
         setState(() {
           _customerNameValid =
-              formController.customerNameController.text
-                  .trim()
-                  .isNotEmpty;
+              formController.customerNameController.text.trim().isNotEmpty;
         });
       }
     });
@@ -207,9 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _dateFocusNode.addListener(() {
       if (!_dateFocusNode.hasFocus) {
         setState(() {
-          _dateValid = formController.dateController.text
-              .trim()
-              .isNotEmpty;
+          _dateValid = formController.dateController.text.trim().isNotEmpty;
         });
       }
     });
@@ -218,9 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_projectNameFocusNode.hasFocus) {
         setState(() {
           _projectNameValid =
-              formController.projectNameController.text
-                  .trim()
-                  .isNotEmpty;
+              formController.projectNameController.text.trim().isNotEmpty;
         });
       }
     });
@@ -229,9 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_mobileNumberFocusNode.hasFocus) {
         setState(() {
           _mobileNumberValid =
-              formController.mobileNumberController.text
-                  .trim()
-                  .length == 10;
+              formController.mobileNumberController.text.trim().length == 10;
         });
       }
     });
@@ -240,20 +236,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<bool> validateFields() async {
     setState(() {
       _customerNameValid =
-          formController.customerNameController.text
-              .trim()
-              .isNotEmpty;
-      _dateValid = formController.dateController.text
-          .trim()
-          .isNotEmpty;
+          formController.customerNameController.text.trim().isNotEmpty;
+      _dateValid = formController.dateController.text.trim().isNotEmpty;
       _projectNameValid =
-          formController.projectNameController.text
-              .trim()
-              .isNotEmpty;
+          formController.projectNameController.text.trim().isNotEmpty;
       _mobileNumberValid =
-          formController.mobileNumberController.text
-              .trim()
-              .length == 10;
+          formController.mobileNumberController.text.trim().length == 10;
     });
 
     bool hasErrors = false;
@@ -329,15 +317,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                _customerNameValid ? null : "Customer name is required",
+                    _customerNameValid ? null : "Customer name is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
                 if (!_customerNameValid) {
                   setState(() {
-                    _customerNameValid = value
-                        .trim()
-                        .isNotEmpty;
+                    _customerNameValid = value.trim().isNotEmpty;
                   });
                 }
               },
@@ -375,9 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   formController: formController,
                 );
                 if (!_dateValid &&
-                    formController.dateController.text
-                        .trim()
-                        .isNotEmpty) {
+                    formController.dateController.text.trim().isNotEmpty) {
                   setState(() {
                     _dateValid = true;
                   });
@@ -409,15 +393,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                _projectNameValid ? null : "Project name is required",
+                    _projectNameValid ? null : "Project name is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
                 if (!_projectNameValid) {
                   setState(() {
-                    _projectNameValid = value
-                        .trim()
-                        .isNotEmpty;
+                    _projectNameValid = value.trim().isNotEmpty;
                   });
                 }
               },
@@ -452,16 +434,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorText:
-                _mobileNumberValid ? null : "Mobile number is required",
+                    _mobileNumberValid ? null : "Mobile number is required",
                 contentPadding: EdgeInsets.all(10),
               ),
               onChanged: (value) {
                 setState(() {
                   _mobileNumberValid =
-                      value
-                          .trim()
-                          .length ==
-                          10; // Valid only if exactly 10 digits
+                      value.trim().length ==
+                      10; // Valid only if exactly 10 digits
                 });
               },
             ),
@@ -494,9 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${item.length} × ${item.width}${item.height != null
-                                ? ' × ${item.height}'
-                                : ''} ${item.unit}',
+                            '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
                           ),
                           Text(
                             'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
@@ -566,7 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     foregroundColor: Colors.black,
                     elevation: 3,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(15),
                       side: BorderSide(color: Colors.grey.shade300),
                     ),
                   ),
@@ -585,10 +563,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   label: const Text(
                     "Add Item",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
@@ -602,16 +577,19 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Preview PDF Button - Square with icon above text
+                  // Preview PDF Button
                   Column(
                     children: [
                       InkWell(
                         onTap: () {
                           generatePdf(
-                            customerName: formController.customerNameController.text,
+                            customerName:
+                                formController.customerNameController.text,
                             date: formController.dateController.text,
-                            projectName: formController.projectNameController.text,
-                            mobileNumber: formController.mobileNumberController.text,
+                            projectName:
+                                formController.projectNameController.text,
+                            mobileNumber:
+                                formController.mobileNumberController.text,
                             items: items,
                           );
                         },
@@ -643,7 +621,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
 
-                  // Save Quotation Button - Square with icon above text
+                  // Save Quotation Button
                   Column(
                     children: [
                       InkWell(
@@ -653,22 +631,29 @@ class _HomeScreenState extends State<HomeScreen> {
                             // Calculate total amount
                             double totalAmount = items.fold(
                               0,
-                                  (sum, item) => sum + item.totalCost,
+                              (sum, item) => sum + item.totalCost,
                             );
 
                             // Create quotation object
                             final quotation = Quotation(
-                              id: DateTime.now().millisecondsSinceEpoch.toString(),
-                              customerName: formController.customerNameController.text,
+                              id:
+                                  DateTime.now().millisecondsSinceEpoch
+                                      .toString(),
+                              customerName:
+                                  formController.customerNameController.text,
                               date: formController.dateController.text,
-                              projectName: formController.projectNameController.text,
-                              mobileNumber: formController.mobileNumberController.text,
+                              projectName:
+                                  formController.projectNameController.text,
+                              mobileNumber:
+                                  formController.mobileNumberController.text,
                               items: List.from(items),
                               totalAmount: totalAmount,
                             );
 
                             // Save to database
-                            await DBHelperQuotation.instance.saveQuotation(quotation);
+                            await DBHelperQuotation.instance.saveQuotation(
+                              quotation,
+                            );
 
                             // Show success message
                             ScaffoldMessenger.of(context).showSnackBar(
