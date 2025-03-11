@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class QuotationItem {
-  final int? id; // Added ID field, which can be null for new items
+  final int? id;
   final String itemName;
   final String unit;
   final String shape;

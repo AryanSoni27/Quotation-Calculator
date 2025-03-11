@@ -62,7 +62,7 @@ class ClientScreenState extends State<ClientScreen> {
       clients.isEmpty
           ? Center(child: Text('No clients added yet'))
           : ListView.builder(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
         itemCount: clients.length,
         itemBuilder: (BuildContext context, int index) {
           final client = clients[index];

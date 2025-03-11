@@ -106,6 +106,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             ),
                             SizedBox(height: 10),
                             Text("Address:-"),
+                            SizedBox(height: 10),
                             //Street Address Field
                             TextField(
                               textAlign: TextAlign.left,
