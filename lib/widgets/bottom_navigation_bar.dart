@@ -1,6 +1,8 @@
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quotation/main.dart'; // Import ThemeProvider
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -14,15 +16,17 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return CurvedNavigationBar(
-      // type: BottomNavigationBarType.fixed,
       index: currentIndex,
       onTap: onTap,
-      color: Colors.white,
-      buttonBackgroundColor: Colors.white,
+      color: themeProvider.isDarkMode ? Colors.black12 : Colors.white,
+      buttonBackgroundColor:
+      themeProvider.isDarkMode ? Colors.white60 : Colors.white,
       backgroundColor: Colors.transparent,
       animationCurve: Curves.easeInOut,
-      animationDuration: Duration(milliseconds: 200),
+      animationDuration: const Duration(milliseconds: 200),
       items: const [
         CurvedNavigationBarItem(
           child: Icon(Icons.home_outlined),
@@ -43,5 +47,4 @@ class CustomBottomNavigationBar extends StatelessWidget {
       ],
     );
   }
-
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:quotation/screens/clients.dart';
 import 'package:quotation/screens/home_screen.dart';
 import 'package:quotation/screens/quotations.dart';
@@ -12,7 +13,14 @@ import 'widgets/bottom_popup_quotation_item.dart';
 import 'services/pdf_generator.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -20,13 +28,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Quotation',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Estimation'),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Quotation',
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.isDarkMode
+              ? ThemeData(
+            brightness: Brightness.dark,
+            primaryColor: Colors.black12,
+            scaffoldBackgroundColor: Colors.black38,
+            appBarTheme: const AppBarTheme(color: Colors.black38),
+          )
+              : ThemeData.light(),
+          home: const MyHomePage(title: 'Estimation'),
+        );
+      },
     );
   }
 }
@@ -173,5 +190,16 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: _onItemTapped,
       ),
     );
+  }
+}
+
+class ThemeProvider extends ChangeNotifier {
+  bool _isDarkMode = false;
+
+  bool get isDarkMode => _isDarkMode;
+
+  void toggleDarkMode() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
   }
 }
