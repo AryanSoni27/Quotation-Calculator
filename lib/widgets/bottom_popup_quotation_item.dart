@@ -317,6 +317,7 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
 
                           // Create the QuotationItem with all entered data
                           final item = QuotationItem(
+                            id: existingItem?.id ?? DateTime.now().millisecondsSinceEpoch,
                             itemName: itemNameController.text,
                             unit: selectedUnit,
                             shape: selectedShape,

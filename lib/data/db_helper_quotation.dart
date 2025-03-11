@@ -26,9 +26,8 @@ class DBHelper {
   Database? myDb;
 
   Future<Database> getDB() async {
-
     myDb ??= await openDB();
-  return myDb!;
+    return myDb!;
 
     // if (myDb != null) {
     //   return myDb!;
@@ -49,19 +48,18 @@ class DBHelper {
         //Creating table
         db.execute(
           "create table $QUOTATION_TABLE "
-              "($COLUMN_SNO integer primary key autoincrement,"
-              "$COLUMN_ITEM_NAME text,"
-              "$COLUMN_UNIT text,"
-              "$COLUMN_SHAPE text,"
-              "$COLUMN_LENGTH double,"
-              "$COLUMN_WIDTH double,"
-              "$COLUMN_HEIGHT double,"
-              "$COLUMN_SQUARE_FEET double,"
-              "$COLUMN_QUANTITY integer,"
-              "$COLUMN_RATE double,"
-              "$COLUMN_TOTAL_COST double )"
+          "($COLUMN_SNO integer primary key autoincrement,"
+          "$COLUMN_ITEM_NAME text,"
+          "$COLUMN_UNIT text,"
+          "$COLUMN_SHAPE text,"
+          "$COLUMN_LENGTH double,"
+          "$COLUMN_WIDTH double,"
+          "$COLUMN_HEIGHT double,"
+          "$COLUMN_SQUARE_FEET double,"
+          "$COLUMN_QUANTITY integer,"
+          "$COLUMN_RATE double,"
+          "$COLUMN_TOTAL_COST double )",
         );
-
       },
       version: 1,
     );
@@ -94,33 +92,41 @@ class DBHelper {
 
   //Update a quotation item
   Future<int> updateQuotationItem(
-      String oldItemName,
-      String oldUnit,
-      String oldShape,
-      double oldLength,
-      double oldWidth,
-      double? oldHeight,
-      Map<String, dynamic> newValues) async {
+    String oldItemName,
+    String oldUnit,
+    String oldShape,
+    double oldLength,
+    double oldWidth,
+    double? oldHeight,
+    Map<String, dynamic> newValues,
+  ) async {
     Database db = await getDB();
     return await db.update(
       QUOTATION_TABLE,
       newValues,
-      where: "$COLUMN_ITEM_NAME = ? AND $COLUMN_UNIT = ? AND $COLUMN_SHAPE = ? AND $COLUMN_LENGTH = ? AND $COLUMN_WIDTH = ? AND ($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ?)",
-      whereArgs: [oldItemName, oldUnit, oldShape, oldLength, oldWidth, oldHeight, oldHeight],
+      where:
+          "$COLUMN_ITEM_NAME = ? AND $COLUMN_UNIT = ? AND $COLUMN_SHAPE = ? AND $COLUMN_LENGTH = ? AND $COLUMN_WIDTH = ? AND ($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ?)",
+      whereArgs: [
+        oldItemName,
+        oldUnit,
+        oldShape,
+        oldLength,
+        oldWidth,
+        oldHeight,
+        oldHeight,
+      ],
     );
   }
 
-
   //Delete a quotation item
-  Future<int> deleteQuotationItem(String itemName, String unit, String shape, double length, double width, double? height) async {
+  Future<int> deleteQuotationItem(int id) async {
     Database db = await getDB();
     return await db.delete(
       QUOTATION_TABLE,
-      where: "$COLUMN_ITEM_NAME = ? AND $COLUMN_UNIT = ? AND $COLUMN_SHAPE = ? AND $COLUMN_LENGTH = ? AND $COLUMN_WIDTH = ? AND ($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ?)",
-      whereArgs: [itemName, unit, shape, length, width, height, height],
+      where: "$COLUMN_SNO = ?",
+      whereArgs: [id],
     );
   }
-
 
   //Delete all quotation items
   Future<int> deleteAllQuotationItems() async {
@@ -160,5 +166,4 @@ class DBHelper {
   //   Database db = await getDB();
   //   return await db.delete(QUOTATION_TABLE); // Ensure correct table name
   // }
-
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class QuotationItem {
-  final int? id;
+  final int id;
   final String itemName;
   final String unit;
   final String shape;
@@ -14,7 +14,7 @@ class QuotationItem {
   final double totalCost;
 
   QuotationItem({
-    this.id,
+    required this.id,
     required this.itemName,
     required this.unit,
     required this.shape,

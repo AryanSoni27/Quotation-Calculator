@@ -229,6 +229,9 @@ class _QuotationsState extends State<Quotations> {
                 },
               ),
       floatingActionButton: FloatingActionButton.extended(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50)
+        ),
         onPressed: _loadQuotations,
         label: const Text("Refresh"),
         icon: const Icon(Icons.refresh),
