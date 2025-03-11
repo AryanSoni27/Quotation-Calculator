@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/screens/clients.dart';
 import 'package:quotation/screens/home_screen.dart';
@@ -15,9 +13,7 @@ import 'services/pdf_generator.dart';
 void main() {
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-      ],
+      providers: [ChangeNotifierProvider(create: (context) => ThemeProvider())],
       child: const MyApp(),
     ),
   );
@@ -33,14 +29,15 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Quotation',
           debugShowCheckedModeBanner: false,
-          theme: themeProvider.isDarkMode
-              ? ThemeData(
-            brightness: Brightness.dark,
-            primaryColor: Colors.black12,
-            scaffoldBackgroundColor: Colors.black38,
-            appBarTheme: const AppBarTheme(color: Colors.black38),
-          )
-              : ThemeData.light(),
+          theme:
+              themeProvider.isDarkMode
+                  ? ThemeData(
+                    brightness: Brightness.dark,
+                    primaryColor: Colors.black12,
+                    scaffoldBackgroundColor: Colors.black38,
+                    appBarTheme: const AppBarTheme(color: Colors.black38),
+                  )
+                  : ThemeData.light(),
           home: const MyHomePage(title: 'Estimation'),
         );
       },

@@ -1,16 +1,13 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quotation/main.dart'; // Import ThemeProvider
 import 'package:quotation/models/client_details.dart';
-import 'package:quotation/models/quotation_item.dart';
 import 'package:quotation/widgets/bottom_popup_client_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/client_details.dart';
-
 class ClientScreen extends StatefulWidget {
   const ClientScreen({super.key});
-
 
   @override
   ClientScreenState createState() => ClientScreenState();
@@ -43,44 +40,40 @@ class ClientScreenState extends State<ClientScreen> {
     await prefs.setStringList('client_list', clientJsonList);
   }
 
-  void setupTextFieldListeners() {
-    formController.firstNameController.addListener(saveClientList);
-    formController.lastNameController.addListener(saveClientList);
-    formController.mobileNumberController.addListener(saveClientList);
-    formController.streetAddressController.addListener(saveClientList);
-    formController.cityController.addListener(saveClientList);
-    formController.stateController.addListener(saveClientList);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
     return Scaffold(
-      // appBar: AppBar(
-      //     title: const Text("Clients")
-      // ),
-      body:
-      clients.isEmpty
-          ? Center(child: Text('No clients added yet'))
+      backgroundColor: isDarkMode ? Colors.black38 : Colors.white,
+      body: clients.isEmpty
+          ? Center(
+        child: Text(
+          'No clients added yet',
+          style: TextStyle(
+            color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 16,
+          ),
+        ),
+      )
           : ListView.builder(
-        padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         itemCount: clients.length,
         itemBuilder: (BuildContext context, int index) {
           final client = clients[index];
           return Card(
             elevation: 4,
+            color: isDarkMode ? Colors.white24 : Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            margin: EdgeInsets.symmetric(
-              vertical: 8,
-            ),
+            margin: const EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
-              contentPadding: EdgeInsets.all(16),
-              // Padding inside the card
+              contentPadding: const EdgeInsets.all(16),
               leading: CircleAvatar(
-                backgroundColor: Colors.blueAccent,
-                // Avatar background color
-                child: Icon(
+                backgroundColor: isDarkMode ? Colors.blueGrey[600] : Colors.blueAccent,
+                child: const Icon(
                   Icons.person,
                   color: Colors.white,
                 ),
@@ -90,40 +83,40 @@ class ClientScreenState extends State<ClientScreen> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: isDarkMode ? Colors.white : Colors.black87,
                 ),
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
-                      Icon(Icons.phone, size: 16, color: Colors.green),
-                      SizedBox(width: 5),
+                      const Icon(Icons.phone, size: 16, color: Colors.green),
+                      const SizedBox(width: 5),
                       Text(
                         client.mobileNumber,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black54,
+                          color: isDarkMode ? Colors.white70 : Colors.black54,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
-                      Icon(Icons.home, size: 16, color: Colors.blue),
-                      SizedBox(width: 5),
+                      const Icon(Icons.home, size: 16, color: Colors.blue),
+                      const SizedBox(width: 5),
                       Expanded(
-                        // Prevent overflow
-                        child: Text('${client.streetAddress}, ${client.city}, ${client.state}',
+                        child: Text(
+                          '${client.streetAddress}, ${client.city}, ${client.state}',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black54,
+                            color: isDarkMode ? Colors.white70 : Colors.black54,
                           ),
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 1, // Limit to one line
+                          maxLines: 1,
                         ),
                       ),
                     ],
@@ -133,11 +126,9 @@ class ClientScreenState extends State<ClientScreen> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Edit Button
                   IconButton(
-                    icon: Icon(Icons.edit, color: Colors.black),
+                    icon: Icon(Icons.edit, color: isDarkMode ? Colors.white : Colors.black),
                     onPressed: () async {
-                      // Pass the existing client data to showClientForm
                       final updatedClient = await showClientForm(
                         context,
                         existingItem: clients[index],
@@ -145,19 +136,17 @@ class ClientScreenState extends State<ClientScreen> {
                       if (updatedClient != null) {
                         setState(() {
                           clients[index] = updatedClient;
-                          saveClientList(); // Save after updating
+                          saveClientList();
                         });
                       }
                     },
                   ),
-
-                  //Delete Button
                   IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
                       setState(() {
                         clients.removeAt(index);
-                        saveClientList(); // Save updated list
+                        saveClientList();
                       });
                     },
                   ),
@@ -167,19 +156,19 @@ class ClientScreenState extends State<ClientScreen> {
           );
         },
       ),
-      // FloatingActionButton at the bottom right
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+        backgroundColor: isDarkMode ? Colors.blueGrey[700] : Theme.of(context).primaryColor,
         onPressed: () async {
           final result = await showClientForm(context);
           if (result != null) {
             setState(() {
               clients.add(result);
-              saveClientList(); // Save updated list
+              saveClientList();
             });
           }
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
