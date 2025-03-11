@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/data/db_helper_quotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/db_helper_quotation_screen.dart';
+import '../models/client_details.dart';
 import '../models/quotation_item.dart';
 import '../models/quotation_screen.dart';
 import '../util/date_picker.dart';
@@ -23,10 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> allQuotationItems = [];
   DBHelper dbRef = DBHelper.instance;
 
+  List<String> clientNames = [];
+
   bool _customerNameValid = true;
   bool _dateValid = true;
   bool _projectNameValid = true;
   bool _mobileNumberValid = true;
+  bool _showDropdown = false;
+
+  String selectedCustomer = "";
 
   final FocusNode _customerNameFocusNode = FocusNode();
   final FocusNode _dateFocusNode = FocusNode();
@@ -40,7 +48,34 @@ class _HomeScreenState extends State<HomeScreen> {
     loadCustomerDetails();
     setupTextFieldListeners();
     _setupFocusListeners();
+    loadClients();
   }
+
+  Future<void> loadClients() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? clientJsonList = prefs.getStringList('client_list');
+
+    if (clientJsonList != null) {
+      setState(() {
+        clientNames = clientJsonList
+            .map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString)).firstName)
+            .toList();
+      });
+    }
+  }
+
+  Future<void> saveSelectedCustomer(String name) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_customer', name);
+  }
+
+  void clearFormFields() {
+    setState(() {
+      formController.customerNameController.clear();
+      _customerNameValid = false;
+    });
+  }
+
 
   Future<void> loadCustomerDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -297,39 +332,66 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //Customer Name Field
-              TextField(
-                controller: formController.customerNameController,
-                textAlign: TextAlign.left,
-                focusNode: _customerNameFocusNode,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person),
-                  prefixIconColor: Colors.blue,
-                  labelText: "Customer Name",
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: _customerNameValid ? Colors.blue : Colors.red,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 2,
-                      color: _customerNameValid ? Colors.blue : Colors.red,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorText:
-                      _customerNameValid ? null : "Customer name is required",
-                  contentPadding: EdgeInsets.all(10),
-                ),
-                onChanged: (value) {
-                  if (!_customerNameValid) {
-                    setState(() {
-                      _customerNameValid = value.trim().isNotEmpty;
-                    });
-                  }
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _showDropdown = !_showDropdown;
+                  });
                 },
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: formController.customerNameController,
+                    decoration: InputDecoration(
+                      labelText: "Customer Name",
+                      prefixIcon: Icon(Icons.person, color: Colors.blue),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: _customerNameValid ? Colors.blue : Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: _customerNameValid ? Colors.blue : Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      errorText: _customerNameValid ? null : "Name is required",
+                      contentPadding: EdgeInsets.all(10),
+                      // suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                    ),
+                  ),
+                ),
               ),
+
+              if (_showDropdown)
+                Container(
+                  margin: EdgeInsets.only(top: 5),
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
+                  ),
+                  child: Column(
+                    children: clientNames
+                        .map(
+                          (name) => ListTile(
+                        title: Text(name, style: TextStyle(fontSize: 16)),
+                        onTap: () {
+                          setState(() {
+                            formController.customerNameController.text = name;
+                            _showDropdown = false;
+                            _customerNameValid = true;
+                          });
+                          saveSelectedCustomer(name);
+                        },
+                      ),
+                    )
+                        .toList(),
+                  ),
+                ),
               SizedBox(height: 20),
 
               //Date Picker Field
@@ -723,7 +785,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          "Save Quotation",
+                          "Save Estimation",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
