@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../main.dart';
 import '../models/quotation_screen.dart';
 import '../models/quotation_item.dart';
 import '../data/db_helper_quotation_screen.dart';
@@ -66,6 +68,8 @@ class _QuotationsState extends State<Quotations> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
       appBar: AppBar(title: const Text("Saved Estimations")),
       body:
@@ -131,6 +135,7 @@ class _QuotationsState extends State<Quotations> {
                                 children:
                                     quotation.items.map((item) {
                                       return Card(
+                                        color: isDarkMode ? Colors.white10 : Colors.white,
                                         margin: const EdgeInsets.only(
                                           bottom: 12.0,
                                         ),
@@ -200,7 +205,7 @@ class _QuotationsState extends State<Quotations> {
                                       );
                                     },
                                     icon: const Icon(Icons.picture_as_pdf, color: Colors.blue),
-                                    label: const Text("View PDF"),
+                                    label: const Text("PDF"),
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.blue,
                                     ),

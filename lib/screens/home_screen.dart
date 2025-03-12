@@ -318,485 +318,456 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void _showCustomerSelectionSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: clientNames.map((name) => ListTile(
+              title: Text(name),
+              onTap: () {
+                setState(() {
+                  formController.customerNameController.text = name;
+                  _customerNameValid = true;
+                });
+                Navigator.pop(context);
+                saveSelectedCustomer(name);
+              },
+            )).toList(),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(8.0),
-          child: Padding(
-            padding: const EdgeInsets.all(7),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //Customer Name Field
-                GestureDetector(
-                  onTap: () {
+      body: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(7),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //Customer Name Field
+              GestureDetector(
+                onTap: _showCustomerSelectionSheet,
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: formController.customerNameController,
+                    decoration: InputDecoration(
+                      labelText: "Customer Name",
+                      prefixIcon: Icon(Icons.person, color: Colors.blue),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: _customerNameValid ? Colors.blue : Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: _customerNameValid ? Colors.blue : Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding: EdgeInsets.all(10),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+
+              //Date Picker Field
+              TextField(
+                controller: formController.dateController,
+                textAlign: TextAlign.left,
+                focusNode: _dateFocusNode,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.calendar_month),
+                  prefixIconColor: Colors.blue,
+                  labelText: "Date",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _dateValid ? Colors.blue : Colors.red,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: _dateValid ? Colors.blue : Colors.red,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  // errorText: _dateValid ? null : "Date is required",
+                  contentPadding: EdgeInsets.all(10),
+                ),
+                onTap: () async {
+                  await onTapFunction(
+                    context: context,
+                    formController: formController,
+                  );
+                  if (!_dateValid &&
+                      formController.dateController.text.trim().isNotEmpty) {
                     setState(() {
-                      _showDropdown = !_showDropdown;
+                      _dateValid = true;
                     });
-                  },
-                  child: AbsorbPointer(
-                    child: TextField(
-                      controller: formController.customerNameController,
-                      decoration: InputDecoration(
-                        labelText: "Customer Name",
-                        prefixIcon: Icon(Icons.person, color: Colors.blue),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color:
-                                _customerNameValid ? Colors.blue : Colors.red,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 2,
-                            color:
-                                _customerNameValid ? Colors.blue : Colors.red,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        errorText:
-                            _customerNameValid ? null : "Name is required",
-                        contentPadding: EdgeInsets.all(10),
-                        // suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.blue),
-                      ),
+                  }
+                },
+              ),
+              SizedBox(height: 20),
+
+              // Project Name Field
+              TextField(
+                controller: formController.projectNameController,
+                textAlign: TextAlign.left,
+                focusNode: _projectNameFocusNode,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.shopping_bag_sharp),
+                  prefixIconColor: Colors.blue,
+                  labelText: "Project Name",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _projectNameValid ? Colors.blue : Colors.red,
                     ),
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: _projectNameValid ? Colors.blue : Colors.red,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  // errorText: _projectNameValid ? null : "Project name is required",
+                  contentPadding: EdgeInsets.all(10),
                 ),
-
-                if (_showDropdown)
-                  Container(
-                    margin: EdgeInsets.only(top: 5),
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: isDarkMode ? Colors.grey : Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black26, blurRadius: 5),
-                      ],
-                    ),
-                    child: Column(
-                      children:
-                          clientNames
-                              .map(
-                                (name) => ListTile(
-                                  title: Text(
-                                    name,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color:
-                                          isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      formController
-                                          .customerNameController
-                                          .text = name;
-                                      _showDropdown = false;
-                                      _customerNameValid = true;
-                                    });
-                                    saveSelectedCustomer(name);
-                                  },
-                                ),
-                              )
-                              .toList(),
-                    ),
-                  ),
-                SizedBox(height: 20),
-
-                //Date Picker Field
-                TextField(
-                  controller: formController.dateController,
-                  textAlign: TextAlign.left,
-                  focusNode: _dateFocusNode,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.calendar_month),
-                    prefixIconColor: Colors.blue,
-                    labelText: "Date",
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: _dateValid ? Colors.blue : Colors.red,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: _dateValid ? Colors.blue : Colors.red,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorText: _dateValid ? null : "Date is required",
-                    contentPadding: EdgeInsets.all(10),
-                  ),
-                  onTap: () async {
-                    await onTapFunction(
-                      context: context,
-                      formController: formController,
-                    );
-                    if (!_dateValid &&
-                        formController.dateController.text.trim().isNotEmpty) {
-                      setState(() {
-                        _dateValid = true;
-                      });
-                    }
-                  },
-                ),
-                SizedBox(height: 20),
-
-                // Project Name Field
-                TextField(
-                  controller: formController.projectNameController,
-                  textAlign: TextAlign.left,
-                  focusNode: _projectNameFocusNode,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.shopping_bag_sharp),
-                    prefixIconColor: Colors.blue,
-                    labelText: "Project Name",
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: _projectNameValid ? Colors.blue : Colors.red,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: _projectNameValid ? Colors.blue : Colors.red,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorText:
-                        _projectNameValid ? null : "Project name is required",
-                    contentPadding: EdgeInsets.all(10),
-                  ),
-                  onChanged: (value) {
-                    if (!_projectNameValid) {
-                      setState(() {
-                        _projectNameValid = value.trim().isNotEmpty;
-                      });
-                    }
-                  },
-                ),
-                SizedBox(height: 20),
-
-                // Mobile Number Field
-                TextField(
-                  controller: formController.mobileNumberController,
-                  textAlign: TextAlign.left,
-                  focusNode: _mobileNumberFocusNode,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(10),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.phone),
-                    prefixIconColor: Colors.blue,
-                    labelText: "Mobile Number",
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: _mobileNumberValid ? Colors.blue : Colors.red,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: _mobileNumberValid ? Colors.blue : Colors.red,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorText:
-                        _mobileNumberValid ? null : "Mobile number is required",
-                    contentPadding: EdgeInsets.all(10),
-                  ),
-                  onChanged: (value) {
+                onChanged: (value) {
+                  if (!_projectNameValid) {
                     setState(() {
-                      _mobileNumberValid =
-                          value.trim().length ==
-                          10; // Valid only if exactly 10 digits
+                      _projectNameValid = value.trim().isNotEmpty;
                     });
-                  },
-                ),
+                  }
+                },
+              ),
+              SizedBox(height: 20),
 
-                if (items.isNotEmpty) ...[
-                  SizedBox(height: 20),
-                  Text(
-                    "Added Items:",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 10),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      return Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          title: Text(
-                            item.itemName,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
-                              ),
-                              Text(
-                                'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
-                              ),
-                              Text('Quantity: ${item.quantity}'),
-                              Text('Rate: ${item.rate.toStringAsFixed(2)}'),
-                              Text(
-                                'Total: ${item.totalCost.toStringAsFixed(2)}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          //Added delete and edit button for each item
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Edit Button
-                              IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  color:
-                                      isDarkMode
-                                          ? Colors.white
-                                          : Colors.black87,
-                                ),
-                                onPressed: () async {
-                                  final updatedItem = await showBottomPopup(
-                                    context,
-                                    existingItem: item,
-                                  );
-                                  if (updatedItem != null) {
-                                    await updateQuotationItem(
-                                      item,
-                                      updatedItem,
-                                    ); // Pass old and new item
-                                  }
-                                },
-                              ),
-
-                              //Delete Button
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () async {
-                                  await deleteQuotationItem(item.id);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+              // Mobile Number Field
+              TextField(
+                controller: formController.mobileNumberController,
+                textAlign: TextAlign.left,
+                focusNode: _mobileNumberFocusNode,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(10),
+                  FilteringTextInputFormatter.digitsOnly,
                 ],
-
-                SizedBox(height: 40),
-
-                //Button to add items
-                // Add Item Button
-                const SizedBox(height: 20),
-
-                // Preview PDF Button
-                if (items.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 20,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.phone),
+                  prefixIconColor: Colors.blue,
+                  labelText: "Mobile Number",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _mobileNumberValid ? Colors.blue : Colors.red,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Preview PDF Button
-                        Column(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: _mobileNumberValid ? Colors.blue : Colors.red,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  // errorText: _mobileNumberValid ? null : "Mobile number is required",
+                  contentPadding: EdgeInsets.all(10),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _mobileNumberValid =
+                        value.trim().length ==
+                        10; // Valid only if exactly 10 digits
+                  });
+                },
+              ),
+              SizedBox(height: 10),
+              Row(
+                  children: [
+                    if (items.isNotEmpty)
+                      Text("Added Items:-", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDarkMode ? Colors.white : Colors.black87)),
+                    SizedBox(width: 34),
+                    if (items.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            InkWell(
-                              onTap: () async {
-                                if (await validateFields()) {
-                                  generatePdf(
-                                    customerName:
+                            // Preview PDF Button
+                            Column(
+                              children: [
+                                InkWell(
+                                  onTap: () async {
+                                    if (await validateFields()) {
+                                      generatePdf(
+                                        customerName:
                                         formController
                                             .customerNameController
                                             .text,
-                                    date: formController.dateController.text,
-                                    projectName:
-                                        formController
-                                            .projectNameController
-                                            .text,
-                                    mobileNumber:
+                                        date: formController.dateController.text,
+                                        projectName:
+                                        formController.projectNameController.text,
+                                        mobileNumber:
                                         formController
                                             .mobileNumberController
                                             .text,
-                                    items: items,
-                                  );
-                                }
-                              },
-                              child: Container(
-                                width: 70,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.shade300,
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                      offset: Offset(2, 4),
+                                        items: items,
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.shade300,
+                                          spreadRadius: 0.5,
+                                          blurRadius: 5,
+                                          offset: Offset(2, 4),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.picture_as_pdf,
-                                    size: 36,
-                                    color: Colors.blue,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.picture_as_pdf,
+                                        size: 36,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                                // const SizedBox(height: 8),
+                                // Text(
+                                //   "Preview",
+                                //   style: TextStyle(
+                                //     fontSize: 14,
+                                //     fontWeight: FontWeight.w500,
+                                //     color: isDarkMode ? Colors.white : Colors.black87,
+                                //   ),
+                                // ),
+                              ],
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Preview",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color:
-                                    isDarkMode ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
+                            SizedBox(width: 30),
+                            // Save Quotation Button
+                            Column(
+                              children: [
+                                InkWell(
+                                  onTap: () async {
+                                    // Validate all fields before generating PDF
+                                    if (await validateFields()) {
+                                      // Calculate total amount
+                                      double totalAmount = items.fold(
+                                        0,
+                                            (sum, item) => sum + item.totalCost,
+                                      );
 
-                        // Save Quotation Button
-                        Column(
-                          children: [
-                            InkWell(
-                              onTap: () async {
-                                // Validate all fields before generating PDF
-                                if (await validateFields()) {
-                                  // Calculate total amount
-                                  double totalAmount = items.fold(
-                                    0,
-                                    (sum, item) => sum + item.totalCost,
-                                  );
-
-                                  // Create quotation object
-                                  final quotation = Quotation(
-                                    id:
+                                      // Create quotation object
+                                      final quotation = Quotation(
+                                        id:
                                         DateTime.now().millisecondsSinceEpoch
                                             .toString(),
-                                    customerName:
+                                        customerName:
                                         formController
                                             .customerNameController
                                             .text,
-                                    date: formController.dateController.text,
-                                    projectName:
-                                        formController
-                                            .projectNameController
-                                            .text,
-                                    mobileNumber:
+                                        date: formController.dateController.text,
+                                        projectName:
+                                        formController.projectNameController.text,
+                                        mobileNumber:
                                         formController
                                             .mobileNumberController
                                             .text,
-                                    items: List.from(items),
-                                    totalAmount: totalAmount,
-                                  );
+                                        items: List.from(items),
+                                        totalAmount: totalAmount,
+                                      );
 
-                                  // Save to database
-                                  await DBHelperQuotation.instance
-                                      .saveQuotation(quotation);
+                                      // Save to database
+                                      await DBHelperQuotation.instance.saveQuotation(
+                                        quotation,
+                                      );
 
-                                  // Show success message
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Quotation saved successfully!',
+                                      // Show success message
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Quotation saved successfully!',
+                                          ),
+                                          backgroundColor: Colors.green,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+
+                                      // First clear database items
+                                      await dbRef.deleteAllQuotationItems();
+
+                                      // Then clear the UI state
+                                      setState(() {
+                                        formController.customerNameController.clear();
+                                        formController.dateController.clear();
+                                        formController.projectNameController.clear();
+                                        formController.mobileNumberController.clear();
+                                        items.clear(); // Clear the items list
+                                      });
+
+                                      // Force refresh items from database to ensure UI is in sync
+                                      getQuotationItems();
+                                    }
+                                  },
+                                  child: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.shade300,
+                                          spreadRadius: 0.5,
+                                          blurRadius: 5,
+                                          offset: Offset(2, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.save,
+                                        size: 36,
+                                        color: Colors.blue,
                                       ),
-                                      backgroundColor: Colors.green,
-                                      duration: Duration(seconds: 2),
                                     ),
-                                  );
-
-                                  // First clear database items
-                                  await dbRef.deleteAllQuotationItems();
-
-                                  // Then clear the UI state
-                                  setState(() {
-                                    formController.customerNameController
-                                        .clear();
-                                    formController.dateController.clear();
-                                    formController.projectNameController
-                                        .clear();
-                                    formController.mobileNumberController
-                                        .clear();
-                                    items.clear(); // Clear the items list
-                                  });
-
-                                  // Force refresh items from database to ensure UI is in sync
-                                  getQuotationItems();
-                                }
-                              },
-                              child: Container(
-                                width: 70,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.shade300,
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                      offset: Offset(2, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.save,
-                                    size: 36,
-                                    color: Colors.blue,
                                   ),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Save",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color:
-                                    isDarkMode ? Colors.white : Colors.black87,
-                              ),
+                                // const SizedBox(height: 8),
+                                // Text(
+                                //   "Save",
+                                //   style: TextStyle(
+                                //     fontSize: 14,
+                                //     fontWeight: FontWeight.w500,
+                                //     color: isDarkMode ? Colors.white : Colors.black87,
+                                //   ),
+                                // ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
+                      ),
+                  ]
+                ),
+              SizedBox(height: 10),
+              Expanded(
+                child:
+                    items.isNotEmpty
+                        ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            return Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              margin: EdgeInsets.symmetric(vertical: 8),
+                              child: ListTile(
+                                title: Text(
+                                  item.itemName,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
+                                    ),
+                                    Text(
+                                      'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
+                                    ),
+                                    Text('Quantity: ${item.quantity}'),
+                                    Text(
+                                      'Rate: ${item.rate.toStringAsFixed(2)}',
+                                    ),
+                                    Text(
+                                      'Total: ${item.totalCost.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                //Added delete and edit button for each item
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Edit Button
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color:
+                                            isDarkMode
+                                                ? Colors.white
+                                                : Colors.black87,
+                                      ),
+                                      onPressed: () async {
+                                        final updatedItem =
+                                            await showBottomPopup(
+                                              context,
+                                              existingItem: item,
+                                            );
+                                        if (updatedItem != null) {
+                                          await updateQuotationItem(
+                                            item,
+                                            updatedItem,
+                                          ); // Pass old and new item
+                                        }
+                                      },
+                                    ),
+
+                                    //Delete Button
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () async {
+                                        await deleteQuotationItem(item.id);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                        : const SizedBox(height: 30),
+              ),
+
+              // Preview PDF Button
+
+            ],
           ),
         ),
       ),
