@@ -373,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     margin: EdgeInsets.only(top: 5),
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDarkMode ? Colors.grey : Colors.white,
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(color: Colors.black26, blurRadius: 5),
@@ -386,7 +386,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 (name) => ListTile(
                                   title: Text(
                                     name,
-                                    style: TextStyle(fontSize: 16),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color:
+                                          isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                    ),
                                   ),
                                   onTap: () {
                                     setState(() {

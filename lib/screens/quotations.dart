@@ -157,7 +157,7 @@ class _QuotationsState extends State<Quotations> {
                                                     "Area: ${item.squareFeet.toStringAsFixed(2)} sq ft (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})",
                                                     style: const TextStyle(
                                                       fontSize: 11,
-                                                      color: Colors.black,
+                                                      color: Colors.grey,
                                                     ),
                                                   ),
                                                 ],
@@ -199,8 +199,11 @@ class _QuotationsState extends State<Quotations> {
                                         quotation,
                                       );
                                     },
-                                    icon: const Icon(Icons.picture_as_pdf),
+                                    icon: const Icon(Icons.picture_as_pdf, color: Colors.blue),
                                     label: const Text("View PDF"),
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.blue,
+                                    ),
                                   ),
 
                                   ElevatedButton.icon(
@@ -229,12 +232,14 @@ class _QuotationsState extends State<Quotations> {
                 },
               ),
       floatingActionButton: FloatingActionButton.extended(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50)
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         onPressed: _loadQuotations,
-        label: const Text("Refresh"),
-        icon: const Icon(Icons.refresh),
+        backgroundColor: Colors.white,
+        icon: Icon(Icons.refresh, color: Colors.blue),
+        label: Text(
+          "Refresh",
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
       ),
     );
   }

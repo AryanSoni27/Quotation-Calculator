@@ -46,7 +46,7 @@ class ClientScreenState extends State<ClientScreen> {
     final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black38 : Colors.white,
+
       body: clients.isEmpty
           ? Center(
         child: Text(
@@ -158,7 +158,7 @@ class ClientScreenState extends State<ClientScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-        backgroundColor: isDarkMode ? Colors.blueGrey[700] : Theme.of(context).primaryColor,
+        backgroundColor: Colors.white,
         onPressed: () async {
           final result = await showClientForm(context);
           if (result != null) {
@@ -168,7 +168,8 @@ class ClientScreenState extends State<ClientScreen> {
             });
           }
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.blue),
+
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
