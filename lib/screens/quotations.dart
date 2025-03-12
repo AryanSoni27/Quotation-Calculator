@@ -207,6 +207,7 @@ class _QuotationsState extends State<Quotations> {
                                     icon: const Icon(Icons.picture_as_pdf, color: Colors.blue),
                                     label: const Text("PDF"),
                                     style: ElevatedButton.styleFrom(
+                                      backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                                       foregroundColor: Colors.blue,
                                     ),
                                   ),
@@ -223,6 +224,7 @@ class _QuotationsState extends State<Quotations> {
                                     ),
                                     label: const Text("Delete"),
                                     style: ElevatedButton.styleFrom(
+                                      backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                                       foregroundColor: Colors.red,
                                     ),
                                   ),

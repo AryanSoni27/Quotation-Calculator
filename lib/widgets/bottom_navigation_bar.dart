@@ -22,9 +22,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
       index: currentIndex,
       onTap: onTap,
       color: themeProvider.isDarkMode ? Colors.black12 : Colors.white,
-      buttonBackgroundColor:
-      themeProvider.isDarkMode ? Colors.white60 : Colors.white,
-      backgroundColor: Colors.transparent,
+      buttonBackgroundColor: themeProvider.isDarkMode ? Colors.white60 : Colors.white,
+      backgroundColor: themeProvider.isDarkMode ? Colors.transparent : Colors.transparent,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 200),
       items: const [

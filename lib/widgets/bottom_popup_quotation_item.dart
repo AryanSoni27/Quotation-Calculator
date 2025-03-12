@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../main.dart';
 import '../models/quotation_item.dart';
 import '../util/calculation_utilities.dart';
 
@@ -24,6 +26,8 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) {
+      final themeProvider = Provider.of<ThemeProvider>(context);
+      final isDarkMode = themeProvider.isDarkMode;
       return StatefulBuilder(
         builder: (context, setState) {
 
@@ -307,6 +311,10 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                     // Add item button
                     Center(
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
+                          elevation: 10,
+                        ),
                         onPressed: () {
                           if (itemNameController.text.isEmpty) {
                             setState(() {
@@ -335,7 +343,8 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                           // Close the popup and return the item
                           Navigator.of(context).pop(item);
                         },
-                        child: Text("Add Item"),
+                        child: Text(existingItem != null ? "Update Item" : "Add Item",
+                                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
                       ),
                     ),
                     SizedBox(height: 10),

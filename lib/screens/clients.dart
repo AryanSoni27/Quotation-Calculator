@@ -64,7 +64,7 @@ class ClientScreenState extends State<ClientScreen> {
           final client = clients[index];
           return Card(
             elevation: 4,
-            color: isDarkMode ? Colors.white24 : Colors.white,
+            color: isDarkMode ? Colors.white10 : Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -72,7 +72,7 @@ class ClientScreenState extends State<ClientScreen> {
             child: ListTile(
               contentPadding: const EdgeInsets.all(16),
               leading: CircleAvatar(
-                backgroundColor: isDarkMode ? Colors.blueGrey[600] : Colors.blueAccent,
+                backgroundColor: isDarkMode ? Colors.grey : Colors.blueAccent,
                 child: const Icon(
                   Icons.person,
                   color: Colors.white,

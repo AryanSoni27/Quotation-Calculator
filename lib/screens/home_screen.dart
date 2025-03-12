@@ -23,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   final FormController formController = FormController();
   List<QuotationItem> items = [];
   List<Map<String, dynamic>> allQuotationItems = [];
@@ -320,16 +321,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showCustomerSelectionSheet() {
     showModalBottomSheet(
+      // backgroundColor: Colors.black12,
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Container(
+        return SingleChildScrollView(
           padding: EdgeInsets.all(10),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: clientNames.map((name) => ListTile(
+              // contentPadding: EdgeInsets.symmetric(vertical: 10),
               title: Text(name),
               onTap: () {
                 setState(() {
