@@ -52,6 +52,8 @@ class ClientDetailsFormController {
   final TextEditingController cityController = TextEditingController();
   final TextEditingController stateController = TextEditingController();
 
+  bool isMobileValid = true;
+
   void dispose() {
     firstNameController.dispose();
     lastNameController.dispose();
