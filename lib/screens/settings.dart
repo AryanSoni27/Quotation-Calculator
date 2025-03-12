@@ -15,9 +15,7 @@ class _SettingsState extends State<Settings> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text("Settings"),
-      // ),
+      appBar: AppBar(title: const Text("Setting")),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [

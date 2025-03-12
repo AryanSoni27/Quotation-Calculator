@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:quotation/models/client_details.dart';
 import 'package:quotation/models/client_details.dart';
+
+import '../main.dart';
 
 Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? existingItem}) async {
   // Create controllers
@@ -29,6 +32,8 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) {
+      final themeProvider = Provider.of<ThemeProvider>(context);
+      final isDarkMode = themeProvider.isDarkMode;
       return StatefulBuilder(
           builder: (context, setState) {
             return Padding(
@@ -161,6 +166,10 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             //Add Client Button
                             Center(
                                 child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
+                                    elevation: 10,
+                                  ),
                                   onPressed: () {
                                     final client = ClientDetails(
                                       firstName: firstNameController.text,
@@ -172,8 +181,10 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                                     );
                                     Navigator.of(context).pop(client);
                                   },
-                                  child: Text(existingItem != null ? "Update Client" : "Add Client"),
+                                  child: Text(existingItem != null ? "Update Client" : "Add Client",
+                                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                                 )
+                            )
                             )
                           ]
                       )

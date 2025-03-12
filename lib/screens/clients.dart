@@ -46,7 +46,7 @@ class ClientScreenState extends State<ClientScreen> {
     final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
-
+      appBar: AppBar(title: const Text("Clients")),
       body: clients.isEmpty
           ? Center(
         child: Text(

@@ -29,7 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> allQuotationItems = [];
   DBHelper dbRef = DBHelper.instance;
 
-  List<String> clientNames = [];
+  List<ClientDetails> clients = [];
+
 
   bool _customerNameValid = true;
   bool _dateValid = true;
@@ -60,16 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (clientJsonList != null) {
       setState(() {
-        clientNames =
-            clientJsonList
-                .map(
-                  (jsonString) =>
-                      ClientDetails.fromJson(jsonDecode(jsonString)).firstName,
-                )
-                .toList();
+        clients = clientJsonList
+            .map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString)))
+            .toList();
       });
     }
   }
+
 
   Future<void> saveSelectedCustomer(String name) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -224,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
       SnackBar(
         content: Text('Item deleted successfully!'),
         backgroundColor: Colors.red,
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 1),
       ),
     );
   }
@@ -320,41 +318,57 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCustomerSelectionSheet() {
+    if (clients.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("No clients available."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     showModalBottomSheet(
-      // backgroundColor: Colors.black12,
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return SingleChildScrollView(
+        return Container(
           padding: EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: clientNames.map((name) => ListTile(
-              // contentPadding: EdgeInsets.symmetric(vertical: 10),
-              title: Text(name),
-              onTap: () {
-                setState(() {
-                  formController.customerNameController.text = name;
-                  _customerNameValid = true;
-                });
-                Navigator.pop(context);
-                saveSelectedCustomer(name);
-              },
-            )).toList(),
+          constraints: BoxConstraints(
+            minHeight: 200, // Ensure modal has a minimum height
+            maxHeight: MediaQuery.of(context).size.height * 0.6, // Limit height
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: clients.map((client) => ListTile(
+                title: Text("${client.firstName} ${client.lastName}"),
+                onTap: () {
+                  setState(() {
+                    formController.customerNameController.text =
+                    "${client.firstName} ${client.lastName}";
+                    _customerNameValid = true;
+                  });
+                  Navigator.pop(context);
+                  saveSelectedCustomer("${client.firstName} ${client.lastName}");
+                },
+              )).toList(),
+            ),
           ),
         );
       },
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
+      // appBar: AppBar(title: const Text("Estimation")),
       body: Padding(
         padding: EdgeInsets.all(8.0),
         child: Padding(
@@ -509,7 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     if (items.isNotEmpty)
                       Text("Added Items:-", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDarkMode ? Colors.white : Colors.black87)),
-                    SizedBox(width: 34),
+                    SizedBox(width: 44),
                     if (items.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -541,8 +555,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     }
                                   },
                                   child: Container(
-                                    width: 50,
-                                    height: 50,
+                                    width: 45,
+                                    height: 45,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -558,7 +572,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Center(
                                       child: Icon(
                                         Icons.picture_as_pdf,
-                                        size: 36,
+                                        size: 30,
                                         color: Colors.blue,
                                       ),
                                     ),
@@ -642,8 +656,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     }
                                   },
                                   child: Container(
-                                    width: 50,
-                                    height: 50,
+                                    width: 45,
+                                    height: 45,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
@@ -659,7 +673,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: const Center(
                                       child: Icon(
                                         Icons.save,
-                                        size: 36,
+                                        size: 30,
                                         color: Colors.blue,
                                       ),
                                     ),
@@ -683,64 +697,64 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               SizedBox(height: 10),
               Expanded(
-                child:
-                    items.isNotEmpty
-                        ? ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            final item = items[index];
-                            return Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              margin: EdgeInsets.symmetric(vertical: 8),
-                              child: ListTile(
-                                title: Text(
-                                  item.itemName,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                child: items.isNotEmpty
+                    ? ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      child: ExpansionTile(
+                        title: Text(
+                          item.itemName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Quantity: ${item.quantity}'),
+                                Text(
+                                  'Rate: ${item.rate.toStringAsFixed(2)}',
                                 ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit}',
-                                    ),
-                                    Text(
-                                      'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft',
-                                    ),
-                                    Text('Quantity: ${item.quantity}'),
-                                    Text(
-                                      'Rate: ${item.rate.toStringAsFixed(2)}',
-                                    ),
-                                    Text(
-                                      'Total: ${item.totalCost.toStringAsFixed(2)}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  'Total: ${item.totalCost.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                //Added delete and edit button for each item
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     // Edit Button
-                                    IconButton(
+                                    ElevatedButton.icon(
                                       icon: Icon(
                                         Icons.edit,
-                                        color:
-                                            isDarkMode
-                                                ? Colors.white
-                                                : Colors.black87,
+                                        color: isDarkMode ? Colors.white : Colors.black,
+                                        size: 18,
+                                      ),
+                                      label: Text('Edit'),
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: isDarkMode ? Colors.white : Colors.black,
+                                        backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                                       ),
                                       onPressed: () async {
-                                        final updatedItem =
-                                            await showBottomPopup(
-                                              context,
-                                              existingItem: item,
-                                            );
+                                        final updatedItem = await showBottomPopup(
+                                          context,
+                                          existingItem: item,
+                                        );
                                         if (updatedItem != null) {
                                           await updateQuotationItem(
                                             item,
@@ -749,12 +763,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                         }
                                       },
                                     ),
-
+                                    SizedBox(width: 12),
                                     //Delete Button
-                                    IconButton(
+                                    ElevatedButton.icon(
                                       icon: Icon(
                                         Icons.delete,
                                         color: Colors.red,
+                                        size: 18,
+                                      ),
+                                      label: Text('Delete'),
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.red,
+                                        backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                                       ),
                                       onPressed: () async {
                                         await deleteQuotationItem(item.id);
@@ -762,15 +782,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ],
                                 ),
-                              ),
-                            );
-                          },
-                        )
-                        : const SizedBox(height: 30),
-              ),
-
-              // Preview PDF Button
-
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+                    : const SizedBox(height: 30, child: Center(child: Text("No items added yet."))),
+              )
             ],
           ),
         ),

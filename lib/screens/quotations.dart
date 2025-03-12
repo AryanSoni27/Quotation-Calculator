@@ -72,8 +72,7 @@ class _QuotationsState extends State<Quotations> {
     final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
       appBar: AppBar(title: const Text("Saved Estimations")),
-      body:
-          _isLoading
+      body: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _quotations.isEmpty
               ? const Center(child: Text("No quotations found"))
