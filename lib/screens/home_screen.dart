@@ -23,14 +23,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   final FormController formController = FormController();
   List<QuotationItem> items = [];
   List<Map<String, dynamic>> allQuotationItems = [];
   DBHelper dbRef = DBHelper.instance;
 
   List<ClientDetails> clients = [];
-
 
   bool _customerNameValid = true;
   bool _dateValid = true;
@@ -61,13 +59,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (clientJsonList != null) {
       setState(() {
-        clients = clientJsonList
-            .map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString)))
-            .toList();
+        clients =
+            clientJsonList
+                .map(
+                  (jsonString) =>
+                      ClientDetails.fromJson(jsonDecode(jsonString)),
+                )
+                .toList();
       });
     }
   }
-
 
   Future<void> saveSelectedCustomer(String name) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -343,25 +344,31 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: clients.map((client) => ListTile(
-                title: Text("${client.firstName} ${client.lastName}"),
-                onTap: () {
-                  setState(() {
-                    formController.customerNameController.text =
-                    "${client.firstName} ${client.lastName}";
-                    _customerNameValid = true;
-                  });
-                  Navigator.pop(context);
-                  saveSelectedCustomer("${client.firstName} ${client.lastName}");
-                },
-              )).toList(),
+              children:
+                  clients
+                      .map(
+                        (client) => ListTile(
+                          title: Text("${client.firstName} ${client.lastName}"),
+                          onTap: () {
+                            setState(() {
+                              formController.customerNameController.text =
+                                  "${client.firstName} ${client.lastName}";
+                              _customerNameValid = true;
+                            });
+                            Navigator.pop(context);
+                            saveSelectedCustomer(
+                              "${client.firstName} ${client.lastName}",
+                            );
+                          },
+                        ),
+                      )
+                      .toList(),
             ),
           ),
         );
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -520,285 +527,316 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 10),
               Row(
-                  children: [
-                    if (items.isNotEmpty)
-                      Text("Added Items:-", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDarkMode ? Colors.white : Colors.black87)),
-                    SizedBox(width: 44),
-                    if (items.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // Preview PDF Button
-                            Column(
-                              children: [
-                                InkWell(
-                                  onTap: () async {
-                                    if (await validateFields()) {
-                                      generatePdf(
-                                        customerName:
-                                        formController
-                                            .customerNameController
-                                            .text,
-                                        date: formController.dateController.text,
-                                        projectName:
-                                        formController.projectNameController.text,
-                                        mobileNumber:
-                                        formController
-                                            .mobileNumberController
-                                            .text,
-                                        items: items,
-                                      );
-                                    }
-                                  },
-                                  child: Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.shade300,
-                                          spreadRadius: 0.5,
-                                          blurRadius: 5,
-                                          offset: Offset(2, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.picture_as_pdf,
-                                        size: 30,
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                // const SizedBox(height: 8),
-                                // Text(
-                                //   "Preview",
-                                //   style: TextStyle(
-                                //     fontSize: 14,
-                                //     fontWeight: FontWeight.w500,
-                                //     color: isDarkMode ? Colors.white : Colors.black87,
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                            SizedBox(width: 30),
-                            // Save Quotation Button
-                            Column(
-                              children: [
-                                InkWell(
-                                  onTap: () async {
-                                    // Validate all fields before generating PDF
-                                    if (await validateFields()) {
-                                      // Calculate total amount
-                                      double totalAmount = items.fold(
-                                        0,
-                                            (sum, item) => sum + item.totalCost,
-                                      );
-
-                                      // Create quotation object
-                                      final quotation = Quotation(
-                                        id:
-                                        DateTime.now().millisecondsSinceEpoch
-                                            .toString(),
-                                        customerName:
-                                        formController
-                                            .customerNameController
-                                            .text,
-                                        date: formController.dateController.text,
-                                        projectName:
-                                        formController.projectNameController.text,
-                                        mobileNumber:
-                                        formController
-                                            .mobileNumberController
-                                            .text,
-                                        items: List.from(items),
-                                        totalAmount: totalAmount,
-                                      );
-
-                                      // Save to database
-                                      await DBHelperQuotation.instance.saveQuotation(
-                                        quotation,
-                                      );
-
-                                      // Show success message
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Quotation saved successfully!',
-                                          ),
-                                          backgroundColor: Colors.green,
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-
-                                      // First clear database items
-                                      await dbRef.deleteAllQuotationItems();
-
-                                      // Then clear the UI state
-                                      setState(() {
-                                        formController.customerNameController.clear();
-                                        formController.dateController.clear();
-                                        formController.projectNameController.clear();
-                                        formController.mobileNumberController.clear();
-                                        items.clear(); // Clear the items list
-                                      });
-
-                                      // Force refresh items from database to ensure UI is in sync
-                                      getQuotationItems();
-                                    }
-                                  },
-                                  child: Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.shade300,
-                                          spreadRadius: 0.5,
-                                          blurRadius: 5,
-                                          offset: Offset(2, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.save,
-                                        size: 30,
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                // const SizedBox(height: 8),
-                                // Text(
-                                //   "Save",
-                                //   style: TextStyle(
-                                //     fontSize: 14,
-                                //     fontWeight: FontWeight.w500,
-                                //     color: isDarkMode ? Colors.white : Colors.black87,
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                          ],
-                        ),
+                children: [
+                  if (items.isNotEmpty)
+                    Text(
+                      "Added Items:-",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black87,
                       ),
-                  ]
-                ),
-              SizedBox(height: 10),
-              Expanded(
-                child: items.isNotEmpty
-                    ? ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      child: ExpansionTile(
-                        title: Text(
-                          item.itemName,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})',
-                          style: TextStyle(fontSize: 11),
-                        ),
+                    ),
+                  SizedBox(width: 44),
+                  if (items.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 3),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Quantity: ${item.quantity}'),
-                                Text(
-                                  'Rate: ${item.rate.toStringAsFixed(2)}',
-                                ),
-                                Text(
-                                  'Total: ${item.totalCost.toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                          // Preview PDF Button
+                          Column(
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  if (await validateFields()) {
+                                    generatePdf(
+                                      customerName:
+                                          formController
+                                              .customerNameController
+                                              .text,
+                                      date: formController.dateController.text,
+                                      projectName:
+                                          formController
+                                              .projectNameController
+                                              .text,
+                                      mobileNumber:
+                                          formController
+                                              .mobileNumberController
+                                              .text,
+                                      items: items,
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.shade300,
+                                        spreadRadius: 0.5,
+                                        blurRadius: 5,
+                                        offset: Offset(2, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.picture_as_pdf,
+                                      size: 30,
+                                      color: Colors.blue,
+                                    ),
                                   ),
                                 ),
-                                SizedBox(height: 12),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    // Edit Button
-                                    ElevatedButton.icon(
-                                      icon: Icon(
-                                        Icons.edit,
-                                        color: isDarkMode ? Colors.white : Colors.black,
-                                        size: 18,
+                              ),
+                              // const SizedBox(height: 8),
+                              // Text(
+                              //   "Preview",
+                              //   style: TextStyle(
+                              //     fontSize: 14,
+                              //     fontWeight: FontWeight.w500,
+                              //     color: isDarkMode ? Colors.white : Colors.black87,
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                          SizedBox(width: 30),
+                          // Save Quotation Button
+                          Column(
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  // Validate all fields before generating PDF
+                                  if (await validateFields()) {
+                                    // Calculate total amount
+                                    double totalAmount = items.fold(
+                                      0,
+                                      (sum, item) => sum + item.totalCost,
+                                    );
+
+                                    // Create quotation object
+                                    final quotation = Quotation(
+                                      id:
+                                          DateTime.now().millisecondsSinceEpoch
+                                              .toString(),
+                                      customerName:
+                                          formController
+                                              .customerNameController
+                                              .text,
+                                      date: formController.dateController.text,
+                                      projectName:
+                                          formController
+                                              .projectNameController
+                                              .text,
+                                      mobileNumber:
+                                          formController
+                                              .mobileNumberController
+                                              .text,
+                                      items: List.from(items),
+                                      totalAmount: totalAmount,
+                                    );
+
+                                    // Save to database
+                                    await DBHelperQuotation.instance
+                                        .saveQuotation(quotation);
+
+                                    // Show success message
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Quotation saved successfully!',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                        duration: Duration(seconds: 2),
                                       ),
-                                      label: Text('Edit'),
-                                      style: ElevatedButton.styleFrom(
-                                        foregroundColor: isDarkMode ? Colors.white : Colors.black,
-                                        backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
+                                    );
+
+                                    // First clear database items
+                                    await dbRef.deleteAllQuotationItems();
+
+                                    // Then clear the UI state
+                                    setState(() {
+                                      formController.customerNameController
+                                          .clear();
+                                      formController.dateController.clear();
+                                      formController.projectNameController
+                                          .clear();
+                                      formController.mobileNumberController
+                                          .clear();
+                                      items.clear(); // Clear the items list
+                                    });
+
+                                    // Force refresh items from database to ensure UI is in sync
+                                    getQuotationItems();
+                                  }
+                                },
+                                child: Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.shade300,
+                                        spreadRadius: 0.5,
+                                        blurRadius: 5,
+                                        offset: Offset(2, 4),
                                       ),
-                                      onPressed: () async {
-                                        final updatedItem = await showBottomPopup(
-                                          context,
-                                          existingItem: item,
-                                        );
-                                        if (updatedItem != null) {
-                                          await updateQuotationItem(
-                                            item,
-                                            updatedItem,
-                                          ); // Pass old and new item
-                                        }
-                                      },
+                                    ],
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.save,
+                                      size: 30,
+                                      color: Colors.blue,
                                     ),
-                                    SizedBox(width: 12),
-                                    //Delete Button
-                                    ElevatedButton.icon(
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                        size: 18,
-                                      ),
-                                      label: Text('Delete'),
-                                      style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.red,
-                                        backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
-                                      ),
-                                      onPressed: () async {
-                                        await deleteQuotationItem(item.id);
-                                      },
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              // const SizedBox(height: 8),
+                              // Text(
+                              //   "Save",
+                              //   style: TextStyle(
+                              //     fontSize: 14,
+                              //     fontWeight: FontWeight.w500,
+                              //     color: isDarkMode ? Colors.white : Colors.black87,
+                              //   ),
+                              // ),
+                            ],
                           ),
                         ],
                       ),
-                    );
-                  },
-                )
-                    : const SizedBox(height: 30, child: Center(child: Text("No items added yet."))),
-              )
+                    ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Expanded(
+                child:
+                    items.isNotEmpty
+                        ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            return Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              margin: EdgeInsets.symmetric(vertical: 8),
+                              child: ExpansionTile(
+                                title: Text(
+                                  item.itemName,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(
+                                  'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})',
+                                  style: TextStyle(fontSize: 11.5),
+                                ),
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      // vertical: 3,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('Quantity: ${item.quantity}'),
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // Edit Button
+                                                IconButton(
+                                                  icon: Icon(
+                                                    Icons.edit,
+                                                    color:
+                                                        isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () async {
+                                                    final updatedItem =
+                                                        await showBottomPopup(
+                                                          context,
+                                                          existingItem: item,
+                                                        );
+                                                    if (updatedItem != null) {
+                                                      await updateQuotationItem(
+                                                        item,
+                                                        updatedItem,
+                                                      );
+                                                    }
+                                                  },
+                                                  padding: EdgeInsets.all(4),
+                                                  constraints: BoxConstraints(),
+                                                ),
+                                                SizedBox(width: 4),
+                                                // Delete Button
+                                                IconButton(
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () async {
+                                                    await deleteQuotationItem(
+                                                      item.id,
+                                                    );
+                                                  },
+                                                  padding: EdgeInsets.all(4),
+                                                  constraints: BoxConstraints(),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+
+                                        // Rate info
+                                        Text(
+                                          'Rate: ${item.rate.toStringAsFixed(2)}',
+                                        ),
+
+                                        SizedBox(height: 11),
+
+                                        Text(
+                                          'Total: ${item.totalCost.toStringAsFixed(2)}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                        : const SizedBox(
+                          height: 30,
+                          child: Center(child: Text("No items added yet.")),
+                        ),
+              ),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          // Action to add a new item
+          // Floating button to add a new item
           final result = await showBottomPopup(context);
           if (result != null) {
             await addQuotationItem(result); // Save to database
@@ -809,11 +847,14 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: Icon(Icons.add, color: Colors.blue),
         label: Text(
           "Item",
-          style: TextStyle(color: Colors.black, fontSize: 16),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.endFloat, // Bottom right position
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
