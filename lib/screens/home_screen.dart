@@ -23,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String selectedCustomerMobileNumber = "";
   final FormController formController = FormController();
   List<QuotationItem> items = [];
   List<Map<String, dynamic>> allQuotationItems = [];
@@ -34,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _dateValid = true;
   bool _projectNameValid = true;
   bool _mobileNumberValid = true;
-  bool _showDropdown = false;
 
   String selectedCustomer = "";
 
@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setupTextFieldListeners();
     _setupFocusListeners();
     loadClients();
+    loadSelectedClient();
   }
 
   Future<void> loadClients() async {
@@ -60,38 +61,37 @@ class _HomeScreenState extends State<HomeScreen> {
     if (clientJsonList != null) {
       setState(() {
         clients =
-            clientJsonList
-                .map(
-                  (jsonString) =>
-                  ClientDetails.fromJson(jsonDecode(jsonString)),
-            )
-                .toList();
+            clientJsonList.map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString)),).toList();
       });
     }
   }
 
-  Future<void> saveSelectedCustomer(String name) async {
+  Future<void> loadSelectedClient() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selected_customer', name);
+    String? savedName = prefs.getString('selected_customer');
+    String? savedMobile = prefs.getString('selected_mobile');
+
+    if (savedName != null && savedMobile != null) {
+      setState(() {
+        formController.customerNameController.text = savedName;
+        selectedCustomerMobileNumber = savedMobile;
+      });
+    }
   }
 
-  void clearFormFields() {
-    setState(() {
-      formController.customerNameController.clear();
-      _customerNameValid = false;
-    });
+  Future<void> saveSelectedClient(String name, String mobile) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_customer', name);
+    await prefs.setString('selected_mobile', mobile);
   }
 
   Future<void> loadCustomerDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      formController.customerNameController.text =
-          prefs.getString('customer_name') ?? '';
-      formController.mobileNumberController.text =
-          prefs.getString('mobile_number') ?? '';
-      formController.projectNameController.text =
-          prefs.getString('project_name') ?? '';
+      formController.customerNameController.text = prefs.getString('customer_name') ?? '';
+      formController.mobileNumberController.text = prefs.getString('mobile_number') ?? '';
+      formController.projectNameController.text = prefs.getString('project_name') ?? '';
       formController.dateController.text = prefs.getString('date') ?? '';
     });
   }
@@ -143,10 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: item['shape'],
         length: (item['length'] as num).toDouble(),
         width: (item['width'] as num).toDouble(),
-        height:
-        item['height'] != null
-            ? (item['height'] as num).toDouble()
-            : null,
+        height: item['height'] != null ? (item['height'] as num).toDouble() : null,
         squareFeet: (item['square_feet'] as num).toDouble(),
         quantity: item['quantity'] as int,
         rate: (item['rate'] as num).toDouble(),
@@ -230,10 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _customerNameFocusNode.addListener(() {
       if (!_customerNameFocusNode.hasFocus) {
         setState(() {
-          _customerNameValid =
-              formController.customerNameController.text
-                  .trim()
-                  .isNotEmpty;
+          _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
         });
       }
     });
@@ -241,9 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _dateFocusNode.addListener(() {
       if (!_dateFocusNode.hasFocus) {
         setState(() {
-          _dateValid = formController.dateController.text
-              .trim()
-              .isNotEmpty;
+          _dateValid = formController.dateController.text.trim().isNotEmpty;
         });
       }
     });
@@ -251,10 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _projectNameFocusNode.addListener(() {
       if (!_projectNameFocusNode.hasFocus) {
         setState(() {
-          _projectNameValid =
-              formController.projectNameController.text
-                  .trim()
-                  .isNotEmpty;
+          _projectNameValid = formController.projectNameController.text.trim().isNotEmpty;
         });
       }
     });
@@ -262,10 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _mobileNumberFocusNode.addListener(() {
       if (!_mobileNumberFocusNode.hasFocus) {
         setState(() {
-          _mobileNumberValid =
-              formController.mobileNumberController.text
-                  .trim()
-                  .length == 10;
+          _mobileNumberValid = formController.mobileNumberController.text.trim().length == 10;
         });
       }
     });
@@ -273,21 +259,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<bool> validateFields() async {
     setState(() {
-      _customerNameValid =
-          formController.customerNameController.text
-              .trim()
-              .isNotEmpty;
-      _dateValid = formController.dateController.text
-          .trim()
-          .isNotEmpty;
-      _projectNameValid =
-          formController.projectNameController.text
-              .trim()
-              .isNotEmpty;
-      _mobileNumberValid =
-          formController.mobileNumberController.text
-              .trim()
-              .length == 10;
+      _customerNameValid = formController.customerNameController.text.trim().isNotEmpty;
+      _dateValid = formController.dateController.text.trim().isNotEmpty;
+      _projectNameValid = formController.projectNameController.text.trim().isNotEmpty;
     });
 
     bool hasErrors = false;
@@ -352,41 +326,32 @@ class _HomeScreenState extends State<HomeScreen> {
         return Container(
           padding: EdgeInsets.all(10),
           constraints: BoxConstraints(
-            minHeight: 200, // Ensure modal has a minimum height
-            maxHeight: MediaQuery
-                .of(context)
-                .size
-                .height * 0.6, // Limit height
+            minHeight: 200,
+            maxHeight: MediaQuery.of(context).size.height * 0.6,
           ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children:
-              clients
-                  .map(
-                    (client) =>
-                    ListTile(
-                      title: Text("${client.firstName} ${client.lastName}"),
-                      onTap: () {
-                        setState(() {
-                          formController.customerNameController.text =
-                          "${client.firstName} ${client.lastName}";
-                          _customerNameValid = true;
-                        });
-                        Navigator.pop(context);
-                        saveSelectedCustomer(
-                          "${client.firstName} ${client.lastName}",
-                        );
-                      },
-                    ),
-              )
-                  .toList(),
+              children: clients.map((client) => ListTile(
+                title: Text("${client.firstName} ${client.lastName}"),
+                onTap: () {
+                  setState(() {
+                    formController.customerNameController.text =
+                    "${client.firstName} ${client.lastName}";
+                    selectedCustomerMobileNumber = client.mobileNumber;
+                  });
+                  saveSelectedClient("${client.firstName} ${client.lastName}", client.mobileNumber); // ✅ Save selected client
+                  Navigator.pop(context);
+                },
+              )).toList(),
             ),
           ),
         );
       },
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -510,46 +475,46 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 20),
 
               // Mobile Number Field
-              TextField(
-                controller: formController.mobileNumberController,
-                textAlign: TextAlign.left,
-                focusNode: _mobileNumberFocusNode,
-                keyboardType: TextInputType.phone,
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(10),
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.phone),
-                  prefixIconColor: Colors.blue,
-                  labelText: "Mobile Number",
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: _mobileNumberValid ? Colors.blue : Colors.red,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 2,
-                      color: _mobileNumberValid ? Colors.blue : Colors.red,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  // errorText: _mobileNumberValid ? null : "Mobile number is required",
-                  contentPadding: EdgeInsets.all(10),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _mobileNumberValid =
-                        value
-                            .trim()
-                            .length ==
-                            10; // Valid only if exactly 10 digits
-                  });
-                },
-              ),
-              SizedBox(height: 10),
+              // TextField(
+              //   controller: formController.mobileNumberController,
+              //   textAlign: TextAlign.left,
+              //   focusNode: _mobileNumberFocusNode,
+              //   keyboardType: TextInputType.phone,
+              //   inputFormatters: [
+              //     LengthLimitingTextInputFormatter(10),
+              //     FilteringTextInputFormatter.digitsOnly,
+              //   ],
+              //   decoration: InputDecoration(
+              //     prefixIcon: Icon(Icons.phone),
+              //     prefixIconColor: Colors.blue,
+              //     labelText: "Mobile Number",
+              //     enabledBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(
+              //         color: _mobileNumberValid ? Colors.blue : Colors.red,
+              //       ),
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(
+              //         width: 2,
+              //         color: _mobileNumberValid ? Colors.blue : Colors.red,
+              //       ),
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     // errorText: _mobileNumberValid ? null : "Mobile number is required",
+              //     contentPadding: EdgeInsets.all(10),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       _mobileNumberValid =
+              //           value
+              //               .trim()
+              //               .length ==
+              //               10; // Valid only if exactly 10 digits
+              //     });
+              //   },
+              // ),
+              // SizedBox(height: 10),
               Row(
                 children: [
                   // if (items.isNotEmpty)
@@ -561,22 +526,114 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: isDarkMode ? Colors.white : Colors.black87,
                     ),
                   ),
-                  SizedBox(width: 200),
+                  SizedBox(width: 50),
                   ElevatedButton(
-                    onPressed: () async {
-                      // Floating button to add a new item
-                      final result = await showBottomPopup(context);
-                      if (result != null) {
-                        await addQuotationItem(result); // Save to database
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(10),
-                      backgroundColor: Colors.white,
+                      onPressed: () async {
+                        // Floating button to add a new item
+                        final result = await showBottomPopup(context);
+                        if (result != null) {
+                          await addQuotationItem(result); // Save to database
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(10),
+                        backgroundColor: Colors.white,
+                      ),
+                      child: const Icon(Icons.add, color: Colors.blue,size: 25),
                     ),
-                    child: const Icon(Icons.add, color: Colors.blue,size: 25),
+
+                  //Button to preview pdf of quotation
+                  if(items.isNotEmpty)
+                  Expanded(
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            // Floating button to add a new item
+                            if (await validateFields()) {
+                              generatePdf(
+                                customerName: formController.customerNameController.text,
+                                date: formController.dateController.text,
+                                projectName: formController.projectNameController.text,
+                                mobileNumber: selectedCustomerMobileNumber,
+                                items: items,
+                              );
+                            }
+                          },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(10),
+                          backgroundColor: Colors.white,
+                        ),
+                        child: const Icon(Icons.picture_as_pdf, color: Colors.blue,size: 25),
+                      ),
                   ),
+
+                  //Button to save estimation
+                  if(items.isNotEmpty)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (await validateFields()) {
+                          // Calculate total amount
+                          double totalAmount = items.fold(
+                            0,
+                                (sum, item) => sum + item.totalCost,
+                          );
+
+                          // Create quotation object
+                          final quotation = Quotation(
+                            id: DateTime.now().millisecondsSinceEpoch.toString(),
+                            customerName: formController.customerNameController.text,
+                            date: formController.dateController.text,
+                            projectName: formController.projectNameController.text,
+                            mobileNumber: formController.mobileNumberController.text,
+                            items: List.from(items),
+                            totalAmount: totalAmount,
+                          );
+
+                          // Save to database
+                          await DBHelperQuotation.instance.saveQuotation(quotation);
+
+                          // Show success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Quotation saved successfully!',
+                              ),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+
+                          // First clear database items
+                          await dbRef.deleteAllQuotationItems();
+
+                          // Then clear the UI state
+                          setState(() {
+                            formController.customerNameController.clear();
+                            formController.dateController.clear();
+                            formController.projectNameController.clear();
+                            formController.mobileNumberController.clear();
+                            selectedCustomerMobileNumber = "";
+                            items.clear();
+                          });
+
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('selected_customer');
+                          await prefs.remove('selected_mobile');
+
+                          // Force refresh items from database to ensure UI is in sync
+                          getQuotationItems();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(10),
+                        backgroundColor: Colors.white,
+                      ),
+                      child: const Icon(Icons.save, color: Colors.blue,size: 25),
+                    ),
+                  )
                 ],
               ),
               SizedBox(height: 5),
@@ -696,90 +753,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if(items.isNotEmpty)
-          FloatingActionButton(
-            onPressed: () async {
-              // Floating button to add a new item
-              if (await validateFields()) {
-                generatePdf(
-                  customerName: formController.customerNameController.text,
-                  date: formController.dateController.text,
-                  projectName: formController.projectNameController.text,
-                  mobileNumber: formController.mobileNumberController.text,
-                  items: items,
-                );
-              }
-            },
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: const Icon(Icons.picture_as_pdf, color: Colors.blue),
-          ),
-          const SizedBox(height: 16),
-          // Add spacing between buttons
-          if(items.isNotEmpty)
-          FloatingActionButton(
-            onPressed: () async {
-              if (await validateFields()) {
-                // Calculate total amount
-                double totalAmount = items.fold(
-                  0,
-                      (sum, item) => sum + item.totalCost,
-                );
-
-                // Create quotation object
-                final quotation = Quotation(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  customerName: formController.customerNameController.text,
-                  date: formController.dateController.text,
-                  projectName: formController.projectNameController.text,
-                  mobileNumber: formController.mobileNumberController.text,
-                  items: List.from(items),
-                  totalAmount: totalAmount,
-                );
-
-                // Save to database
-                await DBHelperQuotation.instance.saveQuotation(quotation);
-
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Quotation saved successfully!',
-                    ),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-
-                // First clear database items
-                await dbRef.deleteAllQuotationItems();
-
-                // Then clear the UI state
-                setState(() {
-                  formController.customerNameController.clear();
-                  formController.dateController.clear();
-                  formController.projectNameController.clear();
-                  formController.mobileNumberController.clear();
-                  items.clear(); // Clear the items list
-                });
-
-                // Force refresh items from database to ensure UI is in sync
-                getQuotationItems();
-              }
-            },
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: const Icon(Icons.save, color: Colors.blue),
-          ),
-        ],
       ),
     );
   }
