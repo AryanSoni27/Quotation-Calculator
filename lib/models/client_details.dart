@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 class ClientDetails {
@@ -41,7 +39,6 @@ class ClientDetails {
       state: json['state'],
     );
   }
-
 }
 
 class ClientDetailsFormController {

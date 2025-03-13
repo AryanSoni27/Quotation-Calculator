@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
+import '../models/client_details.dart';
 import '../models/quotation_screen.dart';
 import '../models/quotation_item.dart';
 import '../data/db_helper_quotation_screen.dart';
@@ -8,6 +12,16 @@ import '../services/pdf_generator.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+
+Future<List<ClientDetails>> loadClients() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String>? clientJsonList = prefs.getStringList('client_list');
+
+  if (clientJsonList != null) {
+    return clientJsonList.map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString))).toList();
+  }
+  return [];
+}
 
 class Quotations extends StatefulWidget {
   const Quotations({super.key});
@@ -22,6 +36,20 @@ class _QuotationsState extends State<Quotations> {
   List<QuotationItem> items = [];
   bool _isLoading = true;
 
+  Future<ClientDetails?> getClientDetailsByName(String customerName) async {
+    List<ClientDetails> clients = await loadClients(); // Load client list first
+    for (var client in clients) {
+      String fullName = "${client.firstName} ${client.lastName}";
+      if (fullName.toLowerCase() == customerName.toLowerCase()) {
+        return client;
+      }
+    }
+    return null;
+  }
+
+
+
+
   @override
   void initState() {
     super.initState();
@@ -35,23 +63,25 @@ class _QuotationsState extends State<Quotations> {
 
   Future<String?> generateAndOpenPdf(Quotation quotation) async {
     try {
+      ClientDetails? client = await getClientDetailsByName(quotation.customerName);
       await generatePdf(
         customerName: quotation.customerName,
         date: quotation.date,
         projectName: quotation.projectName,
-        mobileNumber: quotation.mobileNumber,
+        mobileNumber: client != null ? client.mobileNumber : quotation.mobileNumber,
+        address: client != null ? "${client.streetAddress}, ${client.city}, ${client.state}" : "N/A", // Correct address
         items: quotation.items,
       );
-      // PDF is automatically opened by the generatePdf function
       return null;
     } catch (e) {
       print("Error opening PDF: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Failed to open PDF: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to open PDF: $e")));
       return null;
     }
   }
+
+
+
 
   Future<void> _loadQuotations() async {
     setState(() {
@@ -71,7 +101,7 @@ class _QuotationsState extends State<Quotations> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
-      appBar: AppBar(title: const Text("Saved Estimations")),
+      // appBar: AppBar(title: const Text("Saved Estimations")),
       body: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _quotations.isEmpty

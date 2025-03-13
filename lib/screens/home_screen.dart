@@ -15,6 +15,16 @@ import '../services/pdf_generator.dart';
 import '../widgets/bottom_popup_quotation_item.dart';
 import 'package:uuid/uuid.dart';
 
+Future<List<ClientDetails>> loadClientsAddress() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String>? clientJsonList = prefs.getStringList('client_list');
+
+  if (clientJsonList != null) {
+    return clientJsonList.map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString))).toList();
+  }
+  return [];
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -52,6 +62,17 @@ class _HomeScreenState extends State<HomeScreen> {
     _setupFocusListeners();
     loadClients();
     loadSelectedClient();
+  }
+
+  Future<ClientDetails?> getClientDetailsByName(String customerName) async {
+    List<ClientDetails> clients = await loadClientsAddress();
+    for (var client in clients) {
+      String fullName = "${client.firstName} ${client.lastName}";
+      if (fullName.toLowerCase() == customerName.toLowerCase()) {
+        return client;
+      }
+    }
+    return null;
   }
 
   Future<void> loadClients() async {
@@ -292,7 +313,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       hasErrors = true;
     }
-
     return !hasErrors;
   }
 
@@ -527,21 +547,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(width: 50),
-                  ElevatedButton(
-                      onPressed: () async {
-                        // Floating button to add a new item
-                        final result = await showBottomPopup(context);
-                        if (result != null) {
-                          await addQuotationItem(result); // Save to database
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(10),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: const Icon(Icons.add, color: Colors.blue,size: 25),
-                    ),
+
 
                   //Button to preview pdf of quotation
                   if(items.isNotEmpty)
@@ -550,11 +556,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () async {
                             // Floating button to add a new item
                             if (await validateFields()) {
+                              ClientDetails? client = await getClientDetailsByName(formController.customerNameController.text); // Use correct name field
+
                               generatePdf(
                                 customerName: formController.customerNameController.text,
                                 date: formController.dateController.text,
                                 projectName: formController.projectNameController.text,
                                 mobileNumber: selectedCustomerMobileNumber,
+                                address: client != null
+                                    ? "${client.streetAddress}, ${client.city}, ${client.state}"
+                                    : "N/A", // Ensure a valid address is passed
                                 items: items,
                               );
                             }
@@ -633,7 +644,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: const Icon(Icons.save, color: Colors.blue,size: 25),
                     ),
-                  )
+                  ),
+
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        // Floating button to add a new item
+                        final result = await showBottomPopup(context);
+                        if (result != null) {
+                          await addQuotationItem(result); // Save to database
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(10),
+                        backgroundColor: Colors.white,
+                      ),
+                      child: const Icon(Icons.add, color: Colors.blue,size: 25),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 5),

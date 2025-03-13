@@ -16,6 +16,7 @@ Future<void> generatePdf({
   required String date,
   required String projectName,
   required String mobileNumber,
+  required String address,
   required List<QuotationItem> items,
 }) async {
   try {
@@ -63,15 +64,22 @@ Future<void> generatePdf({
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        "Customer Name: $customerName",
+                        "Customer : $customerName",
                         style: pw.TextStyle(fontSize: 12, font: ttf),
                       ),
+                      pw.SizedBox(height: 5),
                       pw.Text(
-                        "Project Name: $projectName",
+                        "Project : $projectName",
                         style: pw.TextStyle(fontSize: 12, font: ttf),
                       ),
+                      pw.SizedBox(height: 5),
                       pw.Text(
-                        "Mobile: $mobileNumber",
+                        "Address: $address", // Add this line for the address
+                        style: pw.TextStyle(fontSize: 12, font: ttf),
+                      ),
+                      pw.SizedBox(height: 5),
+                      pw.Text(
+                        "Mobile : $mobileNumber",
                         style: pw.TextStyle(fontSize: 12, font: ttf),
                       ),
                     ],
@@ -79,7 +87,7 @@ Future<void> generatePdf({
 
 
                   pw.Text(
-                    "Date: $date",
+                    "Date : $date",
                     style: pw.TextStyle(fontSize: 12, font: ttf),
                   ),
                 ],
@@ -110,7 +118,7 @@ Future<void> generatePdf({
                     ("${index + 1}"),
                     items[index].itemName,
                     "${items[index].length} × ${items[index].width}${items[index].height != null ? ' × ${items[index].height}' : ''} ${items[index].unit}",
-                    "${(items[index].squareFeet.toStringAsFixed(2))} sq ft",
+                    (items[index].squareFeet.toStringAsFixed(2)),
                     (items[index].quantity.toString()),
                     (items[index].rate.toStringAsFixed(2)),
                     (items[index].totalCost.toStringAsFixed(2)),
@@ -118,9 +126,13 @@ Future<void> generatePdf({
                 ),
                 border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
                 cellStyle: pw.TextStyle(fontSize: 12, font: ttf),
-                // cellAlignment: <int, pw.Alignment>{
-                //   0: pw.Alignment.center,
-                // },
+                cellAlignments: {
+                  0: pw.Alignment.center,
+                  3: pw.Alignment.center,
+                  4: pw.Alignment.center,
+                  5: pw.Alignment.center,
+                  6: pw.Alignment.center,
+                },
               ),
 
               pw.SizedBox(height: 10),
