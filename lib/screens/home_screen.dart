@@ -564,9 +564,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               date: formController.dateController.text,
                               projectName: formController.projectNameController.text,
                               mobileNumber: selectedCustomerMobileNumber,
-                              address: client != null
-                                  ? "${client.streetAddress}, ${client.city}, ${client.state}"
-                                  : "N/A",
+                              streetAddress: client?.streetAddress ?? "N/A",
+                              city: client?.city ?? "N/A",
+                              state: client?.state ?? "N/A",
+                              pinCode: client?.pinCode ?? "N/A",
                               items: items,
                             );
                           }

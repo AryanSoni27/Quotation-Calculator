@@ -69,7 +69,10 @@ class _QuotationsState extends State<Quotations> {
         date: quotation.date,
         projectName: quotation.projectName,
         mobileNumber: client != null ? client.mobileNumber : quotation.mobileNumber,
-        address: client != null ? "${client.streetAddress}, ${client.city}, ${client.state}" : "N/A", // Correct address
+        streetAddress: client?.streetAddress ?? "N/A",
+        city: client?.city ?? "N/A",
+        state: client?.state ?? "N/A",
+        pinCode: client?.pinCode ?? "N/A",
         items: quotation.items,
       );
       return null;

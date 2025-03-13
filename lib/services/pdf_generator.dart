@@ -1,37 +1,24 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import '../main.dart';
 import '../models/quotation_item.dart';
-
-
 
 Future<void> generatePdf({
   required String customerName,
   required String date,
   required String projectName,
   required String mobileNumber,
-  required String address,
+  required String streetAddress,
+  required String city,
+  required String state,
+  required String pinCode,
   required List<QuotationItem> items,
 }) async {
   try {
     final pdf = pw.Document();
-
-    // Load custom font
-    pw.Font? ttf;
-    try {
-      final fontData = await rootBundle.load(
-        "assets/fonts/OpenSans-Regular.ttf",
-      );
-      ttf = pw.Font.ttf(fontData.buffer.asByteData());
-    } catch (e) {
-      print("Error fetching font");
-    }
 
     // Calculate grand total
     double grandTotal = items.fold(0.0, (sum, item) => sum + item.totalCost);
@@ -63,54 +50,41 @@ Future<void> generatePdf({
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text(
-                        "Customer : $customerName",
-                        style: pw.TextStyle(fontSize: 12, font: ttf),
-                      ),
+                      pw.Text("Customer : $customerName", style: pw.TextStyle(fontSize: 12)),
                       pw.SizedBox(height: 5),
-                      pw.Text(
-                        "Project : $projectName",
-                        style: pw.TextStyle(fontSize: 12, font: ttf),
-                      ),
+                      pw.Text("Project : $projectName", style: pw.TextStyle(fontSize: 12)),
                       pw.SizedBox(height: 5),
-                      pw.Text(
-                        "Address : $address", // Add this line for the address
-                        style: pw.TextStyle(fontSize: 12, font: ttf),
+
+                      // Address Formatting
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+
+                          pw.Text("Address: $streetAddress,", style: pw.TextStyle(fontSize: 12, )),
+                          pw.SizedBox(height: 1),
+
+                          pw.Text("$city - $pinCode,", style: pw.TextStyle(fontSize: 12)),
+                          pw.SizedBox(height: 1),
+
+                          pw.Text(state, style: pw.TextStyle(fontSize: 12)),
+                        ],
                       ),
+
                       pw.SizedBox(height: 5),
-                      pw.Text(
-                        "Mobile : $mobileNumber",
-                        style: pw.TextStyle(fontSize: 12, font: ttf),
-                      ),
+                      pw.Text("Mobile : $mobileNumber", style: pw.TextStyle(fontSize: 12)),
                     ],
                   ),
 
-
-                  pw.Text(
-                    "Date : $date",
-                    style: pw.TextStyle(fontSize: 12, font: ttf),
-                  ),
+                  pw.Text("Date : $date", style: pw.TextStyle(fontSize: 12)),
                 ],
               ),
 
               pw.SizedBox(height: 10),
 
-              //Quotation Table
+              // Quotation Table
               pw.TableHelper.fromTextArray(
-                headers: [
-                  "S.No.",
-                  "Item",
-                  "Measurements",
-                  "Square Feet",
-                  "Quantity",
-                  "Rate",
-                  "Total",
-                ],
-                headerStyle: pw.TextStyle(
-                  fontSize: 12,
-                  fontWeight: pw.FontWeight.bold,
-                  color: PdfColors.white,
-                ),
+                headers: ["S.No.", "Item", "Measurements", "Square Feet", "Quantity", "Rate", "Total"],
+                headerStyle: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.white),
                 headerDecoration: pw.BoxDecoration(color: PdfColors.blue),
                 data: List.generate(
                   items.length,
@@ -125,7 +99,7 @@ Future<void> generatePdf({
                   ],
                 ),
                 border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
-                cellStyle: pw.TextStyle(fontSize: 12, font: ttf),
+                cellStyle: pw.TextStyle(fontSize: 12),
                 cellAlignments: {
                   0: pw.Alignment.center,
                   3: pw.Alignment.center,

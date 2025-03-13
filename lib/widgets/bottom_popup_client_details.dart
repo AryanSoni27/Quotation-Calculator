@@ -75,7 +75,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         focusedBorder : OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: isMobileValid ? Colors.blue : Colors.red,
                             width: 2,
                           ),
                         ),
@@ -98,8 +98,8 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
-                            width: 1,
+                            color: isMobileValid ? Colors.blue : Colors.red,
+                            width: 2,
                           ),
                         ),
                         focusedBorder : OutlineInputBorder(
@@ -175,7 +175,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.home_filled),
                         prefixIconColor: Colors.blue,
-                        labelText: "Street Address",
+                        labelText: "Address",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -189,7 +189,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         focusedBorder : OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: isMobileValid ? Colors.blue : Colors.red,
                             width: 2,
                           ),
                         ),
@@ -223,7 +223,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: Colors.blue,
+                                  color: isMobileValid ? Colors.blue : Colors.red,
                                   width: 2,
                                 ),
                               ),
@@ -248,8 +248,8 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: Colors.blue,
-                                  width: 1,
+                                  color: isMobileValid ? Colors.blue : Colors.red,
+                                  width: 2,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -282,8 +282,8 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
-                            width: 1,
+                            color: isMobileValid ? Colors.blue : Colors.red,
+                            width: 2,
                           ),
                         ),
                         focusedBorder : OutlineInputBorder(
