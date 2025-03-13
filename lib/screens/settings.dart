@@ -24,9 +24,10 @@ class _SettingsState extends State<Settings> {
             title: const Text("Dark Mode"),
             trailing: Switch(
               value: themeProvider.isDarkMode,
-              onChanged: (bool value) {
+              onChanged: (bool value) async {
                 themeProvider.toggleDarkMode();
               },
+
             ),
           ),
           // ListTile(

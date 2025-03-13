@@ -539,129 +539,119 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   // if (items.isNotEmpty)
                   Text(
-                    "Items:-",
+                    "Items :",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: isDarkMode ? Colors.white : Colors.black87,
                     ),
                   ),
-                  SizedBox(width: 50),
-
+                  SizedBox(width: 55),
 
                   //Button to preview pdf of quotation
-                  if(items.isNotEmpty)
-                  Expanded(
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            // Floating button to add a new item
-                            if (await validateFields()) {
-                              ClientDetails? client = await getClientDetailsByName(formController.customerNameController.text); // Use correct name field
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // Ensures fixed positions
+                    children: [
+                      // PDF Button (Hidden when no items)
+                      items.isNotEmpty
+                          ? ElevatedButton(
+                        onPressed: () async {
+                          if (await validateFields()) {
+                            ClientDetails? client = await getClientDetailsByName(formController.customerNameController.text);
 
-                              generatePdf(
-                                customerName: formController.customerNameController.text,
-                                date: formController.dateController.text,
-                                projectName: formController.projectNameController.text,
-                                mobileNumber: selectedCustomerMobileNumber,
-                                address: client != null
-                                    ? "${client.streetAddress}, ${client.city}, ${client.state}"
-                                    : "N/A", // Ensure a valid address is passed
-                                items: items,
-                              );
-                            }
-                          },
+                            generatePdf(
+                              customerName: formController.customerNameController.text,
+                              date: formController.dateController.text,
+                              projectName: formController.projectNameController.text,
+                              mobileNumber: selectedCustomerMobileNumber,
+                              address: client != null
+                                  ? "${client.streetAddress}, ${client.city}, ${client.state}"
+                                  : "N/A",
+                              items: items,
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(10),
                           backgroundColor: Colors.white,
                         ),
-                        child: const Icon(Icons.picture_as_pdf, color: Colors.blue,size: 25),
-                      ),
-                  ),
+                        child: const Icon(Icons.picture_as_pdf, color: Colors.blue, size: 25),
+                      )
+                          : const SizedBox(width: 50), // Placeholder to keep layout fixed
 
-                  //Button to save estimation
-                  if(items.isNotEmpty)
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (await validateFields()) {
-                          // Calculate total amount
-                          double totalAmount = items.fold(
-                            0,
-                                (sum, item) => sum + item.totalCost,
-                          );
+                      SizedBox(width: 15),
+                      // Save Button (Hidden when no items)
+                      items.isNotEmpty
+                          ? ElevatedButton(
+                        onPressed: () async {
+                          if (await validateFields()) {
+                            double totalAmount = items.fold(0, (sum, item) => sum + item.totalCost);
 
-                          // Create quotation object
-                          final quotation = Quotation(
-                            id: DateTime.now().millisecondsSinceEpoch.toString(),
-                            customerName: formController.customerNameController.text,
-                            date: formController.dateController.text,
-                            projectName: formController.projectNameController.text,
-                            mobileNumber: formController.mobileNumberController.text,
-                            items: List.from(items),
-                            totalAmount: totalAmount,
-                          );
+                            final quotation = Quotation(
+                              id: DateTime.now().millisecondsSinceEpoch.toString(),
+                              customerName: formController.customerNameController.text,
+                              date: formController.dateController.text,
+                              projectName: formController.projectNameController.text,
+                              mobileNumber: formController.mobileNumberController.text,
+                              items: List.from(items),
+                              totalAmount: totalAmount,
+                            );
 
-                          // Save to database
-                          await DBHelperQuotation.instance.saveQuotation(quotation);
+                            await DBHelperQuotation.instance.saveQuotation(quotation);
 
-                          // Show success message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Quotation saved successfully!',
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Quotation saved successfully!'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 2),
                               ),
-                              backgroundColor: Colors.green,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
+                            );
 
-                          // First clear database items
-                          await dbRef.deleteAllQuotationItems();
+                            await dbRef.deleteAllQuotationItems();
 
-                          // Then clear the UI state
-                          setState(() {
-                            formController.customerNameController.clear();
-                            formController.dateController.clear();
-                            formController.projectNameController.clear();
-                            formController.mobileNumberController.clear();
-                            selectedCustomerMobileNumber = "";
-                            items.clear();
-                          });
+                            setState(() {
+                              formController.customerNameController.clear();
+                              formController.dateController.clear();
+                              formController.projectNameController.clear();
+                              formController.mobileNumberController.clear();
+                              selectedCustomerMobileNumber = "";
+                              items.clear();
+                            });
 
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.remove('selected_customer');
-                          await prefs.remove('selected_mobile');
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            await prefs.remove('selected_customer');
+                            await prefs.remove('selected_mobile');
 
-                          // Force refresh items from database to ensure UI is in sync
-                          getQuotationItems();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(10),
-                        backgroundColor: Colors.white,
+                            getQuotationItems();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(10),
+                          backgroundColor: Colors.white,
+                        ),
+                        child: const Icon(Icons.save, color: Colors.blue, size: 25),
+                      )
+                          : const SizedBox(width: 50), // Placeholder to keep layout fixed
+
+                      // Add Item Button (Always Visible & Fixed at Rightmost)
+                      SizedBox(width: 15),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final result = await showBottomPopup(context);
+                          if (result != null) {
+                            await addQuotationItem(result);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(10),
+                          backgroundColor: Colors.white,
+                        ),
+                        child: const Icon(Icons.add, color: Colors.blue, size: 25),
                       ),
-                      child: const Icon(Icons.save, color: Colors.blue,size: 25),
-                    ),
-                  ),
-
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        // Floating button to add a new item
-                        final result = await showBottomPopup(context);
-                        if (result != null) {
-                          await addQuotationItem(result); // Save to database
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(10),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: const Icon(Icons.add, color: Colors.blue,size: 25),
-                    ),
+                    ],
                   ),
                 ],
               ),

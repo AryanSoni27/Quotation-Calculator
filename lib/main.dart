@@ -5,6 +5,7 @@ import 'package:quotation/screens/home_screen.dart';
 import 'package:quotation/screens/quotations.dart';
 import 'package:quotation/screens/settings.dart';
 import 'package:quotation/widgets/bottom_navigation_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/quotation_item.dart';
 import 'package:quotation/util/date_picker.dart';
 import 'widgets/bottom_popup_quotation_item.dart';
@@ -24,25 +25,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp(
-          title: 'Quotation',
-          debugShowCheckedModeBanner: false,
-          theme:
-              themeProvider.isDarkMode
-                  ? ThemeData(
-                    brightness: Brightness.dark,
-                    primaryColor: Colors.black12,
-                    scaffoldBackgroundColor: Colors.black38,
-                    appBarTheme: const AppBarTheme(color: Colors.black38),
-                  )
-                  : ThemeData.light(),
-          home: const MyHomePage(title: 'Estimation'),
-        );
-      },
+    return ChangeNotifierProvider(
+      create: (context) => ThemeProvider(), // Ensure ThemeProvider is initialized
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Quotation',
+            debugShowCheckedModeBanner: false,
+            theme: themeProvider.isDarkMode
+                ? ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: Colors.black12,
+              scaffoldBackgroundColor: Colors.black38,
+              appBarTheme: const AppBarTheme(color: Colors.black38),
+            )
+                : ThemeData.light(),
+            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light, // Ensure persistence
+            home: const MyHomePage(title: 'Estimation'),
+          );
+        },
+      ),
     );
   }
+
 }
 
 class MyHomePage extends StatefulWidget {
@@ -195,8 +200,20 @@ class ThemeProvider extends ChangeNotifier {
 
   bool get isDarkMode => _isDarkMode;
 
-  void toggleDarkMode() {
+  ThemeProvider() {
+    _loadThemePreference();
+  }
+
+  void _loadThemePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    notifyListeners();
+  }
+
+  void toggleDarkMode() async {
     _isDarkMode = !_isDarkMode;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', _isDarkMode);
     notifyListeners();
   }
 }

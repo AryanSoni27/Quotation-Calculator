@@ -6,6 +6,7 @@ class ClientDetails {
   final String mobileNumber;
   final String streetAddress;
   final String city;
+  final String pinCode;
   final String state;
 
   ClientDetails({
@@ -14,6 +15,7 @@ class ClientDetails {
     required this.mobileNumber,
     required this.streetAddress,
     required this.city,
+    required this.pinCode,
     required this.state,
   });
 
@@ -24,11 +26,11 @@ class ClientDetails {
       'mobileNumber': mobileNumber,
       'streetAddress': streetAddress,
       'city': city,
+      'pinCode': pinCode,
       'state': state,
     };
   }
 
-  // Convert from JSON
   factory ClientDetails.fromJson(Map<String, dynamic> json) {
     return ClientDetails(
       firstName: json['firstName'],
@@ -36,10 +38,12 @@ class ClientDetails {
       mobileNumber: json['mobileNumber'],
       streetAddress: json['streetAddress'],
       city: json['city'],
+      pinCode: json['pinCode'] ?? "",
       state: json['state'],
     );
   }
 }
+
 
 class ClientDetailsFormController {
   final TextEditingController firstNameController = TextEditingController();
@@ -47,6 +51,7 @@ class ClientDetailsFormController {
   final TextEditingController mobileNumberController = TextEditingController();
   final TextEditingController streetAddressController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
+  final TextEditingController pinCodeController = TextEditingController();
   final TextEditingController stateController = TextEditingController();
 
   bool isMobileValid = true;
@@ -57,6 +62,7 @@ class ClientDetailsFormController {
     mobileNumberController.dispose();
     streetAddressController.dispose();
     cityController.dispose();
+    pinCodeController.dispose();
     stateController.dispose();
   }
 }

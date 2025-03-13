@@ -199,33 +199,71 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                     SizedBox(height: 10),
 
                     // City Field
-                    TextField(
-                      textAlign: TextAlign.left,
-                      controller: formController.cityController,
-                      keyboardType: TextInputType.streetAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.location_city),
-                        prefixIconColor: Colors.blue,
-                        labelText: "City",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.blue,
-                            width: 1,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            textAlign: TextAlign.left,
+                            controller: formController.cityController,
+                            keyboardType: TextInputType.streetAddress,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.location_city),
+                              prefixIconColor: Colors.blue,
+                              labelText: "City",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
                           ),
                         ),
-                        focusedBorder : OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.blue,
-                            width: 2,
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            textAlign: TextAlign.left,
+                            controller: formController.pinCodeController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [LengthLimitingTextInputFormatter(6), FilteringTextInputFormatter.digitsOnly],
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.pin),
+                              prefixIconColor: Colors.blue,
+                              labelText: "Pin Code",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
                           ),
                         ),
-                        contentPadding: EdgeInsets.all(10),
-                      ),
+                      ],
                     ),
                     SizedBox(height: 10),
 
@@ -267,19 +305,38 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                           backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                           elevation: 10,
                         ),
-                        onPressed: isMobileValid
-                            ? () {
-                          final client = ClientDetails(
-                            firstName: formController.firstNameController.text,
-                            lastName: formController.lastNameController.text,
-                            mobileNumber: formController.mobileNumberController.text,
-                            streetAddress: formController.streetAddressController.text,
-                            city: formController.cityController.text,
-                            state: formController.stateController.text,
-                          );
-                          Navigator.of(context).pop(client);
-                        }
-                            : null,
+                          onPressed: () {
+                            if (formController.firstNameController.text.isEmpty ||
+                            formController.lastNameController.text.isEmpty ||
+                            formController.mobileNumberController.text.isEmpty ||
+                            formController.mobileNumberController.text.length != 10 ||
+                            formController.streetAddressController.text.isEmpty ||
+                            formController.cityController.text.isEmpty ||
+                            formController.pinCodeController.text.isEmpty ||
+                            formController.pinCodeController.text.length != 6 ||
+                            formController.stateController.text.isEmpty) {
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text("Please fill all required fields correctly."),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+                        final client = ClientDetails(
+                          firstName: formController.firstNameController.text,
+                          lastName: formController.lastNameController.text,
+                          mobileNumber: formController.mobileNumberController.text,
+                          streetAddress: formController.streetAddressController.text,
+                          city: formController.cityController.text,
+                          state: formController.stateController.text,
+                          pinCode: formController.pinCodeController.text,
+                        );
+                        Navigator.of(context).pop(client);
+                        },
+
                         child: Text(
                           existingItem != null ? "Update Client" : "Add Client",
                           style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),

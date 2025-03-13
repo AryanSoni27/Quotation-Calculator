@@ -90,6 +90,8 @@ class _QuotationsState extends State<Quotations> {
 
     final quotations = await DBHelperQuotation.instance.getAllQuotations();
 
+
+
     setState(() {
       _quotations = quotations;
       _isLoading = false;
@@ -128,10 +130,10 @@ class _QuotationsState extends State<Quotations> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Customer: ${quotation.customerName}"),
-                          Text("Date: ${quotation.date}"),
+                          Text("Customer : ${quotation.customerName}"),
+                          Text("Date : ${quotation.date}"),
                           Text(
-                            "Total: ₹${quotation.totalAmount.toStringAsFixed(2)}",
+                            "Total : ₹${quotation.totalAmount.toStringAsFixed(2)}",
                           ),
                         ],
                       ),
@@ -145,13 +147,26 @@ class _QuotationsState extends State<Quotations> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "Contact: ${quotation.mobileNumber}",
-                                style: const TextStyle(fontSize: 16),
+                              FutureBuilder<ClientDetails?>(
+                                future: getClientDetailsByName(quotation.customerName), // Fetch client details
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const Text("Contact : Loading...", style: TextStyle(fontSize: 16));
+                                  }
+                                  if (!snapshot.hasData || snapshot.data == null) {
+                                    return const Text("Contact : Not Available", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+                                  }
+
+                                  return Text(
+                                    "Contact : ${snapshot.data!.mobileNumber}",
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  );
+                                },
                               ),
+
                               const SizedBox(height: 8),
                               const Text(
-                                "Items:",
+                                "Items :",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

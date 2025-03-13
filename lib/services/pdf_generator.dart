@@ -74,7 +74,7 @@ Future<void> generatePdf({
                       ),
                       pw.SizedBox(height: 5),
                       pw.Text(
-                        "Address: $address", // Add this line for the address
+                        "Address : $address", // Add this line for the address
                         style: pw.TextStyle(fontSize: 12, font: ttf),
                       ),
                       pw.SizedBox(height: 5),
@@ -93,7 +93,7 @@ Future<void> generatePdf({
                 ],
               ),
 
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 10),
 
               //Quotation Table
               pw.TableHelper.fromTextArray(
