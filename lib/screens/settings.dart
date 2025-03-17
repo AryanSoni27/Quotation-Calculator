@@ -110,25 +110,37 @@ class _SettingsState extends State<Settings> {
 
             SizedBox(height: 20),
 
+            Divider(thickness: 1, color: Colors.grey),
+
+            Text("User Profile",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+
+            SizedBox(height: 15),
+
             // First name and last name fields
             Row(
               children: [
                 Expanded(
-                  child: isEditing
-                      ? TextFormField(
+                  child: TextFormField(
                     controller: firstNameController,
+                    readOnly: !isEditing,
                     decoration: InputDecoration(
                       labelText: "First Name",
                       labelStyle: TextStyle(color: firstNameColor),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: firstNameColor),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: firstNameColor, width: 2),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: firstNameColor),
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      // filled: !isEditing,
+                      // fillColor: !isEditing ? Colors.grey.withOpacity(0.1) : null,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -136,27 +148,30 @@ class _SettingsState extends State<Settings> {
                       }
                       return null;
                     },
-                  )
-                      : Text("First Name: ${firstNameController.text}",
-                      style: TextStyle(color: firstNameColor)),
+                  ),
                 ),
                 SizedBox(width: 10),
                 Expanded(
-                  child: isEditing
-                      ? TextFormField(
+                  child: TextFormField(
                     controller: lastNameController,
+                    readOnly: !isEditing,
                     decoration: InputDecoration(
                       labelText: "Last Name",
                       labelStyle: TextStyle(color: lastNameColor),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: lastNameColor),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: lastNameColor, width: 2),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: lastNameColor),
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      // filled: !isEditing,
+                      // fillColor: !isEditing ? Colors.grey.withOpacity(0.1) : null,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -164,9 +179,7 @@ class _SettingsState extends State<Settings> {
                       }
                       return null;
                     },
-                  )
-                      : Text("Last Name: ${lastNameController.text}",
-                      style: TextStyle(color: lastNameColor)),
+                  ),
                 ),
               ],
             ),
@@ -174,26 +187,31 @@ class _SettingsState extends State<Settings> {
             SizedBox(height: 10),
 
             // Mobile number field
-            isEditing
-                ? TextFormField(
+            TextFormField(
               controller: mobileNumberController,
+              readOnly: !isEditing,
               keyboardType: TextInputType.phone,
-              inputFormatters: [
+              inputFormatters: isEditing ? [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
-              ],
+              ] : [],
               decoration: InputDecoration(
                 labelText: "Mobile Number",
                 labelStyle: TextStyle(color: mobileColor),
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: mobileColor),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: mobileColor, width: 2),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: mobileColor),
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                // filled: !isEditing,
+                // fillColor: !isEditing ? Colors.grey.withValues(0.1) : null,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -204,9 +222,7 @@ class _SettingsState extends State<Settings> {
                 }
                 return null;
               },
-            )
-                : Text("Mobile Number: ${mobileNumberController.text}",
-                style: TextStyle(color: mobileColor)),
+            ),
 
             SizedBox(height: 20),
 
@@ -231,4 +247,4 @@ class _SettingsState extends State<Settings> {
       ),
     );
   }
-}
+  }
