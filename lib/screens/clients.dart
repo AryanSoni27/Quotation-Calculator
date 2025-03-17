@@ -110,7 +110,7 @@ class ClientScreenState extends State<ClientScreen> {
                       const SizedBox(width: 5),
                       Expanded(
                         child: Text(
-                          '${client.streetAddress}, ${client.city}, ${client.state}',
+                          '${client.streetAddress}, ${client.city}, ${client.state}, ${client.pinCode}',
                           style: TextStyle(
                             fontSize: 14,
                             color: isDarkMode ? Colors.white70 : Colors.black54,
@@ -169,7 +169,6 @@ class ClientScreenState extends State<ClientScreen> {
           }
         },
         child: const Icon(Icons.add, color: Colors.blue),
-
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

@@ -45,14 +45,14 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _customerNameValid = true;
   bool _dateValid = true;
   bool _projectNameValid = true;
-  bool _mobileNumberValid = true;
+  // bool _mobileNumberValid = true;
 
   String selectedCustomer = "";
 
   final FocusNode _customerNameFocusNode = FocusNode();
   final FocusNode _dateFocusNode = FocusNode();
   final FocusNode _projectNameFocusNode = FocusNode();
-  final FocusNode _mobileNumberFocusNode = FocusNode();
+  // final FocusNode _mobileNumberFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -270,13 +270,13 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
 
-    _mobileNumberFocusNode.addListener(() {
-      if (!_mobileNumberFocusNode.hasFocus) {
-        setState(() {
-          _mobileNumberValid = formController.mobileNumberController.text.trim().length == 10;
-        });
-      }
-    });
+    // _mobileNumberFocusNode.addListener(() {
+    //   if (!_mobileNumberFocusNode.hasFocus) {
+    //     setState(() {
+    //       _mobileNumberValid = formController.mobileNumberController.text.trim().length == 10;
+    //     });
+    //   }
+    // });
   }
 
   Future<bool> validateFields() async {
@@ -290,8 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (!_customerNameValid ||
         !_dateValid ||
-        !_projectNameValid ||
-        !_mobileNumberValid) {
+        !_projectNameValid ) {
       hasErrors = true;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -323,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _customerNameFocusNode.dispose();
     _dateFocusNode.dispose();
     _projectNameFocusNode.dispose();
-    _mobileNumberFocusNode.dispose();
+    // _mobileNumberFocusNode.dispose();
     super.dispose();
   }
 

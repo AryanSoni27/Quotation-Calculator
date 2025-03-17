@@ -6,9 +6,73 @@ import '../main.dart';
 
 Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? existingItem}) async {
   ClientDetailsFormController formController = ClientDetailsFormController();
+
+  bool isFirstNameValid = true;
+  bool isLastNameValid = true;
   bool isMobileValid = true;
-  bool isMobileFocused = false;
+  bool isAddressValid = true;
+  bool isCityValid = true;
+  bool isPinCodeValid = true;
+  bool isStateValid = true;
+
+  FocusNode firstNameFocusNode = FocusNode();
+  FocusNode lastNameFocusNode = FocusNode();
   FocusNode mobileFocusNode = FocusNode();
+  FocusNode addressFocusNode = FocusNode();
+  FocusNode cityFocusNode = FocusNode();
+  FocusNode pinCodeFocusNode = FocusNode();
+  FocusNode stateFocusNode = FocusNode();
+
+  void setupFocusListeners() {
+    firstNameFocusNode.addListener(() {
+      if (!firstNameFocusNode.hasFocus) {
+        isFirstNameValid = formController.firstNameController.text.trim().isNotEmpty;
+      }
+    });
+
+    lastNameFocusNode.addListener(() {
+      if (!lastNameFocusNode.hasFocus) {
+        isLastNameValid = formController.lastNameController.text.trim().isNotEmpty;
+      }
+    });
+
+    mobileFocusNode.addListener(() {
+      if (!mobileFocusNode.hasFocus) {
+        isMobileValid = formController.mobileNumberController.text.length == 10;
+      }
+    });
+
+    addressFocusNode.addListener(() {
+      if (!addressFocusNode.hasFocus) {
+        isAddressValid = formController.streetAddressController.text.trim().isNotEmpty;
+      }
+    });
+
+    cityFocusNode.addListener(() {
+      if (!cityFocusNode.hasFocus) {
+        isCityValid = formController.cityController.text.trim().isNotEmpty;
+      }
+    });
+
+    pinCodeFocusNode.addListener(() {
+      if (!pinCodeFocusNode.hasFocus) {
+        isPinCodeValid = formController.pinCodeController.text.length == 6;
+      }
+    });
+
+    stateFocusNode.addListener(() {
+      if (!stateFocusNode.hasFocus) {
+        isStateValid = formController.stateController.text.trim().isNotEmpty;
+      }
+    });
+  }
+
+  setupFocusListeners();
+
+  // @override
+  // void initState() {
+  //   setupFocusListeners();
+  // }
 
   // Populate controllers with existing data if available
   if (existingItem != null) {
@@ -17,6 +81,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
     formController.mobileNumberController.text = existingItem.mobileNumber;
     formController.streetAddressController.text = existingItem.streetAddress;
     formController.cityController.text = existingItem.city;
+    formController.pinCodeController.text = existingItem.pinCode;
     formController.stateController.text = existingItem.state;
   }
 
@@ -58,24 +123,25 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                     TextField(
                       textAlign: TextAlign.left,
                       controller: formController.firstNameController,
+                      focusNode: firstNameFocusNode,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
                         prefixIconColor: Colors.blue,
                         labelText: "First Name",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: isFirstNameValid ? Colors.blue : Colors.red,
                             width: 1,
                           ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder : OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: isMobileValid ? Colors.blue : Colors.red,
+                            color: isFirstNameValid ? Colors.blue : Colors.red,
                             width: 2,
                           ),
                         ),
@@ -88,6 +154,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                     TextField(
                       textAlign: TextAlign.left,
                       controller: formController.lastNameController,
+                      focusNode: lastNameFocusNode,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
                         prefixIconColor: Colors.blue,
@@ -98,14 +165,14 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: isMobileValid ? Colors.blue : Colors.red,
-                            width: 2,
+                            color: isLastNameValid ? Colors.blue : Colors.red,
+                            width: 1,
                           ),
                         ),
                         focusedBorder : OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: isLastNameValid ? Colors.blue : Colors.red,
                             width: 2,
                           ),
                         ),
@@ -129,7 +196,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: isMobileValid ? Colors.blue : Colors.red,
                             width: 1,
                           ),
                         ),
@@ -140,6 +207,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             width: 2,
                           ),
                         ),
+                        contentPadding: EdgeInsets.all(10),
                       ),
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(10),
@@ -152,7 +220,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                       },
                       onTap: () {
                         setState(() {
-                          isMobileFocused = true;
+                          var isMobileFocused = true;
                         });
                       },
                       onEditingComplete: () {
@@ -167,11 +235,12 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                     Text("Address:-"),
                     SizedBox(height: 10),
 
-                    // Street Address Field
+                    //Address Field
                     TextField(
                       textAlign: TextAlign.left,
                       controller: formController.streetAddressController,
                       keyboardType: TextInputType.streetAddress,
+                      focusNode: addressFocusNode,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.home_filled),
                         prefixIconColor: Colors.blue,
@@ -182,14 +251,14 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: isAddressValid ? Colors.blue : Colors.red,
                             width: 1,
                           ),
                         ),
                         focusedBorder : OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: isMobileValid ? Colors.blue : Colors.red,
+                            color: isAddressValid ? Colors.blue : Colors.red,
                             width: 2,
                           ),
                         ),
@@ -206,6 +275,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             textAlign: TextAlign.left,
                             controller: formController.cityController,
                             keyboardType: TextInputType.streetAddress,
+                            focusNode: cityFocusNode,
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.location_city),
                               prefixIconColor: Colors.blue,
@@ -216,14 +286,14 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: Colors.blue,
+                                  color: isCityValid ? Colors.blue : Colors.red,
                                   width: 1,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: isMobileValid ? Colors.blue : Colors.red,
+                                  color: isCityValid ? Colors.blue : Colors.red,
                                   width: 2,
                                 ),
                               ),
@@ -237,6 +307,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             textAlign: TextAlign.left,
                             controller: formController.pinCodeController,
                             keyboardType: TextInputType.number,
+                            focusNode: pinCodeFocusNode,
                             inputFormatters: [LengthLimitingTextInputFormatter(6), FilteringTextInputFormatter.digitsOnly],
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.pin),
@@ -248,14 +319,14 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: isMobileValid ? Colors.blue : Colors.red,
-                                  width: 2,
+                                  color: isPinCodeValid ? Colors.blue : Colors.red,
+                                  width: 1,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                  color: Colors.blue,
+                                  color: isPinCodeValid ? Colors.blue : Colors.red,
                                   width: 2,
                                 ),
                               ),
@@ -272,6 +343,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                       textAlign: TextAlign.left,
                       controller: formController.stateController,
                       keyboardType: TextInputType.streetAddress,
+                      focusNode: stateFocusNode,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.map),
                         prefixIconColor: Colors.blue,
@@ -282,14 +354,14 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: isMobileValid ? Colors.blue : Colors.red,
-                            width: 2,
+                            color: isStateValid ? Colors.blue : Colors.red,
+                            width: 1,
                           ),
                         ),
                         focusedBorder : OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue,
+                            color: isStateValid ? Colors.blue : Colors.red,
                             width: 2,
                           ),
                         ),

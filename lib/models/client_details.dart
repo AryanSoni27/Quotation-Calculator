@@ -38,7 +38,7 @@ class ClientDetails {
       mobileNumber: json['mobileNumber'],
       streetAddress: json['streetAddress'],
       city: json['city'],
-      pinCode: json['pinCode'] ?? "",
+      pinCode: json['pinCode'],
       state: json['state'],
     );
   }
