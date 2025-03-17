@@ -5,6 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/quotation_item.dart';
 
 Future<void> generatePdf({
@@ -21,7 +22,13 @@ Future<void> generatePdf({
   try {
     final pdf = pw.Document();
 
-    // Format date from dd/MM/yyyy to dd-MMM-yyyy (with MMM in uppercase)
+    // Get user information from SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final firstName = prefs.getString('firstName') ?? "";
+    final lastName = prefs.getString('lastName') ?? "";
+    final userMobileNumber = prefs.getString('mobileNumber') ?? "";
+
+
     String formattedDate;
     try {
       // Parse the input date which is in format dd/MM/yyyy
@@ -79,7 +86,6 @@ Future<void> generatePdf({
                       pw.Text("Project : $projectName", style: pw.TextStyle(fontSize: 12)),
                       pw.SizedBox(height: 5),
 
-
                       pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
@@ -107,13 +113,21 @@ Future<void> generatePdf({
                         ],
                       ),
 
-
                       pw.SizedBox(height: 5),
                       pw.Text("Mobile : $mobileNumber", style: pw.TextStyle(fontSize: 12)),
                     ],
                   ),
 
-                  pw.Text("Date : $formattedDate", style: pw.TextStyle(fontSize: 12)),
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.end,
+                    children: [
+                      pw.Text("Date : $formattedDate", style: pw.TextStyle(fontSize: 12)),
+                      pw.SizedBox(height: 8),
+                      pw.Text("Given By : $firstName $lastName", style: pw.TextStyle(fontSize: 12)),
+                      pw.SizedBox(height: 5),
+                      pw.Text("Mobile : $userMobileNumber", style: pw.TextStyle(fontSize: 12)),
+                    ],
+                  ),
                 ],
               ),
 
