@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
@@ -64,9 +65,31 @@ class _QuotationsState extends State<Quotations> {
   Future<String?> generateAndOpenPdf(Quotation quotation) async {
     try {
       ClientDetails? client = await getClientDetailsByName(quotation.customerName);
+
+      String rawDate = quotation.date;
+      String formattedDate;
+
+      try {
+        DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(rawDate);
+
+        String tempFormatted = DateFormat('dd-MMM-yyyy').format(parsedDate);
+
+        List<String> parts = tempFormatted.split('-');
+        if (parts.length == 3) {
+          parts[1] = parts[1].toUpperCase();
+          formattedDate = parts.join('-');
+        } else {
+          formattedDate = tempFormatted;
+        }
+      } catch (e) {
+
+        formattedDate = rawDate;
+        print("Failed to format date: $e");
+      }
+
       await generatePdf(
         customerName: quotation.customerName,
-        date: quotation.date,
+        date: formattedDate,
         projectName: quotation.projectName,
         mobileNumber: client != null ? client.mobileNumber : quotation.mobileNumber,
         streetAddress: client?.streetAddress ?? "N/A",

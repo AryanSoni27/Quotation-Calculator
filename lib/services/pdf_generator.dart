@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:intl/intl.dart';
 import '../models/quotation_item.dart';
 
 Future<void> generatePdf({
@@ -19,6 +20,29 @@ Future<void> generatePdf({
 }) async {
   try {
     final pdf = pw.Document();
+
+    // Format date from dd/MM/yyyy to dd-MMM-yyyy (with MMM in uppercase)
+    String formattedDate;
+    try {
+      // Parse the input date which is in format dd/MM/yyyy
+      DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(date);
+
+      // Format to dd-MMM-yyyy with month in uppercase
+      String tempFormatted = DateFormat('dd-MMM-yyyy').format(parsedDate);
+
+      // Convert the month part to uppercase
+      List<String> parts = tempFormatted.split('-');
+      if (parts.length == 3) {
+        parts[1] = parts[1].toUpperCase();
+        formattedDate = parts.join('-');
+      } else {
+        formattedDate = tempFormatted;
+      }
+    } catch (e) {
+      // If parsing fails, use the original string
+      formattedDate = date;
+      print("Failed to format date: $e");
+    }
 
     // Calculate grand total
     double grandTotal = items.fold(0.0, (sum, item) => sum + item.totalCost);
@@ -55,27 +79,41 @@ Future<void> generatePdf({
                       pw.Text("Project : $projectName", style: pw.TextStyle(fontSize: 12)),
                       pw.SizedBox(height: 5),
 
-                      // Address Formatting
+
                       pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-
-                          pw.Text("Address: $streetAddress,", style: pw.TextStyle(fontSize: 12, )),
-                          pw.SizedBox(height: 1),
-
-                          pw.Text("$city - $pinCode,", style: pw.TextStyle(fontSize: 12)),
-                          pw.SizedBox(height: 1),
-
-                          pw.Text(state, style: pw.TextStyle(fontSize: 12)),
+                          pw.RichText(
+                            text: pw.TextSpan(
+                              children: [
+                                pw.TextSpan(text: "Address : ", style: pw.TextStyle(fontSize: 12)),
+                                pw.TextSpan(text: streetAddress, style: pw.TextStyle(fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                          pw.Row(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.SizedBox(width: 54),
+                              pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                                children: [
+                                  pw.Text("$city - $pinCode", style: pw.TextStyle(fontSize: 12)),
+                                  pw.Text(state, style: pw.TextStyle(fontSize: 12)),
+                                ],
+                              ),
+                            ],
+                          ),
                         ],
                       ),
+
 
                       pw.SizedBox(height: 5),
                       pw.Text("Mobile : $mobileNumber", style: pw.TextStyle(fontSize: 12)),
                     ],
                   ),
 
-                  pw.Text("Date : $date", style: pw.TextStyle(fontSize: 12)),
+                  pw.Text("Date : $formattedDate", style: pw.TextStyle(fontSize: 12)),
                 ],
               ),
 

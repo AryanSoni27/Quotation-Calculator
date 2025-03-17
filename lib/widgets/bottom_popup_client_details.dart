@@ -6,9 +6,9 @@ import '../main.dart';
 
 Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? existingItem}) async {
   ClientDetailsFormController formController = ClientDetailsFormController();
-  bool isMobileValid = true; // Initially valid
-  bool isMobileFocused = false; // Track if the field was focused
-  FocusNode mobileFocusNode = FocusNode(); // ✅ Declare outside StatefulBuilder
+  bool isMobileValid = true;
+  bool isMobileFocused = false;
+  FocusNode mobileFocusNode = FocusNode();
 
   // Populate controllers with existing data if available
   if (existingItem != null) {

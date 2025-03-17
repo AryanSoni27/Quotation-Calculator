@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/data/db_helper_quotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -559,9 +560,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (await validateFields()) {
                             ClientDetails? client = await getClientDetailsByName(formController.customerNameController.text);
 
+                            String rawDate = formController.dateController.text;
+                            String formattedDate;
+
+                            try {
+                              DateTime parsedDate = DateFormat('dd/MM/yyyy').parse(rawDate);
+
+                              String tempFormatted = DateFormat('dd-MMM-yyyy').format(parsedDate);
+
+                              List<String> parts = tempFormatted.split('-');
+                              if (parts.length == 3) {
+                                parts[1] = parts[1].toUpperCase();
+                                formattedDate = parts.join('-');
+                              } else {
+                                formattedDate = tempFormatted;
+                              }
+                            } catch (e) {
+
+                              formattedDate = rawDate;
+                              print("Failed to format date: $e");
+                            }
+
                             generatePdf(
                               customerName: formController.customerNameController.text,
-                              date: formController.dateController.text,
+                              date: formattedDate,
                               projectName: formController.projectNameController.text,
                               mobileNumber: selectedCustomerMobileNumber,
                               streetAddress: client?.streetAddress ?? "N/A",
