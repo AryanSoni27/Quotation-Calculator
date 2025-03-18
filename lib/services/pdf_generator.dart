@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
@@ -27,7 +26,6 @@ Future<void> generatePdf({
     final firstName = prefs.getString('firstName') ?? "";
     final lastName = prefs.getString('lastName') ?? "";
     final userMobileNumber = prefs.getString('mobileNumber') ?? "";
-
 
     String formattedDate;
     try {
@@ -81,9 +79,15 @@ Future<void> generatePdf({
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text("Customer : $customerName", style: pw.TextStyle(fontSize: 12)),
+                      pw.Text(
+                        "Customer : $customerName",
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
                       pw.SizedBox(height: 5),
-                      pw.Text("Project : $projectName", style: pw.TextStyle(fontSize: 12)),
+                      pw.Text(
+                        "Project : $projectName",
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
                       pw.SizedBox(height: 5),
 
                       pw.Column(
@@ -92,8 +96,14 @@ Future<void> generatePdf({
                           pw.RichText(
                             text: pw.TextSpan(
                               children: [
-                                pw.TextSpan(text: "Address : ", style: pw.TextStyle(fontSize: 12)),
-                                pw.TextSpan(text: streetAddress, style: pw.TextStyle(fontSize: 12)),
+                                pw.TextSpan(
+                                  text: "Address : ",
+                                  style: pw.TextStyle(fontSize: 12),
+                                ),
+                                pw.TextSpan(
+                                  text: "$streetAddress,",
+                                  style: pw.TextStyle(fontSize: 12),
+                                ),
                               ],
                             ),
                           ),
@@ -104,8 +114,14 @@ Future<void> generatePdf({
                               pw.Column(
                                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                                 children: [
-                                  pw.Text("$city - $pinCode", style: pw.TextStyle(fontSize: 12)),
-                                  pw.Text(state, style: pw.TextStyle(fontSize: 12)),
+                                  pw.Text(
+                                    "$city - $pinCode,",
+                                    style: pw.TextStyle(fontSize: 12),
+                                  ),
+                                  pw.Text(
+                                    "$state.",
+                                    style: pw.TextStyle(fontSize: 12),
+                                  ),
                                 ],
                               ),
                             ],
@@ -114,18 +130,30 @@ Future<void> generatePdf({
                       ),
 
                       pw.SizedBox(height: 5),
-                      pw.Text("Mobile : $mobileNumber", style: pw.TextStyle(fontSize: 12)),
+                      pw.Text(
+                        "Mobile : $mobileNumber",
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
                     ],
                   ),
 
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
-                      pw.Text("Date : $formattedDate", style: pw.TextStyle(fontSize: 12)),
+                      pw.Text(
+                        "Date : $formattedDate",
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
                       pw.SizedBox(height: 8),
-                      pw.Text("Given By : $firstName $lastName", style: pw.TextStyle(fontSize: 12)),
+                      pw.Text(
+                        "Given By : $firstName $lastName",
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
                       pw.SizedBox(height: 5),
-                      pw.Text("Mobile : $userMobileNumber", style: pw.TextStyle(fontSize: 12)),
+                      pw.Text(
+                        "Mobile : $userMobileNumber",
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
                     ],
                   ),
                 ],
@@ -135,19 +163,31 @@ Future<void> generatePdf({
 
               // Quotation Table
               pw.TableHelper.fromTextArray(
-                headers: ["S.No.", "Item", "Measurements", "Square Feet", "Quantity", "Rate", "Total"],
-                headerStyle: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+                headers: [
+                  "S.No.",
+                  "Item",
+                  "Measurements",
+                  "Square Feet",
+                  "Quantity",
+                  "Rate",
+                  "Total",
+                ],
+                headerStyle: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.white,
+                ),
                 headerDecoration: pw.BoxDecoration(color: PdfColors.blue),
                 data: List.generate(
                   items.length,
-                      (index) => [
+                  (index) => [
                     ("${index + 1}"),
                     items[index].itemName,
                     "${items[index].length} × ${items[index].width}${items[index].height != null ? ' × ${items[index].height}' : ''} ${items[index].unit}",
                     (items[index].squareFeet.toStringAsFixed(2)),
                     (items[index].quantity.toString()),
                     (items[index].rate.toStringAsFixed(2)),
-                    (items[index].totalCost.toStringAsFixed(2)),
+                    NumberFormat("#,##0.00").format(items[index].totalCost),
                   ],
                 ),
                 border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
@@ -168,7 +208,7 @@ Future<void> generatePdf({
                 padding: pw.EdgeInsets.all(8),
                 alignment: pw.Alignment.centerRight,
                 child: pw.Text(
-                  "Grand Total: ${grandTotal.toStringAsFixed(2)}",
+                  "Grand Total: ${NumberFormat("#,##0.00").format(grandTotal)}",
                   style: pw.TextStyle(
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,

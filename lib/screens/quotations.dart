@@ -159,7 +159,7 @@ class _QuotationsState extends State<Quotations> {
                           Text("Customer : ${quotation.customerName}"),
                           Text("Date : ${quotation.date}"),
                           Text(
-                            "Total : ₹${quotation.totalAmount.toStringAsFixed(2)}",
+                            "Total : ₹${NumberFormat("#,##0.00").format(quotation.totalAmount)}",
                           ),
                         ],
                       ),
@@ -249,7 +249,7 @@ class _QuotationsState extends State<Quotations> {
                                                     "Rate: ₹${item.rate.toStringAsFixed(2)}",
                                                   ),
                                                   Text(
-                                                    "Total: ₹${item.totalCost.toStringAsFixed(2)}",
+                                                    "Total: ₹${NumberFormat("#,##0.00").format(item.totalCost)}",
                                                     style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,

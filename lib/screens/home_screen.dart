@@ -774,7 +774,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(height: 11),
 
                                 Text(
-                                  'Total: ${item.totalCost.toStringAsFixed(2)}',
+                                  'Total: ${NumberFormat("#,##0.00").format(item.totalCost)}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),

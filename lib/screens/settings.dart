@@ -112,7 +112,7 @@ class _SettingsState extends State<Settings> {
 
             Divider(thickness: 1, color: Colors.grey),
 
-            Text("User Profile",
+            Text("Profile",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
             SizedBox(height: 15),

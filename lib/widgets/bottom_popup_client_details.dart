@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/models/client_details.dart';
 import '../main.dart';
@@ -182,10 +183,11 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                     SizedBox(height: 10),
 
                     // Mobile Number Field
-                    TextField(
+                    IntlPhoneField(
                       textAlign: TextAlign.left,
                       controller: formController.mobileNumberController,
                       keyboardType: TextInputType.phone,
+                      initialCountryCode: 'IN',
                       focusNode: mobileFocusNode,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.phone, color: Colors.blue),
@@ -210,25 +212,26 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         contentPadding: EdgeInsets.all(10),
                       ),
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(10),
+                        // LengthLimitingTextInputFormatter(10),
                         FilteringTextInputFormatter.digitsOnly,
                       ],
-                      onChanged: (value) {
-                        setState(() {
-                          isMobileValid = value.length == 10;
-                        });
-                      },
-                      onTap: () {
-                        setState(() {
-                          var isMobileFocused = true;
-                        });
-                      },
-                      onEditingComplete: () {
-                        setState(() {
-                          isMobileValid = formController.mobileNumberController.text.length == 10;
-                        });
-                        mobileFocusNode.unfocus();
-                      },
+                      // onChanged: (value) {
+                      //   setState(() {
+                      //     isMobileValid = value.length == 10;
+                      //   });
+                      // },
+                      // onTap: () {
+                      //   setState(() {
+                      //     var isMobileFocused = true;
+                      //   });
+                      // },
+                      // onEditingComplete: () {
+                      //   setState(() {
+                      //     isMobileValid = formController.mobileNumberController.text.length == 10;
+                      //   });
+                      //   mobileFocusNode.unfocus();
+                      // },
+                      disableLengthCheck: false,
                     ),
                     SizedBox(height: 10),
 
@@ -381,7 +384,6 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             if (formController.firstNameController.text.isEmpty ||
                             formController.lastNameController.text.isEmpty ||
                             formController.mobileNumberController.text.isEmpty ||
-                            formController.mobileNumberController.text.length != 10 ||
                             formController.streetAddressController.text.isEmpty ||
                             formController.cityController.text.isEmpty ||
                             formController.pinCodeController.text.isEmpty ||
@@ -392,6 +394,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             SnackBar(
                                 content: Text("Please fill all required fields correctly."),
                                 backgroundColor: Colors.red,
+                                duration: Duration(seconds: 1),
                               ),
                             );
                             return;
@@ -401,6 +404,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                           firstName: formController.firstNameController.text,
                           lastName: formController.lastNameController.text,
                           mobileNumber: formController.mobileNumberController.text,
+                          countryCode: formController.countryCodeController,
                           streetAddress: formController.streetAddressController.text,
                           city: formController.cityController.text,
                           state: formController.stateController.text,
