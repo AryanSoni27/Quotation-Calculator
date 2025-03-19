@@ -94,11 +94,14 @@ class ClientScreenState extends State<ClientScreen> {
                     children: [
                       const Icon(Icons.phone, size: 16, color: Colors.green),
                       const SizedBox(width: 5),
-                      Text(
-                        client.mobileNumber,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDarkMode ? Colors.white70 : Colors.black54,
+                      Expanded(
+                        child: Text(
+                          "${client.countryCode} ${client.mobileNumber}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDarkMode ? Colors.white70 : Colors.black54,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
