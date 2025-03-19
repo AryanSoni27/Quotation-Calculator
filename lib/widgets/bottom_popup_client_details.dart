@@ -4,12 +4,15 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/models/client_details.dart';
 import '../main.dart';
+import '../util/date_picker.dart';
+import '../data/country_codes.dart';
 
 Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? existingItem}) async {
   ClientDetailsFormController formController = ClientDetailsFormController();
 
   bool isFirstNameValid = true;
   bool isLastNameValid = true;
+  bool isDateValid = true;
   bool isMobileValid = true;
   bool isAddressValid = true;
   bool isCityValid = true;
@@ -18,6 +21,7 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
 
   FocusNode firstNameFocusNode = FocusNode();
   FocusNode lastNameFocusNode = FocusNode();
+  FocusNode dateFocusNode = FocusNode();
   FocusNode mobileFocusNode = FocusNode();
   FocusNode addressFocusNode = FocusNode();
   FocusNode cityFocusNode = FocusNode();
@@ -37,9 +41,15 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
       }
     });
 
+    dateFocusNode.addListener(() {
+      if (!dateFocusNode.hasFocus) {
+        isDateValid = formController.dateController.text.trim().isNotEmpty;
+      }
+    });
+
     mobileFocusNode.addListener(() {
       if (!mobileFocusNode.hasFocus) {
-        isMobileValid = formController.mobileNumberController.text.length == 10;
+        isMobileValid = formController.mobileNumberController.text.trim().isNotEmpty;
       }
     });
 
@@ -70,20 +80,35 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
 
   setupFocusListeners();
 
-  // @override
-  // void initState() {
-  //   setupFocusListeners();
-  // }
+  // Default to India
+  // Default to India
+  // Default to India
+  // Default to India
+  String initialCountryCode = 'IN';
 
-  // Populate controllers with existing data if available
   if (existingItem != null) {
     formController.firstNameController.text = existingItem.firstName;
     formController.lastNameController.text = existingItem.lastName;
+    formController.dateController.text = existingItem.date;
+    formController.countryCodeController = existingItem.countryCode;
     formController.mobileNumberController.text = existingItem.mobileNumber;
     formController.streetAddressController.text = existingItem.streetAddress;
     formController.cityController.text = existingItem.city;
     formController.pinCodeController.text = existingItem.pinCode;
     formController.stateController.text = existingItem.state;
+
+    // Ensure the country code exists in the map
+    String countryCodeKey = existingItem.countryCode;
+    if (countryCodeToIso.containsKey(countryCodeKey)) {
+      List<String> isoList = countryCodeToIso[countryCodeKey]!;
+
+      // Check if the previous selection is in the list
+      if (isoList.contains(existingItem.countryCode.replaceAll('+', ''))) {
+        initialCountryCode = existingItem.countryCode.replaceAll('+', '');
+      } else {
+        initialCountryCode = isoList.first;
+      }
+    }
   }
 
   return showModalBottomSheet<ClientDetails>(
@@ -121,73 +146,121 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                     SizedBox(height: 10),
 
                     // First Name Field
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            textAlign: TextAlign.left,
+                            controller: formController.firstNameController,
+                            focusNode: firstNameFocusNode,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.person),
+                              prefixIconColor: Colors.blue,
+                              labelText: "First Name",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: isFirstNameValid ? Colors.blue : Colors.red,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder : OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: isFirstNameValid ? Colors.blue : Colors.red,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        //Last Name Field
+                        Expanded(
+                          child: TextField(
+                            textAlign: TextAlign.left,
+                            controller: formController.lastNameController,
+                            focusNode: lastNameFocusNode,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.person),
+                              prefixIconColor: Colors.blue,
+                              labelText: "Last Name",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: isLastNameValid ? Colors.blue : Colors.red,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder : OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: isLastNameValid ? Colors.blue : Colors.red,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 10),
+
                     TextField(
+                      controller: formController.dateController,
                       textAlign: TextAlign.left,
-                      controller: formController.firstNameController,
-                      focusNode: firstNameFocusNode,
+                      focusNode: dateFocusNode,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
+                        prefixIcon: Icon(Icons.calendar_month),
                         prefixIconColor: Colors.blue,
-                        labelText: "First Name",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        labelText: "Birth Date",
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: isFirstNameValid ? Colors.blue : Colors.red,
-                            width: 1,
+                            color: isDateValid ? Colors.blue : Colors.red,
                           ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        focusedBorder : OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: isFirstNameValid ? Colors.blue : Colors.red,
                             width: 2,
+                            color: isDateValid ? Colors.blue : Colors.red,
                           ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         contentPadding: EdgeInsets.all(10),
                       ),
+                      onTap: () async {
+                        await datePickerFunction(
+                          context: context,
+                          formController: formController,
+                        );
+                        if (!isDateValid &&
+                            formController.dateController.text
+                                .trim()
+                                .isNotEmpty) {
+                          setState(() {
+                            isDateValid = true;
+                          });
+                        }
+                      },
                     ),
-                    SizedBox(height: 10),
 
-                    // Last Name Field
-                    TextField(
-                      textAlign: TextAlign.left,
-                      controller: formController.lastNameController,
-                      focusNode: lastNameFocusNode,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
-                        prefixIconColor: Colors.blue,
-                        labelText: "Last Name",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: isLastNameValid ? Colors.blue : Colors.red,
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder : OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: isLastNameValid ? Colors.blue : Colors.red,
-                            width: 2,
-                          ),
-                        ),
-                        contentPadding: EdgeInsets.all(10),
-                      ),
-                    ),
                     SizedBox(height: 10),
-
                     // Mobile Number Field
                     IntlPhoneField(
                       textAlign: TextAlign.left,
                       controller: formController.mobileNumberController,
                       keyboardType: TextInputType.phone,
-                      initialCountryCode: 'IN',
+                      initialCountryCode: initialCountryCode,
                       focusNode: mobileFocusNode,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.phone, color: Colors.blue),
@@ -198,40 +271,28 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: isMobileValid ? Colors.blue : Colors.red,
+                            color: Colors.blue,
                             width: 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: isMobileValid ? Colors.blue : Colors.red,
+                            color: Colors.blue,
                             width: 2,
                           ),
                         ),
                         contentPadding: EdgeInsets.all(10),
                       ),
                       inputFormatters: [
-                        // LengthLimitingTextInputFormatter(10),
                         FilteringTextInputFormatter.digitsOnly,
                       ],
-                      // onChanged: (value) {
-                      //   setState(() {
-                      //     isMobileValid = value.length == 10;
-                      //   });
-                      // },
-                      // onTap: () {
-                      //   setState(() {
-                      //     var isMobileFocused = true;
-                      //   });
-                      // },
-                      // onEditingComplete: () {
-                      //   setState(() {
-                      //     isMobileValid = formController.mobileNumberController.text.length == 10;
-                      //   });
-                      //   mobileFocusNode.unfocus();
-                      // },
                       disableLengthCheck: false,
+                      onCountryChanged: (country) {
+                        // Update the country code when changed
+                        formController.countryCodeController = '+${country.dialCode}';
+                      },
+                      initialValue: existingItem?.mobileNumber, // Preserve the number
                     ),
                     SizedBox(height: 10),
 
@@ -380,18 +441,19 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                           backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                           elevation: 10,
                         ),
-                          onPressed: () {
-                            if (formController.firstNameController.text.isEmpty ||
-                            formController.lastNameController.text.isEmpty ||
-                            formController.mobileNumberController.text.isEmpty ||
-                            formController.streetAddressController.text.isEmpty ||
-                            formController.cityController.text.isEmpty ||
-                            formController.pinCodeController.text.isEmpty ||
-                            formController.pinCodeController.text.length != 6 ||
-                            formController.stateController.text.isEmpty) {
+                        onPressed: () {
+                          if (formController.firstNameController.text.isEmpty ||
+                              formController.lastNameController.text.isEmpty ||
+                              formController.dateController.text.isEmpty ||
+                              formController.mobileNumberController.text.isEmpty ||
+                              formController.streetAddressController.text.isEmpty ||
+                              formController.cityController.text.isEmpty ||
+                              formController.pinCodeController.text.isEmpty ||
+                              formController.pinCodeController.text.length != 6 ||
+                              formController.stateController.text.isEmpty) {
 
                             ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                              SnackBar(
                                 content: Text("Please fill all required fields correctly."),
                                 backgroundColor: Colors.red,
                                 duration: Duration(seconds: 1),
@@ -400,17 +462,18 @@ Future<ClientDetails?> showClientForm(BuildContext context, {ClientDetails? exis
                             return;
                           }
 
-                        final client = ClientDetails(
-                          firstName: formController.firstNameController.text,
-                          lastName: formController.lastNameController.text,
-                          mobileNumber: formController.mobileNumberController.text,
-                          countryCode: formController.countryCodeController,
-                          streetAddress: formController.streetAddressController.text,
-                          city: formController.cityController.text,
-                          state: formController.stateController.text,
-                          pinCode: formController.pinCodeController.text,
-                        );
-                        Navigator.of(context).pop(client);
+                          final client = ClientDetails(
+                            firstName: formController.firstNameController.text,
+                            lastName: formController.lastNameController.text,
+                            date: formController.dateController.text,
+                            mobileNumber: formController.mobileNumberController.text,
+                            countryCode: formController.countryCodeController,
+                            streetAddress: formController.streetAddressController.text,
+                            city: formController.cityController.text,
+                            state: formController.stateController.text,
+                            pinCode: formController.pinCodeController.text,
+                          );
+                          Navigator.of(context).pop(client);
                         },
 
                         child: Text(

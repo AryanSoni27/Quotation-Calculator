@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ClientDetails {
   final String firstName;
   final String lastName;
+  final String date;
   final String mobileNumber;
   final String countryCode;
   final String streetAddress;
@@ -13,6 +14,7 @@ class ClientDetails {
   ClientDetails({
     required this.firstName,
     required this.lastName,
+    required this.date,
     required this.mobileNumber,
     this.countryCode = '+91',
     required this.streetAddress,
@@ -25,6 +27,7 @@ class ClientDetails {
     return {
       'firstName': firstName,
       'lastName': lastName,
+      'date': date,
       'mobileNumber': mobileNumber,
       'countryCode': countryCode,
       'streetAddress': streetAddress,
@@ -38,6 +41,7 @@ class ClientDetails {
     return ClientDetails(
       firstName: json['firstName'],
       lastName: json['lastName'],
+      date: json['date'],
       mobileNumber: json['mobileNumber'],
       countryCode: json['countryCode'],
       streetAddress: json['streetAddress'],
@@ -53,6 +57,7 @@ class ClientDetailsFormController {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController mobileNumberController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
   String countryCodeController = '+91';
   final TextEditingController streetAddressController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
