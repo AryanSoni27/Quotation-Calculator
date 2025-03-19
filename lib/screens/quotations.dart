@@ -128,6 +128,7 @@ class _QuotationsState extends State<Quotations> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
+    // ClientDetails? client = await getClientDetailsByName(quotation.customerName);
     return Scaffold(
       // appBar: AppBar(title: const Text("Saved Estimations")),
       body: _isLoading
@@ -182,9 +183,8 @@ class _QuotationsState extends State<Quotations> {
                                   if (!snapshot.hasData || snapshot.data == null) {
                                     return const Text("Contact : Not Available", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
                                   }
-
                                   return Text(
-                                    "Contact : ${snapshot.data!.mobileNumber}",
+                                    "Contact : ${snapshot.data!.countryCode} ${snapshot.data!.mobileNumber}",
                                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                   );
                                 },
