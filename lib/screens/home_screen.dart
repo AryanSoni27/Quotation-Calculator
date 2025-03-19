@@ -358,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {
                     formController.customerNameController.text =
                     "${client.firstName} ${client.lastName}";
-                    selectedCustomerMobileNumber = client.mobileNumber;
+                    selectedCustomerMobileNumber = "${client.countryCode} ${client.mobileNumber}";
                   });
                   saveSelectedClient("${client.firstName} ${client.lastName}", client.mobileNumber); // ✅ Save selected client
                   Navigator.pop(context);

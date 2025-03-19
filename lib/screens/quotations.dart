@@ -91,7 +91,7 @@ class _QuotationsState extends State<Quotations> {
         customerName: quotation.customerName,
         date: formattedDate,
         projectName: quotation.projectName,
-        mobileNumber: client != null ? client.mobileNumber : quotation.mobileNumber,
+        mobileNumber: client != null ? "${client.countryCode} ${client.mobileNumber}" : quotation.mobileNumber,
         streetAddress: client?.streetAddress ?? "N/A",
         city: client?.city ?? "N/A",
         state: client?.state ?? "N/A",
