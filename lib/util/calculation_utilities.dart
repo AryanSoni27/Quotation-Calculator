@@ -17,6 +17,7 @@ double calculateMeasurement({
   required double length,
   required double width,
   required double height,
+  required double quantity,
   required String unit,
   required String shape,
 }) {
@@ -27,9 +28,9 @@ double calculateMeasurement({
 
   // Calculate based on selected shape
   if (shape == "Area") {
-    return lengthInFeet * widthInFeet; // Returns square feet
+    return lengthInFeet * widthInFeet * quantity; // Returns square feet
   } else if (shape == "Cubic") {
-    return lengthInFeet * widthInFeet * heightInFeet; // Returns cubic feet
+    return lengthInFeet * widthInFeet * heightInFeet * quantity; // Returns cubic feet
   }
   return 0;
 }

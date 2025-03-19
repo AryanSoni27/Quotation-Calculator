@@ -37,8 +37,8 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
           void calculateTotalCost() {
             double squareFeet = double.tryParse(squareFootController.text) ?? 0;
             double rate = double.tryParse(rateController.text) ?? 0;
-            double quantity = double.tryParse(quantityController.text) ?? 0;
-            double totalCost = squareFeet * rate * quantity;
+            // double quantity = double.tryParse(quantityController.text) ?? 0;
+            double totalCost = squareFeet * rate;
 
             setState(() {
               totalCostController.text = totalCost.toStringAsFixed(2);
@@ -54,6 +54,7 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
               length: length,
               width: width,
               height: height,
+              quantity: double.tryParse(quantityController.text) ?? 0,
               unit: selectedUnit,
               shape: selectedShape,
             );
@@ -242,10 +243,27 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                       children: [
                         Expanded(
                           child: TextField(
+                            controller: quantityController,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.numbers),
+                              labelText: "Quantity",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+
+                        //Square Foot Field
+                        Expanded(
+                          child: TextField(
                             controller: squareFootController,
                             decoration: InputDecoration(
                               // prefixIcon: Icon(Icons.square_foot),
-                              prefixText: "SquareFoot: ",
+                              prefixText: "Sq. Foot: ",
                               prefixStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                               // labelText: "Square Foot",
                               border: InputBorder.none,
@@ -256,21 +274,6 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                             ),
                             keyboardType: TextInputType.number,
                             readOnly: true, // User can't edit the result
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: quantityController,
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.numbers),
-                              labelText: "Quantity",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              // contentPadding: EdgeInsets.all(10),
-                            ),
-                            keyboardType: TextInputType.number,
                           ),
                         ),
                       ],
