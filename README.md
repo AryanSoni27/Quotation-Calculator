@@ -15,7 +15,12 @@ Quotation Calculator is a Flutter-based application that calculates quotations b
 - **PDF Package** (For PDF generation)
 
 ## 📸 Screenshots
-*(Add screenshots of your app UI here to showcase its functionality.)*
+   ![WhatsApp Image 2025-03-20 at 12 06 11_bda750dd](https://github.com/user-attachments/assets/ba1f0c87-1a48-44e3-9ca4-433c4b95bde0)
+   ![WhatsApp Image 2025-03-20 at 12 06 12_6628870c](https://github.com/user-attachments/assets/fef68371-5ca7-4616-b193-5e64b7416ac6)
+   ![WhatsApp Image 2025-03-20 at 12 06 12_f01225b7](https://github.com/user-attachments/assets/f2354950-d148-40d4-9cf2-d54d776018c7)
+   ![WhatsApp Image 2025-03-20 at 12 06 13_2c8ff22f](https://github.com/user-attachments/assets/ca6ed941-bc8c-492b-8e83-d7aa1f0c2f3e)
+   ![WhatsApp Image 2025-03-20 at 12 06 13_43981336](https://github.com/user-attachments/assets/abac3770-11d7-4468-b508-112610c013f0)
+   ![WhatsApp Image 2025-03-20 at 12 06 13_cc54ce94](https://github.com/user-attachments/assets/65c7ee2c-214b-412e-8aeb-78bd06be5abe)
 
 ## 📥 Installation
 1. Clone this repository:
