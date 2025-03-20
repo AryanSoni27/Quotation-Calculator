@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
@@ -246,7 +247,7 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                             controller: quantityController,
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.numbers),
-                              labelText: "Quantity",
+                              labelText: "Qty",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -259,23 +260,18 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
 
                         //Square Foot Field
                         Expanded(
-                          child: TextField(
-                            controller: squareFootController,
-                            decoration: InputDecoration(
-                              // prefixIcon: Icon(Icons.square_foot),
-                              prefixText: "Sq. Foot: ",
-                              prefixStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                              // labelText: "Square Foot",
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                            child: AutoSizeText(
+                              "Sq. Foot: ${squareFootController.text}",
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                              maxLines: 1,
+                              minFontSize: 10,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            keyboardType: TextInputType.number,
-                            readOnly: true, // User can't edit the result
                           ),
                         ),
+
                       ],
                     ),
                     SizedBox(height: 10),
