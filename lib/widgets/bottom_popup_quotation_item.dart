@@ -5,17 +5,34 @@ import '../main.dart';
 import '../models/quotation_item.dart';
 import '../util/calculation_utilities.dart';
 
-Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? existingItem}) async {
+Future<QuotationItem?> showBottomPopup(
+  BuildContext context, {
+  QuotationItem? existingItem,
+}) async {
   // Controllers for handling text input fields
-  TextEditingController lengthController = TextEditingController(text: existingItem?.length.toString() ?? "");
-  TextEditingController widthController = TextEditingController(text: existingItem?.width.toString() ?? "");
-  TextEditingController heightController = TextEditingController(text: existingItem?.height?.toString() ?? "");
+  TextEditingController lengthController = TextEditingController(
+    text: existingItem?.length.toString() ?? "",
+  );
+  TextEditingController widthController = TextEditingController(
+    text: existingItem?.width.toString() ?? "",
+  );
+  TextEditingController heightController = TextEditingController(
+    text: existingItem?.height?.toString() ?? "",
+  );
   TextEditingController squareFootController = TextEditingController();
-  TextEditingController rateController = TextEditingController(text: existingItem?.rate.toString() ?? "");
+  TextEditingController rateController = TextEditingController(
+    text: existingItem?.rate.toString() ?? "",
+  );
   TextEditingController totalCostController = TextEditingController();
-  TextEditingController itemNameController = TextEditingController(text: existingItem?.itemName ?? "");
-  TextEditingController quantityController = TextEditingController(text: existingItem?.quantity.toString() ?? "");
-  TextEditingController footController = TextEditingController(text: existingItem?.foot.toString() ?? "");
+  TextEditingController itemNameController = TextEditingController(
+    text: existingItem?.itemName ?? "",
+  );
+  TextEditingController quantityController = TextEditingController(
+    text: existingItem?.quantity.toString() ?? "",
+  );
+  TextEditingController footController = TextEditingController(
+    text: existingItem?.foot.toString() ?? "",
+  );
 
   // Default values for unit and shape selections
   String selectedUnit = "Feet";
@@ -32,8 +49,6 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
       final isDarkMode = themeProvider.isDarkMode;
       return StatefulBuilder(
         builder: (context, setState) {
-
-
           bool isItemNameEmpty = false;
 
           void calculateTotalCost() {
@@ -88,7 +103,6 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
             }
           }
 
-
           void removeCalculationListeners() {
             lengthController.removeListener(calculateSquareFoot);
             widthController.removeListener(calculateSquareFoot);
@@ -115,7 +129,10 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                     Center(
                       child: Text(
                         "Enter Item Details",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     SizedBox(height: 10),
@@ -128,10 +145,13 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        errorText: isItemNameEmpty ? "Item Name is required" : null,
+                        errorText:
+                            isItemNameEmpty ? "Item Name is required" : null,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(color: isItemNameEmpty ? Colors.red : Colors.blue),
+                          borderSide: BorderSide(
+                            color: isItemNameEmpty ? Colors.red : Colors.blue,
+                          ),
                         ),
                       ),
                       onChanged: (value) {
@@ -153,7 +173,7 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                         ),
                       ),
                       value: selectedUnit,
-                      items: ["Inch", "Feet", "Meter", "R. Foot"].map((String unit) {
+                      items: ["Inch", "Feet", "Meter", "R. Foot", "N/A"].map((String unit) {
                         return DropdownMenuItem<String>(
                           value: unit,
                           child: Text(unit),
@@ -162,109 +182,127 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedUnit = newValue!;
-                          calculateSquareFoot();
+                          calculateSquareFoot(); // Ensure recalculation
                         });
                       },
                     ),
                     SizedBox(height: 10),
 
-                    // Conditionally show the Shape dropdown
-                    if (selectedUnit != "R. Foot")
-                      DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.category),
-                          labelText: "Select Shape",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        value: selectedShape,
-                        items: ["Area", "Cubic"].map((String shape) {
-                          return DropdownMenuItem<String>(
-                            value: shape,
-                            child: Text(shape),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedShape = newValue!;
-                            calculateSquareFoot();
-                          });
-                        },
-                      ),
-                    SizedBox(height: 10),
-
-                    // Measurement input fields
-                    if (selectedUnit != "R. Foot") ...[
-                      Row(
+// Shape selection (Hidden for "N/A" and "R. Foot")
+                    Visibility(
+                      visible: selectedUnit != "N/A" && selectedUnit != "R. Foot",
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: lengthController,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.straighten),
-                                labelText: "Length",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                contentPadding: EdgeInsets.all(10),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.category),
+                              labelText: "Select Shape",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
                               ),
-                              keyboardType: TextInputType.number,
                             ),
+                            value: selectedShape,
+                            items: ["Area", "Cubic"].map((String shape) {
+                              return DropdownMenuItem<String>(
+                                value: shape,
+                                child: Text(shape),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedShape = newValue!;
+                                calculateSquareFoot();
+                              });
+                            },
                           ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              controller: widthController,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.straighten),
-                                labelText: "Width",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                contentPadding: EdgeInsets.all(10),
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          if (selectedShape == "Cubic") ...[
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: TextField(
-                                controller: heightController,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.height),
-                                  labelText: "Height",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  contentPadding: EdgeInsets.all(10),
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
+                          SizedBox(height: 10),
                         ],
                       ),
-                    ] else ...[
-                      // Show only Foot field when "R. Foot" is selected
-                      TextField(
-                        controller: footController,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.straighten),
-                          labelText: "Foot",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
+                    ),
+
+// Length, Width, Height (Hidden for "N/A" and "R. Foot")
+                    Visibility(
+                      visible: selectedUnit != "N/A" && selectedUnit != "R. Foot",
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: lengthController,
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.straighten),
+                                    labelText: "Length",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    contentPadding: EdgeInsets.all(10),
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: TextField(
+                                  controller: widthController,
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.straighten),
+                                    labelText: "Width",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    contentPadding: EdgeInsets.all(10),
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ),
+                              if (selectedShape == "Cubic") ...[
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: TextField(
+                                    controller: heightController,
+                                    decoration: InputDecoration(
+                                      prefixIcon: Icon(Icons.height),
+                                      labelText: "Height",
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      contentPadding: EdgeInsets.all(10),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
-                          contentPadding: EdgeInsets.all(10),
-                        ),
-                        keyboardType: TextInputType.number,
+                          SizedBox(height: 10),
+                        ],
                       ),
-                    ],
+                    ),
 
-                    SizedBox(height: 10),
+// Foot field (Only shown for "R. Foot")
+                    Visibility(
+                      visible: selectedUnit == "R. Foot",
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: footController,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.straighten),
+                              labelText: "Foot",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              contentPadding: EdgeInsets.all(10),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                          SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
 
-                    // Result field showing calculated square foot
+// Qty and Sq Foot in the same row, but hide Sq Foot when "N/A" is selected
                     Row(
                       children: [
                         Expanded(
@@ -283,25 +321,27 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                         ),
                         SizedBox(width: 10),
 
-                        //Square Foot Field
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                            child: AutoSizeText(
-                              "Sq. Foot: ${squareFootController.text}",
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                              maxLines: 1,
-                              minFontSize: 10,
-                              overflow: TextOverflow.ellipsis,
+                        // Sq Foot should be hidden when "N/A" is selected
+                        Visibility(
+                          visible: selectedUnit != "N/A",
+                          child: Expanded(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                              child: AutoSizeText(
+                                "Sq. Foot: ${squareFootController.text}",
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                                maxLines: 1,
+                                minFontSize: 10,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
                         ),
-
                       ],
                     ),
                     SizedBox(height: 10),
 
-                    // Rate input field for price per square foot
+// Rate (Always visible)
                     TextField(
                       controller: rateController,
                       decoration: InputDecoration(
@@ -316,7 +356,7 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                     ),
                     SizedBox(height: 10),
 
-                    // Total cost field (calculated from rate * square footage)
+// Total Cost (Always visible)
                     TextField(
                       controller: totalCostController,
                       readOnly: true,
@@ -332,11 +372,13 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                     ),
                     SizedBox(height: 20),
 
+
                     // Add item button
                     Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
+                          backgroundColor:
+                              isDarkMode ? Colors.white12 : Colors.white,
                           elevation: 10,
                         ),
                         onPressed: () {
@@ -349,17 +391,25 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
 
                           // Create the QuotationItem with all entered data
                           final item = QuotationItem(
-                            id: existingItem?.id ?? DateTime.now().millisecondsSinceEpoch,
+                            id:
+                                existingItem?.id ??
+                                DateTime.now().millisecondsSinceEpoch,
                             itemName: itemNameController.text,
                             unit: selectedUnit,
                             shape: selectedShape,
                             length: double.tryParse(lengthController.text) ?? 0,
                             width: double.tryParse(widthController.text) ?? 0,
-                            height: selectedShape == "Cubic" ? double.tryParse(heightController.text) : null,
-                            squareFeet: double.tryParse(squareFootController.text) ?? 0,
-                            quantity: int.tryParse(quantityController.text) ?? 0,
+                            height:
+                                selectedShape == "Cubic"
+                                    ? double.tryParse(heightController.text)
+                                    : null,
+                            squareFeet:
+                                double.tryParse(squareFootController.text) ?? 0,
+                            quantity:
+                                int.tryParse(quantityController.text) ?? 0,
                             rate: double.tryParse(rateController.text) ?? 0,
-                            totalCost: double.tryParse(totalCostController.text) ?? 0,
+                            totalCost:
+                                double.tryParse(totalCostController.text) ?? 0,
                             foot: double.tryParse(footController.text) ?? 0,
                           );
 
@@ -367,8 +417,12 @@ Future<QuotationItem?> showBottomPopup(BuildContext context, {QuotationItem? exi
                           Navigator.of(context).pop(item);
                           print("Item added: ${item?.itemName}");
                         },
-                        child: Text(existingItem != null ? "Update Item" : "Add Item",
-                                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+                        child: Text(
+                          existingItem != null ? "Update Item" : "Add Item",
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(height: 10),

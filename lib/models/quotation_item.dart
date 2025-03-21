@@ -8,11 +8,12 @@ class QuotationItem {
   final double? length;
   final double? width;
   final double? height;
+  final double? foot;
+  final double? NA;
   final double squareFeet;
   final int quantity;
   final double rate;
   final double totalCost;
-  final double? foot;
 
   QuotationItem({
     required this.id,
@@ -22,11 +23,12 @@ class QuotationItem {
     this.length,
     this.width,
     this.height,
+    this.foot,
+    this.NA,
     required this.squareFeet,
     required this.quantity,
     required this.rate,
     required this.totalCost,
-    this.foot
   });
 
   // Create a copy of the item with updated values
@@ -39,6 +41,7 @@ class QuotationItem {
     double? width,
     double? height,
     double? foot,
+    double? NA,
     double? squareFeet,
     int? quantity,
     double? rate,
@@ -52,11 +55,12 @@ class QuotationItem {
       length: length ?? this.length,
       width: width ?? this.width,
       height: height ?? this.height,
+      foot: foot ?? this.foot,
+      NA: NA ?? this.NA,
       squareFeet: squareFeet ?? this.squareFeet,
       quantity: quantity ?? this.quantity,
       rate: rate ?? this.rate,
       totalCost: totalCost ?? this.totalCost,
-      foot: foot ?? this.foot
     );
   }
 
@@ -69,6 +73,8 @@ class QuotationItem {
       'length': length,
       'width': width,
       if (height != null) 'height': height,
+      if (foot != null) 'foot': foot,
+      if (NA != null) 'NA': NA,
       'squareFeet': squareFeet,
       'quantity': quantity,
       'rate': rate,
