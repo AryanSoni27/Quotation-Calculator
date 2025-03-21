@@ -46,7 +46,7 @@ class DBHelper {
 
     return await openDatabase(
       dbPath,
-      version: 2,  // 🚀 Upgrade the database version from 1 to 2
+      version: 3,
       onCreate: (db, version) {
         db.execute(
           "CREATE TABLE $QUOTATION_TABLE "
@@ -64,11 +64,6 @@ class DBHelper {
               "$COLUMN_RATE DOUBLE,"
               "$COLUMN_TOTAL_COST DOUBLE )",
         );
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
-          await db.execute("ALTER TABLE $QUOTATION_TABLE ADD COLUMN $COLUMN_FOOT DOUBLE DEFAULT 0");
-        }
       },
     );
   }
@@ -132,8 +127,8 @@ class DBHelper {
         oldShape,
         oldLength,
         oldWidth,
-        if (oldHeight != null) oldHeight, // Only add if height exists
-        if (oldFoot != null) oldFoot,     // Only add if foot exists
+        if (oldHeight != null) oldHeight,
+        if (oldFoot != null) oldFoot,
       ],
     );
   }

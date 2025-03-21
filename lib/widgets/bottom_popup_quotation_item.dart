@@ -173,13 +173,40 @@ Future<QuotationItem?> showBottomPopup(
                         labelText: "Measurement Unit",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
+                          gapPadding: 10,
                         ),
                       ),
                       value: selectedUnit,
+                      borderRadius: BorderRadius.circular(15),
+                      dropdownColor: Colors.white,
+                      menuMaxHeight: 200,
+                      icon: Icon(Icons.arrow_drop_down),
+                      iconSize: 24,
+                      itemHeight: 50,
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 16,
+                      ),
+                      elevation: 8,
+                      // Here's the important change:
+                      // Custom dropdown button builder to constrain width
+                      selectedItemBuilder: (BuildContext context) {
+                        return ["Inch", "Feet", "Meter", "R. Foot", "N/A"].map<Widget>((String unit) {
+                          return Text(
+                            unit,
+                            style: TextStyle(color: Colors.black87, fontSize: 16),
+                          );
+                        }).toList();
+                      },
                       items: ["Inch", "Feet", "Meter", "R. Foot", "N/A"].map((String unit) {
                         return DropdownMenuItem<String>(
                           value: unit,
-                          child: Text(unit),
+                          // Each item in a constrained container
+                          child: Container(
+                            width: 100, // Adjust this width to control dropdown popup width
+                            alignment: Alignment.centerLeft,
+                            child: Text(unit),
+                          ),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
@@ -189,9 +216,10 @@ Future<QuotationItem?> showBottomPopup(
                         });
                       },
                     ),
+
                     SizedBox(height: 10),
 
-// Shape selection (Hidden for "N/A" and "R. Foot")
+                    // Shape selection (Hidden for "N/A" and "R. Foot")
                     Visibility(
                       visible: selectedUnit != "N/A" && selectedUnit != "R. Foot",
                       child: Column(
@@ -202,9 +230,21 @@ Future<QuotationItem?> showBottomPopup(
                               labelText: "Select Shape",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
+                                gapPadding: 10,
                               ),
                             ),
                             value: selectedShape,
+                            borderRadius: BorderRadius.circular(15),
+                            dropdownColor: Colors.white,
+                            menuMaxHeight: 200,
+                            icon: Icon(Icons.arrow_drop_down),
+                            iconSize: 24,
+                            itemHeight: 50,
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                            ),
+                            elevation: 8,
                             items: ["Area", "Cubic"].map((String shape) {
                               return DropdownMenuItem<String>(
                                 value: shape,
