@@ -54,9 +54,12 @@ Future<QuotationItem?> showBottomPopup(
           void calculateTotalCost() {
             double squareFeet = double.tryParse(squareFootController.text) ?? 0;
             double rate = double.tryParse(rateController.text) ?? 0;
+            double quantity = double.tryParse(quantityController.text) ?? 0;
             // double quantity = double.tryParse(quantityController.text) ?? 0;
             double totalCost = squareFeet * rate;
-
+            if(selectedUnit == "N/A"){
+              totalCost = quantity * rate;
+            }
             setState(() {
               totalCostController.text = totalCost.toStringAsFixed(2);
             });

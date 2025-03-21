@@ -101,49 +101,43 @@ class DBHelper {
 
   //Update a quotation item
   Future<int> updateQuotationItem(
-    String oldItemName,
-    String oldUnit,
-    String oldShape,
-    double oldLength,
-    double oldWidth,
-    double? oldHeight,
-    double? oldFoot,
-    double? oldSquareFeet,
-    int? oldQuantity,
-    double? oldRate,
-    double? oldTotalCost,
-    Map<String, dynamic> newValues,
-  ) async {
+      String oldItemName,
+      String oldUnit,
+      String oldShape,
+      double oldLength,
+      double oldWidth,
+      double? oldHeight,
+      double? oldFoot,
+      double oldSquareFeet,
+      int oldQuantity,
+      double oldRate,
+      double oldTotalCost,
+      Map<String, dynamic> newValues,
+      ) async {
     Database db = await getDB();
+
     return await db.update(
       QUOTATION_TABLE,
       newValues,
-      where:
-          "$COLUMN_ITEM_NAME = ? AND "
-              "$COLUMN_UNIT = ? AND "
-              "$COLUMN_SHAPE = ? AND "
-              "$COLUMN_LENGTH = ? AND "
-              "$COLUMN_WIDTH = ? AND "
-              "($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ? OR "
-              "$COLUMN_HEIGHT IS NULL) AND "
-              "($COLUMN_FOOT IS ? OR "
-              "$COLUMN_FOOT = ? OR "
-              "$COLUMN_FOOT IS NULL)",
+      where: "$COLUMN_ITEM_NAME = ? AND "
+          "$COLUMN_UNIT = ? AND "
+          "$COLUMN_SHAPE = ? AND "
+          "$COLUMN_LENGTH = ? AND "
+          "$COLUMN_WIDTH = ? "
+          "${oldHeight != null ? "AND $COLUMN_HEIGHT = ?" : ""} "
+          "${oldFoot != null ? "AND $COLUMN_FOOT = ?" : ""} ",
       whereArgs: [
         oldItemName,
         oldUnit,
         oldShape,
         oldLength,
         oldWidth,
-        oldHeight,
-        oldFoot,
-        oldSquareFeet,
-        oldQuantity,
-        oldRate,
-        oldTotalCost,
+        if (oldHeight != null) oldHeight, // Only add if height exists
+        if (oldFoot != null) oldFoot,     // Only add if foot exists
       ],
     );
   }
+
 
   //Delete a quotation item
   Future<int> deleteQuotationItem(int id) async {

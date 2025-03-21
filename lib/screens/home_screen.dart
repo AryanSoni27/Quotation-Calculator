@@ -204,8 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Update a quotation item in database
-  Future<void> updateQuotationItem(QuotationItem oldItem,
-      QuotationItem newItem,) async {
+  Future<void> updateQuotationItem(QuotationItem oldItem, QuotationItem newItem) async {
     Map<String, dynamic> updatedValues = {
       DBHelper.COLUMN_ITEM_NAME: newItem.itemName,
       DBHelper.COLUMN_UNIT: newItem.unit,
@@ -213,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (newItem.length != null) DBHelper.COLUMN_LENGTH: newItem.length,
       if (newItem.width != null) DBHelper.COLUMN_WIDTH: newItem.width,
       if (newItem.height != null) DBHelper.COLUMN_HEIGHT: newItem.height,
+      if (newItem.foot != null) DBHelper.COLUMN_FOOT: newItem.foot,
       DBHelper.COLUMN_SQUARE_FEET: newItem.squareFeet,
       DBHelper.COLUMN_QUANTITY: newItem.quantity,
       DBHelper.COLUMN_RATE: newItem.rate,
@@ -225,8 +225,8 @@ class _HomeScreenState extends State<HomeScreen> {
       oldItem.shape ?? '',
       oldItem.length ?? 0,
       oldItem.width ?? 0,
-      oldItem.height ?? 0,
-      oldItem.foot ?? 0,
+      oldItem.height,
+      oldItem.foot,
       oldItem.squareFeet,
       oldItem.quantity,
       oldItem.rate,
@@ -234,8 +234,19 @@ class _HomeScreenState extends State<HomeScreen> {
       updatedValues,
     );
 
+    print("Item is updating");
+
+    setState(() {
+      int index = items.indexWhere((item) => item.id == oldItem.id);
+      if (index != -1) {
+        items[index] = newItem;  // Update item in the UI list
+      }
+    });
+
     getQuotationItems(); // Refresh UI
   }
+
+
 
   // Delete a quotation item from database
   Future<void> deleteQuotationItem(int id) async {
@@ -665,10 +676,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
-                          'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
+                          item.unit == "N/A"
+                              ? "Area: N/A"
+                              : 'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
                               '${item.unit == "R. Foot" ? "" : " (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})"}',
                           style: TextStyle(fontSize: 11.5),
                         ),
+
 
                         children: [
                           Padding(

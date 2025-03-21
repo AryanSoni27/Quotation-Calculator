@@ -27,6 +27,8 @@ double calculateMeasurement({
     return foot * quantity;
   }
 
+
+
   // Convert all measurements to feet before calculating
   double lengthInFeet = convertToFeet(length, unit);
   double widthInFeet = convertToFeet(width, unit);
@@ -38,6 +40,8 @@ double calculateMeasurement({
   } else if (shape == "Cubic") {
     return lengthInFeet * widthInFeet * heightInFeet * quantity; // Returns cubic feet
   }
+
+
 
   return 0;
 }
