@@ -183,8 +183,14 @@ Future<void> generatePdf({
                   (index) => [
                     ("${index + 1}"),
                     items[index].itemName,
-                    "${items[index].length} × ${items[index].width}${items[index].height != null ? ' × ${items[index].height}' : ''} ${items[index].unit}",
-                    (items[index].squareFeet.toStringAsFixed(2)),
+                    items[index].unit == "N/A"
+                        ? "N/A"
+                        : (items[index].unit == "R. Foot"
+                        ? "R. Foot"
+                        : "${items[index].length} × ${items[index].width}${items[index].height != null ? ' × ${items[index].height}' : ''} ${items[index].unit}"),
+                    items[index].unit == "N/A"
+                        ? "N/A":
+                        (items[index].squareFeet.toStringAsFixed(2)),
                     (items[index].quantity.toString()),
                     (items[index].rate.toStringAsFixed(2)),
                     NumberFormat("#,##0.00").format(items[index].totalCost),
@@ -194,6 +200,7 @@ Future<void> generatePdf({
                 cellStyle: pw.TextStyle(fontSize: 12),
                 cellAlignments: {
                   0: pw.Alignment.center,
+                  2: pw.Alignment.center,
                   3: pw.Alignment.center,
                   4: pw.Alignment.center,
                   5: pw.Alignment.center,
