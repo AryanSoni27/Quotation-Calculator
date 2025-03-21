@@ -360,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "${client.firstName} ${client.lastName}";
                     selectedCustomerMobileNumber = "${client.countryCode} ${client.mobileNumber}";
                   });
-                  saveSelectedClient("${client.firstName} ${client.lastName}", client.mobileNumber); // ✅ Save selected client
+                  saveSelectedClient("${client.firstName} ${client.lastName}", "${client.countryCode} ${client.mobileNumber}"); // ✅ Save selected client
                   Navigator.pop(context);
                 },
               )).toList(),
