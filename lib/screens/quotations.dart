@@ -228,7 +228,9 @@ class _QuotationsState extends State<Quotations> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
+                                                    item.unit == "N/A"
+                                                        ? "Area: N/A"
+                                                        : 'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
                                                         '${item.unit == "R. Foot" ? "" : " (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})"}',
                                                     style: const TextStyle(
                                                       fontSize: 11,
