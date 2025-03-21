@@ -26,6 +26,8 @@ Future<void> generatePdf({
     final firstName = prefs.getString('firstName') ?? "";
     final lastName = prefs.getString('lastName') ?? "";
     final userMobileNumber = prefs.getString('mobileNumber') ?? "";
+    final userCountryCode = prefs.getString('countryCode') ?? "+91";
+
 
     String formattedDate;
     try {
@@ -151,7 +153,7 @@ Future<void> generatePdf({
                       ),
                       pw.SizedBox(height: 5),
                       pw.Text(
-                        "Mobile : $userMobileNumber",
+                        "Mobile : $userCountryCode $userMobileNumber",  // ✅ Added Country Code Here
                         style: pw.TextStyle(fontSize: 12),
                       ),
                     ],

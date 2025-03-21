@@ -1,8 +1,10 @@
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../data/country_codes.dart';  // Import country codes
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -21,9 +23,9 @@ class _SettingsState extends State<Settings> {
   String savedFirstName = "";
   String savedLastName = "";
   String savedMobileNumber = "";
+  String selectedCountryCode = "+91"; // Default to India
   bool isLoading = true;
 
-  // Individual colors for each field
   final Color firstNameColor = Colors.blue;
   final Color lastNameColor = Colors.blue;
   final Color mobileColor = Colors.blue;
@@ -41,12 +43,12 @@ class _SettingsState extends State<Settings> {
       savedFirstName = prefs.getString('firstName') ?? "";
       savedLastName = prefs.getString('lastName') ?? "";
       savedMobileNumber = prefs.getString('mobileNumber') ?? "";
+      selectedCountryCode = prefs.getString('countryCode') ?? "+91"; // Load country code
 
       firstNameController.text = savedFirstName;
       lastNameController.text = savedLastName;
       mobileNumberController.text = savedMobileNumber;
 
-      // If we have saved data, start in view mode
       isEditing = savedFirstName.isEmpty && savedLastName.isEmpty;
       isLoading = false;
     });
@@ -57,22 +59,21 @@ class _SettingsState extends State<Settings> {
     await prefs.setString('firstName', firstNameController.text);
     await prefs.setString('lastName', lastNameController.text);
     await prefs.setString('mobileNumber', mobileNumberController.text);
+    await prefs.setString('countryCode', selectedCountryCode); // Save country code
   }
 
   void toggleEditMode() {
     if (isEditing) {
-      // Validate before saving
       if (_formKey.currentState!.validate()) {
         setState(() {
           savedFirstName = firstNameController.text;
           savedLastName = lastNameController.text;
           savedMobileNumber = mobileNumberController.text;
           isEditing = false;
-          _saveData(); // Save data when form is submitted
+          _saveData();
         });
       }
     } else {
-      // Switch back to editing mode
       setState(() {
         firstNameController.text = savedFirstName;
         lastNameController.text = savedLastName;
@@ -95,7 +96,6 @@ class _SettingsState extends State<Settings> {
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
-            // Dark mode switch
             ListTile(
               leading: Icon(Icons.dark_mode, color: iconColor),
               title: const Text("Dark Mode"),
@@ -109,15 +109,15 @@ class _SettingsState extends State<Settings> {
             ),
 
             SizedBox(height: 20),
-
             Divider(thickness: 1, color: Colors.grey),
 
             Text("Profile",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                style:
+                TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
             SizedBox(height: 15),
 
-            // First name and last name fields
+            // First Name & Last Name (With Prefix Icons)
             Row(
               children: [
                 Expanded(
@@ -125,6 +125,7 @@ class _SettingsState extends State<Settings> {
                     controller: firstNameController,
                     readOnly: !isEditing,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person, color: Colors.blue),
                       labelText: "First Name",
                       labelStyle: TextStyle(color: firstNameColor),
                       border: OutlineInputBorder(
@@ -132,15 +133,14 @@ class _SettingsState extends State<Settings> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: firstNameColor, width: 2),
+                        borderSide:
+                        BorderSide(color: firstNameColor, width: 2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: firstNameColor),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      // filled: !isEditing,
-                      // fillColor: !isEditing ? Colors.grey.withOpacity(0.1) : null,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -156,6 +156,8 @@ class _SettingsState extends State<Settings> {
                     controller: lastNameController,
                     readOnly: !isEditing,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person_outline,
+                          color: Colors.blue),
                       labelText: "Last Name",
                       labelStyle: TextStyle(color: lastNameColor),
                       border: OutlineInputBorder(
@@ -163,15 +165,14 @@ class _SettingsState extends State<Settings> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: lastNameColor, width: 2),
+                        borderSide:
+                        BorderSide(color: lastNameColor, width: 2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: lastNameColor),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      // filled: !isEditing,
-                      // fillColor: !isEditing ? Colors.grey.withOpacity(0.1) : null,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -186,47 +187,52 @@ class _SettingsState extends State<Settings> {
 
             SizedBox(height: 10),
 
-            // Mobile number field
-            TextFormField(
+            // Mobile Number with Country Code using IntlPhoneField
+            IntlPhoneField(
               controller: mobileNumberController,
-              readOnly: !isEditing,
-              keyboardType: TextInputType.phone,
-              inputFormatters: isEditing ? [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(10),
-              ] : [],
+              initialCountryCode: countryCodeToIso[selectedCountryCode]?.first ?? 'IN',
+              enabled: isEditing,  // Disable editing when not in edit mode
               decoration: InputDecoration(
                 labelText: "Mobile Number",
-                labelStyle: TextStyle(color: mobileColor),
+                labelStyle: TextStyle(color: mobileColor),  // ✅ Keeps label color same
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor, width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),
+                  borderSide: BorderSide(color: mobileColor),  // ✅ Keeps border color same
                   borderRadius: BorderRadius.circular(10),
                 ),
-                // filled: !isEditing,
-                // fillColor: !isEditing ? Colors.grey.withValues(0.1) : null,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: mobileColor),  // ✅ No color change after submit
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: mobileColor),  // ✅ Keeps border color same when disabled
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Mobile number is required';
+              style: TextStyle(color: Colors.black),  // ✅ Keeps text color same
+              dropdownTextStyle: TextStyle(color: Colors.black),  // ✅ Keeps country code text color same
+              onChanged: (phone) {
+                if (isEditing) {
+                  setState(() {
+                    mobileNumberController.text = phone.number;
+                    selectedCountryCode = phone.countryCode;
+                  });
                 }
-                if (value.length != 10) {
-                  return 'Mobile number must be exactly 10 digits';
+              },
+              onCountryChanged: (country) {
+                if (isEditing) {
+                  setState(() {
+                    selectedCountryCode = country.dialCode;
+                  });
                 }
-                return null;
               },
             ),
 
+
             SizedBox(height: 20),
 
-            // Submit/Edit button
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -235,7 +241,8 @@ class _SettingsState extends State<Settings> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: iconColor,
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   child: Text(isEditing ? "Submit" : "Edit",
                       style: TextStyle(color: Colors.white)),
@@ -247,4 +254,4 @@ class _SettingsState extends State<Settings> {
       ),
     );
   }
-  }
+}
