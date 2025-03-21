@@ -4,27 +4,29 @@ class QuotationItem {
   final int id;
   final String itemName;
   final String unit;
-  final String shape;
-  final double length;
-  final double width;
+  final String? shape;
+  final double? length;
+  final double? width;
   final double? height;
   final double squareFeet;
   final int quantity;
   final double rate;
   final double totalCost;
+  final double? foot;
 
   QuotationItem({
     required this.id,
     required this.itemName,
     required this.unit,
-    required this.shape,
-    required this.length,
-    required this.width,
+    this.shape,
+    this.length,
+    this.width,
     this.height,
     required this.squareFeet,
     required this.quantity,
     required this.rate,
     required this.totalCost,
+    this.foot
   });
 
   // Create a copy of the item with updated values
@@ -36,6 +38,7 @@ class QuotationItem {
     double? length,
     double? width,
     double? height,
+    double? foot,
     double? squareFeet,
     int? quantity,
     double? rate,
@@ -53,6 +56,7 @@ class QuotationItem {
       quantity: quantity ?? this.quantity,
       rate: rate ?? this.rate,
       totalCost: totalCost ?? this.totalCost,
+      foot: foot ?? this.foot
     );
   }
 

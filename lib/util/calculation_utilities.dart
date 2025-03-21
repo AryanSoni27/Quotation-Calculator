@@ -20,7 +20,13 @@ double calculateMeasurement({
   required double quantity,
   required String unit,
   required String shape,
+  required double foot,
 }) {
+  // First, check if "R. Foot" is selected
+  if (unit == "R. Foot") {
+    return foot * quantity;
+  }
+
   // Convert all measurements to feet before calculating
   double lengthInFeet = convertToFeet(length, unit);
   double widthInFeet = convertToFeet(width, unit);
@@ -32,5 +38,6 @@ double calculateMeasurement({
   } else if (shape == "Cubic") {
     return lengthInFeet * widthInFeet * heightInFeet * quantity; // Returns cubic feet
   }
+
   return 0;
 }

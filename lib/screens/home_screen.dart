@@ -163,13 +163,15 @@ class _HomeScreenState extends State<HomeScreen> {
         itemName: item['item_name'],
         unit: item['unit'],
         shape: item['shape'],
-        length: (item['length'] as num).toDouble(),
-        width: (item['width'] as num).toDouble(),
+        length: item['length'] != null ? (item['length'] as num).toDouble() : null,
+        width: item['width'] != null ? (item['width'] as num).toDouble() : null,
         height: item['height'] != null ? (item['height'] as num).toDouble() : null,
         squareFeet: (item['square_feet'] as num).toDouble(),
         quantity: item['quantity'] as int,
         rate: (item['rate'] as num).toDouble(),
         totalCost: (item['total_cost'] as num).toDouble(),
+        foot: item['foot'] != null ? (item['foot'] as num).toDouble() : null,
+
       );
     }).toList();
 
@@ -184,14 +186,16 @@ class _HomeScreenState extends State<HomeScreen> {
       DBHelper.COLUMN_SNO: item.id, // Store the ID in the database
       DBHelper.COLUMN_ITEM_NAME: item.itemName,
       DBHelper.COLUMN_UNIT: item.unit,
-      DBHelper.COLUMN_SHAPE: item.shape,
-      DBHelper.COLUMN_LENGTH: item.length,
-      DBHelper.COLUMN_WIDTH: item.width,
+      if (item.shape != null) DBHelper.COLUMN_SHAPE: item.shape,
+      if (item.length != null) DBHelper.COLUMN_LENGTH: item.length,
+      if (item.width != null) DBHelper.COLUMN_WIDTH: item.width,
       if (item.height != null) DBHelper.COLUMN_HEIGHT: item.height,
+      if (item.foot != null) DBHelper.COLUMN_FOOT: item.foot,
       DBHelper.COLUMN_SQUARE_FEET: item.squareFeet,
       DBHelper.COLUMN_QUANTITY: item.quantity,
       DBHelper.COLUMN_RATE: item.rate,
       DBHelper.COLUMN_TOTAL_COST: item.totalCost,
+
     };
 
     await dbRef.insertQuotationItem(row); // Insert into database
@@ -205,9 +209,9 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<String, dynamic> updatedValues = {
       DBHelper.COLUMN_ITEM_NAME: newItem.itemName,
       DBHelper.COLUMN_UNIT: newItem.unit,
-      DBHelper.COLUMN_SHAPE: newItem.shape,
-      DBHelper.COLUMN_LENGTH: newItem.length,
-      DBHelper.COLUMN_WIDTH: newItem.width,
+      if (newItem.shape != null) DBHelper.COLUMN_SHAPE: newItem.shape,
+      if (newItem.length != null) DBHelper.COLUMN_LENGTH: newItem.length,
+      if (newItem.width != null) DBHelper.COLUMN_WIDTH: newItem.width,
       if (newItem.height != null) DBHelper.COLUMN_HEIGHT: newItem.height,
       DBHelper.COLUMN_SQUARE_FEET: newItem.squareFeet,
       DBHelper.COLUMN_QUANTITY: newItem.quantity,
@@ -218,10 +222,15 @@ class _HomeScreenState extends State<HomeScreen> {
     await dbRef.updateQuotationItem(
       oldItem.itemName,
       oldItem.unit,
-      oldItem.shape,
-      oldItem.length,
-      oldItem.width,
-      oldItem.height,
+      oldItem.shape ?? '',
+      oldItem.length ?? 0,
+      oldItem.width ?? 0,
+      oldItem.height ?? 0,
+      oldItem.foot ?? 0,
+      oldItem.squareFeet,
+      oldItem.quantity,
+      oldItem.rate,
+      oldItem.totalCost,
       updatedValues,
     );
 
@@ -494,47 +503,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 20),
 
-              // Mobile Number Field
-              // TextField(
-              //   controller: formController.mobileNumberController,
-              //   textAlign: TextAlign.left,
-              //   focusNode: _mobileNumberFocusNode,
-              //   keyboardType: TextInputType.phone,
-              //   inputFormatters: [
-              //     LengthLimitingTextInputFormatter(10),
-              //     FilteringTextInputFormatter.digitsOnly,
-              //   ],
-              //   decoration: InputDecoration(
-              //     prefixIcon: Icon(Icons.phone),
-              //     prefixIconColor: Colors.blue,
-              //     labelText: "Mobile Number",
-              //     enabledBorder: OutlineInputBorder(
-              //       borderSide: BorderSide(
-              //         color: _mobileNumberValid ? Colors.blue : Colors.red,
-              //       ),
-              //       borderRadius: BorderRadius.circular(10),
-              //     ),
-              //     focusedBorder: OutlineInputBorder(
-              //       borderSide: BorderSide(
-              //         width: 2,
-              //         color: _mobileNumberValid ? Colors.blue : Colors.red,
-              //       ),
-              //       borderRadius: BorderRadius.circular(10),
-              //     ),
-              //     // errorText: _mobileNumberValid ? null : "Mobile number is required",
-              //     contentPadding: EdgeInsets.all(10),
-              //   ),
-              //   onChanged: (value) {
-              //     setState(() {
-              //       _mobileNumberValid =
-              //           value
-              //               .trim()
-              //               .length ==
-              //               10; // Valid only if exactly 10 digits
-              //     });
-              //   },
-              // ),
-              // SizedBox(height: 10),
               Row(
                 children: [
                   // if (items.isNotEmpty)
@@ -697,11 +665,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
-                          'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft (${item.length} × ${item.width}${item
-                              .height != null ? ' × ${item.height}' : ''} ${item
-                              .unit})',
+                          'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
+                              '${item.unit == "R. Foot" ? "" : " (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})"}',
                           style: TextStyle(fontSize: 11.5),
                         ),
+
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(

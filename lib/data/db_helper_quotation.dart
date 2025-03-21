@@ -18,10 +18,13 @@ class DBHelper {
   static final String COLUMN_LENGTH = 'length';
   static final String COLUMN_WIDTH = 'width';
   static final String COLUMN_HEIGHT = 'height';
+  static final String COLUMN_FOOT = 'foot';
+  static final String COLUMN_NA = 'na';
   static final String COLUMN_SQUARE_FEET = 'square_feet';
   static final String COLUMN_QUANTITY = 'quantity';
   static final String COLUMN_RATE = 'rate';
   static final String COLUMN_TOTAL_COST = 'total_cost';
+
 
   Database? myDb;
 
@@ -39,31 +42,37 @@ class DBHelper {
 
   Future<Database> openDB() async {
     Directory appDir = await getApplicationDocumentsDirectory();
-
     String dbPath = join(appDir.path, 'quotation.db');
 
     return await openDatabase(
       dbPath,
+      version: 2,  // 🚀 Upgrade the database version from 1 to 2
       onCreate: (db, version) {
-        //Creating table
         db.execute(
-          "create table $QUOTATION_TABLE "
-          "($COLUMN_SNO integer primary key autoincrement,"
-          "$COLUMN_ITEM_NAME text,"
-          "$COLUMN_UNIT text,"
-          "$COLUMN_SHAPE text,"
-          "$COLUMN_LENGTH double,"
-          "$COLUMN_WIDTH double,"
-          "$COLUMN_HEIGHT double,"
-          "$COLUMN_SQUARE_FEET double,"
-          "$COLUMN_QUANTITY integer,"
-          "$COLUMN_RATE double,"
-          "$COLUMN_TOTAL_COST double )",
+          "CREATE TABLE $QUOTATION_TABLE "
+              "($COLUMN_SNO INTEGER PRIMARY KEY AUTOINCREMENT,"
+              "$COLUMN_ITEM_NAME TEXT,"
+              "$COLUMN_UNIT TEXT,"
+              "$COLUMN_SHAPE TEXT,"
+              "$COLUMN_LENGTH DOUBLE,"
+              "$COLUMN_WIDTH DOUBLE,"
+              "$COLUMN_HEIGHT DOUBLE,"
+              "$COLUMN_FOOT DOUBLE,"
+              "$COLUMN_NA DOUBLE,"
+              "$COLUMN_SQUARE_FEET DOUBLE,"
+              "$COLUMN_QUANTITY INTEGER,"
+              "$COLUMN_RATE DOUBLE,"
+              "$COLUMN_TOTAL_COST DOUBLE )",
         );
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute("ALTER TABLE $QUOTATION_TABLE ADD COLUMN $COLUMN_FOOT DOUBLE DEFAULT 0");
+        }
+      },
     );
   }
+
 
   //Queries for database
   //Insert a new quotation item
@@ -98,6 +107,11 @@ class DBHelper {
     double oldLength,
     double oldWidth,
     double? oldHeight,
+    double? oldFoot,
+    double? oldSquareFeet,
+    int? oldQuantity,
+    double? oldRate,
+    double? oldTotalCost,
     Map<String, dynamic> newValues,
   ) async {
     Database db = await getDB();
@@ -105,7 +119,16 @@ class DBHelper {
       QUOTATION_TABLE,
       newValues,
       where:
-          "$COLUMN_ITEM_NAME = ? AND $COLUMN_UNIT = ? AND $COLUMN_SHAPE = ? AND $COLUMN_LENGTH = ? AND $COLUMN_WIDTH = ? AND ($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ?)",
+          "$COLUMN_ITEM_NAME = ? AND "
+              "$COLUMN_UNIT = ? AND "
+              "$COLUMN_SHAPE = ? AND "
+              "$COLUMN_LENGTH = ? AND "
+              "$COLUMN_WIDTH = ? AND "
+              "($COLUMN_HEIGHT IS ? OR $COLUMN_HEIGHT = ? OR "
+              "$COLUMN_HEIGHT IS NULL) AND "
+              "($COLUMN_FOOT IS ? OR "
+              "$COLUMN_FOOT = ? OR "
+              "$COLUMN_FOOT IS NULL)",
       whereArgs: [
         oldItemName,
         oldUnit,
@@ -113,7 +136,11 @@ class DBHelper {
         oldLength,
         oldWidth,
         oldHeight,
-        oldHeight,
+        oldFoot,
+        oldSquareFeet,
+        oldQuantity,
+        oldRate,
+        oldTotalCost,
       ],
     );
   }

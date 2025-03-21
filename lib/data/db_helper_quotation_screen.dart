@@ -104,6 +104,7 @@ class DBHelperQuotation {
         quantity: maps[i]['quantity'],
         rate: maps[i]['rate'],
         totalCost: maps[i]['totalCost'],
+        foot: maps[i]['foot'],
       );
     });
   }
@@ -227,6 +228,7 @@ class DBHelperQuotation {
             quantity: itemMap['quantity'],
             rate: itemMap['rate'],
             totalCost: itemMap['totalCost'],
+            foot: itemMap['foot'],
           ));
         }
       }
@@ -291,6 +293,7 @@ class DBHelperQuotation {
           quantity: itemMap['quantity'],
           rate: itemMap['rate'],
           totalCost: itemMap['totalCost'],
+          foot: itemMap['foot'],
         ));
       }
     }
