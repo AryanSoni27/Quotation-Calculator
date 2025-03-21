@@ -48,9 +48,6 @@ class _QuotationsState extends State<Quotations> {
     return null;
   }
 
-
-
-
   @override
   void initState() {
     super.initState();
@@ -106,22 +103,24 @@ class _QuotationsState extends State<Quotations> {
     }
   }
 
-
-
-
   Future<void> _loadQuotations() async {
     setState(() {
       _isLoading = true;
     });
-
-    final quotations = await DBHelperQuotation.instance.getAllQuotations();
-
-
-
-    setState(() {
-      _quotations = quotations;
-      _isLoading = false;
-    });
+    try {
+      final quotations = await DBHelperQuotation.instance.getAllQuotations();
+      print("Loaded ${quotations.length} quotations");
+      setState(() {
+        _quotations = quotations;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error loading quotations: $e");
+      setState(() {
+        _isLoading = false;
+        // Show error state
+      });
+    }
   }
 
   @override
@@ -308,16 +307,16 @@ class _QuotationsState extends State<Quotations> {
                   );
                 },
               ),
-      floatingActionButton: FloatingActionButton.extended(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-        onPressed: _loadQuotations,
-        backgroundColor: Colors.white,
-        icon: Icon(Icons.refresh, color: Colors.blue),
-        label: Text(
-          "Refresh",
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+      //   onPressed: _loadQuotations,
+      //   backgroundColor: Colors.white,
+      //   icon: Icon(Icons.refresh, color: Colors.blue),
+      //   label: Text(
+      //     "Refresh",
+      //     style: TextStyle(color: Colors.black, fontSize: 16),
+      //   ),
+      // ),
     );
   }
 }
