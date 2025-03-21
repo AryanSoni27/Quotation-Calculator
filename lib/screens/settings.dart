@@ -194,12 +194,12 @@ class _SettingsState extends State<Settings> {
               enabled: isEditing,  // Disable editing when not in edit mode
               decoration: InputDecoration(
                 labelText: "Mobile Number",
-                labelStyle: TextStyle(color: mobileColor),  // ✅ Keeps label color same
+                labelStyle: TextStyle(color: mobileColor),  // ✅ Label remains same
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),  // ✅ Keeps border color same
+                  borderSide: BorderSide(color: mobileColor),  // ✅ Border color unchanged
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -211,8 +211,12 @@ class _SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              style: TextStyle(color: Colors.black),  // ✅ Keeps text color same
-              dropdownTextStyle: TextStyle(color: Colors.black),  // ✅ Keeps country code text color same
+              style: TextStyle(
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  // ✅ Dynamic text color
+              ),
+              dropdownTextStyle: TextStyle(
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  // ✅ Country code color adapts
+              ),
               onChanged: (phone) {
                 if (isEditing) {
                   setState(() {
@@ -229,6 +233,7 @@ class _SettingsState extends State<Settings> {
                 }
               },
             ),
+
 
 
             SizedBox(height: 20),
