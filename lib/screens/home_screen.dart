@@ -357,88 +357,145 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDarkMode = themeProvider.isDarkMode;
+
+    List<ClientDetails> filteredClients = List.from(clients);
+    TextEditingController searchController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      isScrollControlled: true, // Ensures proper keyboard handling
       builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(15),
-          constraints: BoxConstraints(
-            minHeight: 200,
-            maxHeight: MediaQuery.of(context).size.height * 0.6,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header with title and close button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Select a Customer",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return FractionallySizedBox(
+              heightFactor: 0.8, // Fix height to 80% of screen
+              child: Container(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    // Header with title and close button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Select a Customer",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: isDarkMode ? Colors.white60 : Colors.black54),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close, color: Colors.black54),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              Divider(thickness: 1),
+                    Divider(color: isDarkMode ? Colors.white24 : Colors.black26, thickness: 1),
 
-              // Customer list
-              Expanded(
-                child: ListView.builder(
-                  itemCount: clients.length,
-                  itemBuilder: (context, index) {
-                    final client = clients[index];
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    // Search Bar
+                    TextField(
+                      controller: searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          filteredClients = clients
+                              .where((client) =>
+                          ("${client.firstName} ${client.lastName}")
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                              client.mobileNumber.contains(value))
+                              .toList();
+                        });
+                      },
+                      style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.search, color: isDarkMode ? Colors.white70 : Colors.grey),
+                        hintText: "Search customer...",
+                        hintStyle: TextStyle(color: isDarkMode ? Colors.white54 : Colors.black54),
+                        filled: true,
+                        fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                       ),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.blue.shade100,
-                          child: Icon(Icons.person, color: Colors.blue),
-                        ),
-                        title: Text(
-                          "${client.firstName} ${client.lastName}",
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Text("${client.countryCode} ${client.mobileNumber}"),
-                        trailing: Icon(Icons.check_circle_outline, color: Colors.blue),
-                        onTap: () {
-                          setState(() {
-                            formController.customerNameController.text =
-                            "${client.firstName} ${client.lastName}";
-                            selectedCustomerMobileNumber =
-                            "${client.countryCode} ${client.mobileNumber}";
-                          });
-                          saveSelectedClient(
-                            "${client.firstName} ${client.lastName}",
-                            "${client.countryCode} ${client.mobileNumber}",
+                    ),
+                    SizedBox(height: 10),
+
+                    // Customer List
+                    Expanded(
+                      child: filteredClients.isNotEmpty
+                          ? ListView.builder(
+                        itemCount: filteredClients.length,
+                        itemBuilder: (context, index) {
+                          final client = filteredClients[index];
+                          return Card(
+                            color: isDarkMode ? Colors.grey[800] : Colors.white,
+                            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: isDarkMode ? Colors.blueGrey[700] : Colors.blue.shade100,
+                                child: Icon(Icons.person, color: isDarkMode ? Colors.white : Colors.blue),
+                              ),
+                              title: Text(
+                                "${client.firstName} ${client.lastName}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: isDarkMode ? Colors.white : Colors.black87,
+                                ),
+                              ),
+                              subtitle: Text(
+                                "${client.countryCode} ${client.mobileNumber}",
+                                style: TextStyle(
+                                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                                ),
+                              ),
+                              // trailing: Icon(Icons.check_circle_outline, color: isDarkMode ? Colors.white70 : Colors.blue),
+                              onTap: () {
+                                setState(() {
+                                  formController.customerNameController.text =
+                                  "${client.firstName} ${client.lastName}";
+                                  selectedCustomerMobileNumber =
+                                  "${client.countryCode} ${client.mobileNumber}";
+                                });
+                                saveSelectedClient(
+                                  "${client.firstName} ${client.lastName}",
+                                  "${client.countryCode} ${client.mobileNumber}",
+                                );
+                                Navigator.pop(context);
+                              },
+                            ),
                           );
-                          Navigator.pop(context);
                         },
+                      )
+                          : Center(
+                        child: Text(
+                          "No matching customers found.",
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white70 : Colors.black54,
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
-
-
 
 
   @override
