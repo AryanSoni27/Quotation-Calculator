@@ -1,12 +1,11 @@
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/main.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onTap;
+  final void Function(int) onTap;
 
   const CustomBottomNavigationBar({
     super.key,
@@ -18,32 +17,37 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return CurvedNavigationBar(
-      index: currentIndex,
-      onTap: onTap,
+    return Container(
       color: themeProvider.isDarkMode ? Colors.black12 : Colors.white,
-      buttonBackgroundColor: themeProvider.isDarkMode ? Colors.white60 : Colors.white,
-      backgroundColor: themeProvider.isDarkMode ? Colors.transparent : Colors.transparent,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 200),
-      items: const [
-        CurvedNavigationBarItem(
-          child: Icon(Icons.home_outlined),
-          label: 'Home',
-        ),
-        CurvedNavigationBarItem(
-          child: Icon(Icons.description_outlined),
-          label: 'Estimations',
-        ),
-        CurvedNavigationBarItem(
-          child: Icon(Icons.people_alt_outlined),
-          label: 'Clients',
-        ),
-        CurvedNavigationBarItem(
-          child: Icon(Icons.settings_outlined),
-          label: 'Settings',
-        ),
-      ],
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: GNav(
+        selectedIndex: currentIndex,
+        onTabChange: onTap,
+        backgroundColor: themeProvider.isDarkMode ? Colors.black12 : Colors.white,
+        color: Colors.grey,
+        activeColor: Colors.blue,
+        tabBackgroundColor: Colors.blue.withOpacity(0.1),
+        padding: const EdgeInsets.all(10),
+        gap: 8,
+        tabs: const [
+          GButton(
+            icon: Icons.home_outlined,
+            text: "Home",
+          ),
+          GButton(
+            icon: Icons.description_outlined,
+            text: "Estimations",
+          ),
+          GButton(
+            icon: Icons.people_alt_outlined,
+            text: "Clients",
+          ),
+          GButton(
+            icon: Icons.settings_outlined,
+            text: "Settings",
+          ),
+        ],
+      ),
     );
   }
 }
