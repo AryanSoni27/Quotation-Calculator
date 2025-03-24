@@ -202,8 +202,8 @@ Future<void> generatePdf({
                 cellStyle: pw.TextStyle(fontSize: 12),
                 cellAlignments: {
                   0: pw.Alignment.center,
-                  1: pw.Alignment.center,
-                  2: pw.Alignment.center,
+                  // 1: pw.Alignment.center,
+                  // 2: pw.Alignment.center,
                   3: pw.Alignment.center,
                   4: pw.Alignment.center,
                   5: pw.Alignment.center,
