@@ -50,6 +50,8 @@ dependencies:
   intl_phone_field: ^3.2.0
   auto_size_text: ^3.0.0
   flutter_launcher_icons: ^0.14.3
+  cuberto_bottom_bar: ^3.1.0
+  google_nav_bar: ^5.0.7
 
 
 dev_dependencies:
