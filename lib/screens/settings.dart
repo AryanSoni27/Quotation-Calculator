@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../data/country_codes.dart';  // Import country codes
+import '../data/country_codes.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -29,7 +29,7 @@ class _SettingsState extends State<Settings> {
   final Color firstNameColor = Colors.blue;
   final Color lastNameColor = Colors.blue;
   final Color mobileColor = Colors.blue;
-  final Color iconColor = Colors.white;
+  final Color iconColor = Colors.blue;
 
   @override
   void initState() {
