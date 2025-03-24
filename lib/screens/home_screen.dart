@@ -529,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   //Button to preview pdf of quotation
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // Ensures fixed positions
+                    // mainAxisAlignment: MainAxisAlignment.end, // Ensures fixed positions
                     children: [
                       // PDF Button (Hidden when no items)
                       items.isNotEmpty
@@ -579,13 +579,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: const Icon(Icons.picture_as_pdf, color: Colors.blue, size: 25),
                       )
-                          : const SizedBox(width: 50), // Placeholder to keep layout fixed
+                          : const SizedBox(width: 78), // Placeholder to keep layout fixed
 
                       SizedBox(width: 15),
                       // Save Button (Hidden when no items)
                       items.isNotEmpty
                           ? ElevatedButton(
-                        onPressed: () async {
+                          onPressed: () async {
                           if (await validateFields()) {
                             double totalAmount = items.fold(0, (sum, item) => sum + item.totalCost);
 
