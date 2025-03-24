@@ -29,7 +29,7 @@ class _SettingsState extends State<Settings> {
   final Color firstNameColor = Colors.blue;
   final Color lastNameColor = Colors.blue;
   final Color mobileColor = Colors.blue;
-  final Color iconColor = Colors.blue;
+  final Color iconColor = Colors.white;
 
   @override
   void initState() {
@@ -111,9 +111,28 @@ class _SettingsState extends State<Settings> {
             SizedBox(height: 20),
             Divider(thickness: 1, color: Colors.grey),
 
-            Text("Profile",
-                style:
-                TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Profile",
+                    style:
+                    TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                ElevatedButton(
+                  onPressed: toggleEditMode,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.white,
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(10),
+                  ),
+                  child: Icon(
+                    isEditing ? Icons.save : Icons.edit,
+                    size: 20,
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
 
             SizedBox(height: 15),
 
@@ -194,28 +213,28 @@ class _SettingsState extends State<Settings> {
               enabled: isEditing,  // Disable editing when not in edit mode
               decoration: InputDecoration(
                 labelText: "Mobile Number",
-                labelStyle: TextStyle(color: mobileColor),  // ✅ Label remains same
+                labelStyle: TextStyle(color: mobileColor),  //Label remains same
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),  // ✅ Border color unchanged
+                  borderSide: BorderSide(color: mobileColor),  //Border color unchanged
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),  // ✅ No color change after submit
+                  borderSide: BorderSide(color: mobileColor),  //No color change after submit
                   borderRadius: BorderRadius.circular(10),
                 ),
                 disabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),  // ✅ Keeps border color same when disabled
+                  borderSide: BorderSide(color: mobileColor),  //Keeps border color same when disabled
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               style: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  // ✅ Dynamic text color
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  //Dynamic text color
               ),
               dropdownTextStyle: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  // ✅ Country code color adapts
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  //Country code color adapts
               ),
               onChanged: (phone) {
                 if (isEditing) {
@@ -238,22 +257,22 @@ class _SettingsState extends State<Settings> {
 
             SizedBox(height: 20),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: toggleEditMode,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: iconColor,
-                    foregroundColor: Colors.white,
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  child: Text(isEditing ? "Submit" : "Edit",
-                      style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     ElevatedButton(
+            //       onPressed: toggleEditMode,
+            //       style: ElevatedButton.styleFrom(
+            //         backgroundColor: iconColor,
+            //         foregroundColor: Colors.white,
+            //         padding:
+            //         EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            //       ),
+            //       child: Text(isEditing ? "Submit" : "Edit",
+            //           style: TextStyle(color: Colors.white)),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
