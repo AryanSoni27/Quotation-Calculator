@@ -364,32 +364,80 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.all(15),
           constraints: BoxConstraints(
             minHeight: 200,
             maxHeight: MediaQuery.of(context).size.height * 0.6,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: clients.map((client) => ListTile(
-                title: Text("${client.firstName} ${client.lastName}"),
-                onTap: () {
-                  setState(() {
-                    formController.customerNameController.text =
-                    "${client.firstName} ${client.lastName}";
-                    selectedCustomerMobileNumber = "${client.countryCode} ${client.mobileNumber}";
-                  });
-                  saveSelectedClient("${client.firstName} ${client.lastName}", "${client.countryCode} ${client.mobileNumber}"); // ✅ Save selected client
-                  Navigator.pop(context);
-                },
-              )).toList(),
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with title and close button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Select a Customer",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: Colors.black54),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              Divider(thickness: 1),
+
+              // Customer list
+              Expanded(
+                child: ListView.builder(
+                  itemCount: clients.length,
+                  itemBuilder: (context, index) {
+                    final client = clients[index];
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blue.shade100,
+                          child: Icon(Icons.person, color: Colors.blue),
+                        ),
+                        title: Text(
+                          "${client.firstName} ${client.lastName}",
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text("${client.countryCode} ${client.mobileNumber}"),
+                        trailing: Icon(Icons.check_circle_outline, color: Colors.blue),
+                        onTap: () {
+                          setState(() {
+                            formController.customerNameController.text =
+                            "${client.firstName} ${client.lastName}";
+                            selectedCustomerMobileNumber =
+                            "${client.countryCode} ${client.mobileNumber}";
+                          });
+                          saveSelectedClient(
+                            "${client.firstName} ${client.lastName}",
+                            "${client.countryCode} ${client.mobileNumber}",
+                          );
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         );
       },
     );
   }
+
 
 
 
