@@ -13,13 +13,15 @@ import '../services/pdf_generator.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:auto_size_text/auto_size_text.dart';
 
 Future<List<ClientDetails>> loadClients() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   List<String>? clientJsonList = prefs.getStringList('client_list');
 
   if (clientJsonList != null) {
-    return clientJsonList.map((jsonString) => ClientDetails.fromJson(jsonDecode(jsonString))).toList();
+    return clientJsonList.map((jsonString) =>
+        ClientDetails.fromJson(jsonDecode(jsonString))).toList();
   }
   return [];
 }
@@ -56,12 +58,15 @@ class _QuotationsState extends State<Quotations> {
 
   Future<String> getPdfPath(String quotationId) async {
     final directory = await getApplicationDocumentsDirectory();
-    return "${directory.path}/Quotation_${DateTime.now().millisecondsSinceEpoch}.pdf"; // Ensure it matches the saved filename
+    return "${directory.path}/Quotation_${DateTime
+        .now()
+        .millisecondsSinceEpoch}.pdf"; // Ensure it matches the saved filename
   }
 
   Future<String?> generateAndOpenPdf(Quotation quotation) async {
     try {
-      ClientDetails? client = await getClientDetailsByName(quotation.customerName);
+      ClientDetails? client = await getClientDetailsByName(
+          quotation.customerName);
 
       String rawDate = quotation.date;
       String formattedDate;
@@ -79,7 +84,6 @@ class _QuotationsState extends State<Quotations> {
           formattedDate = tempFormatted;
         }
       } catch (e) {
-
         formattedDate = rawDate;
         print("Failed to format date: $e");
       }
@@ -88,7 +92,8 @@ class _QuotationsState extends State<Quotations> {
         customerName: quotation.customerName,
         date: formattedDate,
         projectName: quotation.projectName,
-        mobileNumber: client != null ? "${client.countryCode} ${client.mobileNumber}" : quotation.mobileNumber,
+        mobileNumber: client != null ? "${client.countryCode} ${client
+            .mobileNumber}" : quotation.mobileNumber,
         streetAddress: client?.streetAddress ?? "N/A",
         city: client?.city ?? "N/A",
         state: client?.state ?? "N/A",
@@ -98,7 +103,8 @@ class _QuotationsState extends State<Quotations> {
       return null;
     } catch (e) {
       print("Error opening PDF: $e");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to open PDF: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to open PDF: $e")));
       return null;
     }
   }
@@ -131,185 +137,213 @@ class _QuotationsState extends State<Quotations> {
     return Scaffold(
       // appBar: AppBar(title: const Text("Saved Estimations")),
       body: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _quotations.isEmpty
-              ? const Center(child: Text("No quotations found"))
-              : ListView.builder(
-                itemCount: _quotations.length,
-                itemBuilder: (context, index) {
-                  final quotation = _quotations[index];
-                  return Card(
-                    margin: const EdgeInsets.only(
-                      left: 15,
-                      right: 15,
-                      bottom: 10,
-                    ),
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ExpansionTile(
-                      title: Text(
-                        quotation.projectName,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+          ? const Center(child: CircularProgressIndicator())
+          : _quotations.isEmpty
+          ? const Center(child: Text("No quotations found"))
+          : ListView.builder(
+        itemCount: _quotations.length,
+        itemBuilder: (context, index) {
+          final quotation = _quotations[index];
+          return Card(
+            margin: const EdgeInsets.only(
+              left: 15,
+              right: 15,
+              bottom: 10,
+            ),
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ExpansionTile(
+              title: Text(
+                quotation.projectName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Customer : ${quotation.customerName}"),
+                  Text("Date : ${quotation.date}"),
+                  Text(
+                    "Total : ₹${NumberFormat("#,##0.00").format(
+                        quotation.totalAmount)}",
+                  ),
+                ],
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 15,
+                    right: 15,
+                    bottom: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FutureBuilder<ClientDetails?>(
+                        future: getClientDetailsByName(quotation.customerName),
+                        // Fetch client details
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Text("Contact : Loading...",
+                                style: TextStyle(fontSize: 16));
+                          }
+                          if (!snapshot.hasData || snapshot.data == null) {
+                            return const Text("Contact : Not Available",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold));
+                          }
+                          return Text(
+                            "Contact : ${snapshot.data!.countryCode} ${snapshot
+                                .data!.mobileNumber}",
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          );
+                        },
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Items :",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      //List of items
+                      Card(
+                        color: isDarkMode ? Colors.white10 : Colors.white,
+                        margin: const EdgeInsets.all(12.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        elevation: 4, // Adds shadow for better UI
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: quotation.items.map((item) {
+                              return Column(
+                                children: [
+                                  // Item Details
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              item.itemName,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Text(
+                                              item.unit == "N/A"
+                                                  ? "Area: N/A"
+                                                  : 'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
+                                                  '${item.unit == "R. Foot" ? "" : " (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})"}',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("Qty: ${item.quantity}"),
+                                            Text("Rate: ₹${item.rate.toStringAsFixed(2)}"),
+                                            Flexible(
+                                              child: AutoSizeText(
+                                                "Total: ₹${NumberFormat("#,##0.00").format(item.totalCost)}",
+                                                maxLines: 1,
+                                                minFontSize: 10,
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false, // Ensures it doesn't wrap
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blueAccent, // Highlighted total cost
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Divider between items (except after the last item)
+                                  if (quotation.items.last != item)
+                                    Divider(
+                                      color: Colors.grey.shade400,
+                                      thickness: 0.8,
+                                    ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text("Customer : ${quotation.customerName}"),
-                          Text("Date : ${quotation.date}"),
-                          Text(
-                            "Total : ₹${NumberFormat("#,##0.00").format(quotation.totalAmount)}",
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              final pdfPath = await generateAndOpenPdf(
+                                quotation,
+                              );
+                            },
+                            icon: const Icon(
+                                Icons.picture_as_pdf, color: Colors.blue),
+                            label: const Text("PDF"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDarkMode
+                                  ? Colors.white12
+                                  : Colors.white,
+                              foregroundColor: Colors.blue,
+                            ),
+                          ),
+
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              await DBHelperQuotation.instance
+                                  .deleteQuotation(quotation.id);
+                              _loadQuotations();
+                            },
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            label: const Text("Delete"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDarkMode
+                                  ? Colors.white12
+                                  : Colors.white,
+                              foregroundColor: Colors.red,
+                            ),
                           ),
                         ],
                       ),
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 15,
-                            right: 15,
-                            bottom: 10,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              FutureBuilder<ClientDetails?>(
-                                future: getClientDetailsByName(quotation.customerName), // Fetch client details
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return const Text("Contact : Loading...", style: TextStyle(fontSize: 16));
-                                  }
-                                  if (!snapshot.hasData || snapshot.data == null) {
-                                    return const Text("Contact : Not Available", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-                                  }
-                                  return Text(
-                                    "Contact : ${snapshot.data!.countryCode} ${snapshot.data!.mobileNumber}",
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  );
-                                },
-                              ),
-
-                              const SizedBox(height: 8),
-                              const Text(
-                                "Items :",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-
-                              //List of items
-                              Column(
-                                children:
-                                    quotation.items.map((item) {
-                                      return Card(
-                                        color: isDarkMode ? Colors.white10 : Colors.white,
-                                        margin: const EdgeInsets.only(
-                                          bottom: 12.0,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    item.itemName,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    item.unit == "N/A"
-                                                        ? "Area: N/A"
-                                                        : 'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
-                                                        '${item.unit == "R. Foot" ? "" : " (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})"}',
-                                                    style: const TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.grey,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 4),
-
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text("Qty: ${item.quantity}"),
-                                                  Text(
-                                                    "Rate: ₹${item.rate.toStringAsFixed(2)}",
-                                                  ),
-                                                  Text(
-                                                    "Total: ₹${NumberFormat("#,##0.00").format(item.totalCost)}",
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  ElevatedButton.icon(
-                                    onPressed: () async {
-                                      final pdfPath = await generateAndOpenPdf(
-                                        quotation,
-                                      );
-                                    },
-                                    icon: const Icon(Icons.picture_as_pdf, color: Colors.blue),
-                                    label: const Text("PDF"),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
-                                      foregroundColor: Colors.blue,
-                                    ),
-                                  ),
-
-                                  ElevatedButton.icon(
-                                    onPressed: () async {
-                                      await DBHelperQuotation.instance
-                                          .deleteQuotation(quotation.id);
-                                      _loadQuotations();
-                                    },
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ),
-                                    label: const Text("Delete"),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
-                                      foregroundColor: Colors.red,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
       // floatingActionButton: FloatingActionButton.extended(
       //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       //   onPressed: _loadQuotations,
