@@ -118,7 +118,7 @@ class ClientScreenState extends State<ClientScreen> {
                     fontSize: 16,
                   ),
                   decoration: InputDecoration(
-                    hintText: "Search clients by name...",
+                    hintText: "Search clients...",
                     hintStyle: TextStyle(
                       color: isDarkMode ? Colors.white54 : Colors.black54,
                     ),
