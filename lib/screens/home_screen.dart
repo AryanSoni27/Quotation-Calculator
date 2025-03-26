@@ -425,8 +425,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderSide: BorderSide.none,
                         ),
                         contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                        suffixIcon: searchController.text.isNotEmpty
+                            ? IconButton(
+                          icon: Icon(Icons.clear, color: isDarkMode ? Colors.white60 : Colors.black54),
+                          onPressed: () {
+                            searchController.clear();
+                            setState(() {
+                              filteredClients = clients;
+                            });
+                          },
+                        )
+                            : null,
                       ),
                     ),
+
                     SizedBox(height: 10),
 
                     // Customer List

@@ -153,76 +153,34 @@ class _QuotationsState extends State<Quotations> {
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: isDarkMode
-                        ? Colors.white12
-                        : Colors.grey.shade300,
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                controller: _searchController,
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white : Colors.black87,
+            child: TextField(
+              controller: _searchController,
+              style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87),
+              decoration: InputDecoration(
+                hintText: 'Search Project...',
+                hintStyle: TextStyle(color: isDarkMode ? Colors.white60 : Colors.black54),
+                prefixIcon: Icon(Icons.search, color: isDarkMode ? Colors.white60 : Colors.black54),
+                filled: true,
+                fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
-                decoration: InputDecoration(
-                  hintText: 'Search Project...',
-                  hintStyle: TextStyle(
-                    color: isDarkMode ? Colors.white60 : Colors.black54,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: isDarkMode ? Colors.white60 : Colors.black54,
-                  ),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                    icon: Icon(
-                      Icons.clear,
-                      color: isDarkMode ? Colors.white70 : Colors.black87,
-                    ),
-                    onPressed: () {
-                      _searchController.clear();
-                      _filterQuotations('');
-                    },
-                  )
-                      : null,
-                  filled: true,
-                  fillColor: isDarkMode
-                      ? Colors.white10
-                      : Colors.white12,
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 15
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: isDarkMode
-                          ? Colors.white24
-                          : Colors.grey.shade300,
-                      width: 1.2,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: isDarkMode
-                          ? Colors.white60
-                          : Colors.blue.shade300,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-                onChanged: _filterQuotations,
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                  icon: Icon(Icons.clear, color: isDarkMode ? Colors.white70 : Colors.black87),
+                  onPressed: () {
+                    _searchController.clear();
+                    _filterQuotations('');
+                  },
+                )
+                    : null,
               ),
+              onChanged: _filterQuotations,
             ),
           ),
+
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
