@@ -320,7 +320,7 @@ class _QuotationsState extends State<Quotations> {
                                                     item.unit == "N/A"
                                                         ? "Area: N/A"
                                                         : item.unit == "R. Foot"
-                                                        ? "Area: ${item.unit}"
+                                                        ? "Area: ${item.foot} ${item.unit}"
                                                         : 'Area: (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})',
                                                     style: TextStyle(
                                                       fontSize: 11,
