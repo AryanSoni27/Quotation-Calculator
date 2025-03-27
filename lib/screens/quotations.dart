@@ -272,8 +272,36 @@ class _QuotationsState extends State<Quotations> {
                                     IconButton(
                                       icon: const Icon(Icons.delete, color: Colors.red),
                                       onPressed: () async {
-                                        await DBHelperQuotation.instance.deleteQuotation(quotation.id);
-                                        _loadQuotations();
+                                        // Show confirmation dialog
+                                        bool? confirmDelete = await showDialog<bool>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Confirm Delete'),
+                                              content: const Text('Are you sure you want to delete this estimation?'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop(false);
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop(true);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+
+                                        // Proceed with deletion only if user confirms
+                                        if (confirmDelete == true) {
+                                          await DBHelperQuotation.instance.deleteQuotation(quotation.id);
+                                          _loadQuotations();
+                                        }
                                       },
                                       style: IconButton.styleFrom(
                                         backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
