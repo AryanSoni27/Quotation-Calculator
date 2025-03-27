@@ -41,7 +41,8 @@ class _QuotationsState extends State<Quotations> {
   bool _isLoading = true;
   final TextEditingController _searchController = TextEditingController();
 
-
+  int? _currentExpandedIndex;
+  
   Future<ClientDetails?> getClientDetailsByName(String customerName) async {
     List<ClientDetails> clients = await loadClients(); // Load client list first
     for (var client in clients) {
@@ -202,6 +203,13 @@ class _QuotationsState extends State<Quotations> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ExpansionTile(
+                    key: ValueKey('$index-${_currentExpandedIndex}'),
+                    initiallyExpanded: _currentExpandedIndex == index,
+                    onExpansionChanged: (isExpanded) {
+                      setState(() {
+                        _currentExpandedIndex = isExpanded ? index : null;
+                      });
+                    },
                     title: Text(
                       quotation.projectName,
                       style: const TextStyle(fontWeight: FontWeight.bold),
