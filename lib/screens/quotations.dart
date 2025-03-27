@@ -253,24 +253,24 @@ class _QuotationsState extends State<Quotations> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 4),
 
                             Card(
                               color: isDarkMode ? Colors.white10 : Colors.white,
-                              margin: const EdgeInsets.all(12.0),
+                              margin: const EdgeInsets.all(8.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               elevation: 4,
                               child: Padding(
-                                padding: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: quotation.items.map((item) {
                                     return Column(
                                       children: [
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                          padding: const EdgeInsets.symmetric(vertical: 2),
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
@@ -284,16 +284,19 @@ class _QuotationsState extends State<Quotations> {
                                                       fontSize: 16,
                                                     ),
                                                   ),
+                                                  // if(item.unit != "R. Foot")
                                                   Text(
                                                     item.unit == "N/A"
                                                         ? "Area: N/A"
-                                                        : 'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
-                                                        '${item.unit == "R. Foot" ? "" : " (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})"}',
+                                                        : item.unit == "R. Foot"
+                                                        ? "Area: ${item.unit}"
+                                                        : 'Area: (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})',
                                                     style: TextStyle(
                                                       fontSize: 11,
                                                       color: Colors.grey.shade600,
                                                     ),
-                                                  ),
+                                                  )
+
                                                 ],
                                               ),
                                               const SizedBox(height: 4),
@@ -305,11 +308,21 @@ class _QuotationsState extends State<Quotations> {
                                                 ],
                                               ),
                                               const SizedBox(height: 4),
-                                              Text(
-                                                "Total: ₹${NumberFormat("#,##0.00").format(item.totalCost)}",
-                                                style: const TextStyle(
-                                                  color: Colors.blueAccent,
-                                                ),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    "Total: ₹${NumberFormat("#,##0.00").format(item.totalCost)}",
+                                                    style: const TextStyle(
+                                                      color: Colors.blueAccent,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                      item.unit == "N/A"
+                                                          ? "Sq. Feet: N/A"
+                                                          : 'Sq. Feet: ${item.squareFeet.toStringAsFixed(2)}'
+                                                  ),
+                                                ],
                                               )
                                             ],
                                           ),
