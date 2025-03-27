@@ -188,7 +188,7 @@ Future<void> generatePdf({
                     items[index].unit == "N/A"
                         ? "N/A"
                         : (items[index].unit == "R. Foot"
-                        ? "R. Foot"
+                        ? "${items[index].foot} ${items[index].unit}"
                         : "${items[index].length} × ${items[index].width}${items[index].height != null ? ' × ${items[index].height}' : ''} ${items[index].unit}"),
                     items[index].unit == "N/A"
                         ? "N/A":
