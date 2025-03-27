@@ -21,9 +21,9 @@ class DBHelperQuotation {
 
     return await openDatabase(
       path,
-      version: 3, // Increment version number
+      version: 3,
       onCreate: _createDB,
-      onUpgrade: _upgradeDB, // Add onUpgrade method
+      // onUpgrade: _upgradeDB,
     );
   }
 
