@@ -41,6 +41,7 @@ class _QuotationsState extends State<Quotations> {
   bool _isLoading = true;
   final TextEditingController _searchController = TextEditingController();
 
+
   Future<ClientDetails?> getClientDetailsByName(String customerName) async {
     List<ClientDetails> clients = await loadClients(); // Load client list first
     for (var client in clients) {
@@ -278,10 +279,10 @@ class _QuotationsState extends State<Quotations> {
                                           builder: (BuildContext context) {
                                             return AlertDialog(
                                               title: const Text('Confirm Delete'),
-                                              content: const Text('Are you sure you want to delete this estimation?'),
+                                              content: const Text('Are you sure want to delete this estimation?'),
                                               actions: <Widget>[
                                                 TextButton(
-                                                  child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+                                                  child: Text('Cancel', style: TextStyle(color : isDarkMode ? Colors.white : Colors.black)),
                                                   onPressed: () {
                                                     Navigator.of(context).pop(false);
                                                   },
