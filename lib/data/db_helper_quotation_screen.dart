@@ -21,8 +21,9 @@ class DBHelperQuotation {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 3, // Increment version number
       onCreate: _createDB,
+      onUpgrade: _upgradeDB, // Add onUpgrade method
     );
   }
 
@@ -37,6 +38,7 @@ class DBHelperQuotation {
         length REAL NOT NULL,
         width REAL NOT NULL,
         height REAL,
+        foot REAL, // Ensure this column is in the initial creation
         squareFeet REAL NOT NULL,
         quantity INTEGER NOT NULL,
         rate REAL NOT NULL,
@@ -68,6 +70,15 @@ class DBHelperQuotation {
     ''');
   }
 
+  // New method to handle database upgrades
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 3) {
+      // Add the foot column if it doesn't exist
+      await db.execute('ALTER TABLE quotation_items ADD COLUMN foot REAL');
+    }
+  }
+
+
   // Quotation Item Operations
   Future<int> insertQuotationItem(QuotationItem item) async {
     final db = await database;
@@ -78,6 +89,7 @@ class DBHelperQuotation {
       'length': item.length,
       'width': item.width,
       'height': item.height,
+      'foot': item.foot,
       'squareFeet': item.squareFeet,
       'quantity': item.quantity,
       'rate': item.rate,
@@ -100,11 +112,11 @@ class DBHelperQuotation {
         length: maps[i]['length'],
         width: maps[i]['width'],
         height: maps[i]['height'],
+        foot: maps[i]['foot'],
         squareFeet: maps[i]['squareFeet'],
         quantity: maps[i]['quantity'],
         rate: maps[i]['rate'],
         totalCost: maps[i]['totalCost'],
-        foot: maps[i]['foot'],
       );
     });
   }
@@ -118,6 +130,7 @@ class DBHelperQuotation {
       'length': item.length,
       'width': item.width,
       'height': item.height,
+      'foot' : item.foot,
       'squareFeet': item.squareFeet,
       'quantity': item.quantity,
       'rate': item.rate,
@@ -168,6 +181,7 @@ class DBHelperQuotation {
           'length': item.length,
           'width': item.width,
           'height': item.height,
+          'foot': item.foot,
           'squareFeet': item.squareFeet,
           'quantity': item.quantity,
           'rate': item.rate,
