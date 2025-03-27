@@ -245,15 +245,46 @@ class _QuotationsState extends State<Quotations> {
                               },
                             ),
 
-                            const SizedBox(height: 8),
-                            const Text(
-                              "Items :",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            const SizedBox(height: 1),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Items :",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.picture_as_pdf, color: Colors.blue),
+                                      onPressed: () async {
+                                        final pdfPath = await generateAndOpenPdf(quotation);
+                                      },
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
+                                        shape: const CircleBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () async {
+                                        await DBHelperQuotation.instance.deleteQuotation(quotation.id);
+                                        _loadQuotations();
+                                      },
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
+                                        shape: const CircleBorder(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 1),
 
                             Card(
                               color: isDarkMode ? Colors.white10 : Colors.white,
@@ -338,40 +369,6 @@ class _QuotationsState extends State<Quotations> {
                                   }).toList(),
                                 ),
                               ),
-                            ),
-
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton.icon(
-                                  onPressed: () async {
-                                    final pdfPath = await generateAndOpenPdf(quotation);
-                                  },
-                                  icon: const Icon(Icons.picture_as_pdf, color: Colors.blue),
-                                  label: const Text("PDF"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
-                                    foregroundColor: Colors.blue,
-                                  ),
-                                ),
-
-                                ElevatedButton.icon(
-                                  onPressed: () async {
-                                    await DBHelperQuotation.instance.deleteQuotation(quotation.id);
-                                    _loadQuotations();
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  label: const Text("Delete"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
-                                    foregroundColor: Colors.red,
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         ),
