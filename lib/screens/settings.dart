@@ -86,7 +86,8 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
+    // final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
     Color getBorderColor(bool isEditing) {
       return isEditing ? Colors.blue : Colors.grey;
     }
@@ -124,7 +125,7 @@ class _SettingsState extends State<Settings> {
                 ElevatedButton(
                   onPressed: toggleEditMode,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                     foregroundColor: Colors.white,
                     shape: CircleBorder(),
                     padding: EdgeInsets.all(10),

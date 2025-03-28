@@ -692,7 +692,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(10),
-                          backgroundColor: Colors.white,
+                          backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                         ),
                         child: const Icon(Icons.picture_as_pdf, color: Colors.blue, size: 25),
                       )
@@ -747,7 +747,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(10),
-                          backgroundColor: Colors.white,
+                          backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                         ),
                         child: const Icon(Icons.save, color: Colors.blue, size: 25),
                       )
@@ -765,7 +765,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(10),
-                          backgroundColor: Colors.white,
+                          backgroundColor: isDarkMode ? Colors.white12 : Colors.white,
                         ),
                         child: const Icon(Icons.add, color: Colors.blue, size: 25),
                       ),
