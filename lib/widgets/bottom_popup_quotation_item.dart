@@ -6,9 +6,9 @@ import '../models/quotation_item.dart';
 import '../util/calculation_utilities.dart';
 
 Future<QuotationItem?> showBottomPopup(
-  BuildContext context, {
-  QuotationItem? existingItem,
-}) async {
+    BuildContext context, {
+      QuotationItem? existingItem,
+    }) async {
   // Controllers for handling text input fields
   TextEditingController lengthController = TextEditingController(
     text: existingItem?.length.toString() ?? "",
@@ -35,8 +35,8 @@ Future<QuotationItem?> showBottomPopup(
   );
 
   // Default values for unit and shape selections
-  String selectedUnit = "Feet";
-  String selectedShape = "Area";
+  String selectedUnit = existingItem?.unit ?? "Feet";
+  String selectedShape = existingItem?.shape ?? "Area";
 
   return showModalBottomSheet<QuotationItem>(
     context: context,
@@ -55,7 +55,6 @@ Future<QuotationItem?> showBottomPopup(
             double squareFeet = double.tryParse(squareFootController.text) ?? 0;
             double rate = double.tryParse(rateController.text) ?? 0;
             double quantity = double.tryParse(quantityController.text) ?? 0;
-            // double quantity = double.tryParse(quantityController.text) ?? 0;
             double totalCost = squareFeet * rate;
             if(selectedUnit == "N/A"){
               totalCost = quantity * rate;
@@ -86,7 +85,12 @@ Future<QuotationItem?> showBottomPopup(
             });
           }
 
+          // Trigger initial calculation when popup opens
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            // Prefill square feet and total cost for existing item
+            squareFootController.text = existingItem?.squareFeet.toStringAsFixed(2) ?? '0.00';
+            totalCostController.text = existingItem?.totalCost.toStringAsFixed(2) ?? '0.00';
+
             if (selectedUnit == "R. Foot") {
               footController.addListener(calculateSquareFoot);
               quantityController.addListener(calculateSquareFoot);
@@ -131,7 +135,7 @@ Future<QuotationItem?> showBottomPopup(
                     // Title of the popup
                     Center(
                       child: Text(
-                        "Enter Item Details",
+                        existingItem != null ? "Edit Item Details" : "Enter Item Details",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -149,7 +153,7 @@ Future<QuotationItem?> showBottomPopup(
                           borderRadius: BorderRadius.circular(15),
                         ),
                         errorText:
-                            isItemNameEmpty ? "Item Name is required" : null,
+                        isItemNameEmpty ? "Item Name is required" : null,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide(
@@ -165,7 +169,6 @@ Future<QuotationItem?> showBottomPopup(
                     ),
                     SizedBox(height: 10),
 
-                    // Unit selection dropdown
                     // Unit selection dropdown
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
@@ -188,8 +191,6 @@ Future<QuotationItem?> showBottomPopup(
                         fontSize: 16,
                       ),
                       elevation: 8,
-                      // Here's the important change:
-                      // Custom dropdown button builder to constrain width
                       selectedItemBuilder: (BuildContext context) {
                         return ["Inch", "Feet", "Meter", "R. Foot", "N/A"].map<Widget>((String unit) {
                           return Text(
@@ -201,9 +202,8 @@ Future<QuotationItem?> showBottomPopup(
                       items: ["Inch", "Feet", "Meter", "R. Foot", "N/A"].map((String unit) {
                         return DropdownMenuItem<String>(
                           value: unit,
-                          // Each item in a constrained container
                           child: Container(
-                            width: 100, // Adjust this width to control dropdown popup width
+                            width: 100,
                             alignment: Alignment.centerLeft,
                             child: Text(unit),
                           ),
@@ -212,6 +212,18 @@ Future<QuotationItem?> showBottomPopup(
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedUnit = newValue!;
+                          // Reset length, width, height, and shape based on unit
+                          if (newValue == "N/A") {
+                            selectedShape = "Area";
+                            lengthController.clear();
+                            widthController.clear();
+                            heightController.clear();
+                          } else if (newValue == "R. Foot") {
+                            selectedShape = "Area";
+                            lengthController.clear();
+                            widthController.clear();
+                            heightController.clear();
+                          }
                           calculateSquareFoot(); // Ensure recalculation
                         });
                       },
@@ -254,6 +266,9 @@ Future<QuotationItem?> showBottomPopup(
                             onChanged: (String? newValue) {
                               setState(() {
                                 selectedShape = newValue!;
+                                if (newValue == "Area") {
+                                  heightController.clear();
+                                }
                                 calculateSquareFoot();
                               });
                             },
@@ -263,7 +278,7 @@ Future<QuotationItem?> showBottomPopup(
                       ),
                     ),
 
-// Length, Width, Height (Hidden for "N/A" and "R. Foot")
+                    // Length, Width, Height (Hidden for "N/A" and "R. Foot")
                     Visibility(
                       visible: selectedUnit != "N/A" && selectedUnit != "R. Foot",
                       child: Column(
@@ -323,7 +338,7 @@ Future<QuotationItem?> showBottomPopup(
                       ),
                     ),
 
-// Foot field (Only shown for "R. Foot")
+                    // Foot field (Only shown for "R. Foot")
                     Visibility(
                       visible: selectedUnit == "R. Foot",
                       child: Column(
@@ -345,7 +360,7 @@ Future<QuotationItem?> showBottomPopup(
                       ),
                     ),
 
-// Qty and Sq Foot in the same row, but hide Sq Foot when "N/A" is selected
+                    // Qty and Sq Foot in the same row
                     Row(
                       children: [
                         Expanded(
@@ -384,7 +399,7 @@ Future<QuotationItem?> showBottomPopup(
                     ),
                     SizedBox(height: 10),
 
-// Rate (Always visible)
+                    // Rate (Always visible)
                     TextField(
                       controller: rateController,
                       decoration: InputDecoration(
@@ -399,7 +414,7 @@ Future<QuotationItem?> showBottomPopup(
                     ),
                     SizedBox(height: 10),
 
-// Total Cost (Always visible)
+                    // Total Cost (Always visible)
                     TextField(
                       controller: totalCostController,
                       readOnly: true,
@@ -415,13 +430,12 @@ Future<QuotationItem?> showBottomPopup(
                     ),
                     SizedBox(height: 20),
 
-
                     // Add item button
                     Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              isDarkMode ? Colors.white12 : Colors.white,
+                          isDarkMode ? Colors.white12 : Colors.white,
                           elevation: 10,
                         ),
                         onPressed: () {
@@ -435,7 +449,7 @@ Future<QuotationItem?> showBottomPopup(
                           // Create the QuotationItem with all entered data
                           final item = QuotationItem(
                             id:
-                                existingItem?.id ??
+                            existingItem?.id ??
                                 DateTime.now().millisecondsSinceEpoch,
                             itemName: itemNameController.text,
                             unit: selectedUnit,
@@ -443,22 +457,22 @@ Future<QuotationItem?> showBottomPopup(
                             length: double.tryParse(lengthController.text) ?? 0,
                             width: double.tryParse(widthController.text) ?? 0,
                             height:
-                                selectedShape == "Cubic"
-                                    ? double.tryParse(heightController.text)
-                                    : null,
+                            selectedShape == "Cubic"
+                                ? double.tryParse(heightController.text)
+                                : null,
                             squareFeet:
-                                double.tryParse(squareFootController.text) ?? 0,
+                            double.tryParse(squareFootController.text) ?? 0,
                             quantity:
-                                int.tryParse(quantityController.text) ?? 0,
+                            int.tryParse(quantityController.text) ?? 0,
                             rate: double.tryParse(rateController.text) ?? 0,
                             totalCost:
-                                double.tryParse(totalCostController.text) ?? 0,
+                            double.tryParse(totalCostController.text) ?? 0,
                             foot: double.tryParse(footController.text) ?? 0,
                           );
 
                           // Close the popup and return the item
                           Navigator.of(context).pop(item);
-                          print("Item added: ${item?.itemName}");
+                          print("Item ${existingItem != null ? 'updated' : 'added'}: ${item.itemName}");
                         },
                         child: Text(
                           existingItem != null ? "Update Item" : "Add Item",
