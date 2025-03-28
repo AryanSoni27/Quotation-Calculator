@@ -42,8 +42,7 @@ class _QuotationsState extends State<Quotations> {
   final TextEditingController _searchController = TextEditingController();
 
   int? _currentExpandedIndex;
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  
+
   Future<ClientDetails?> getClientDetailsByName(String customerName) async {
     List<ClientDetails> clients = await loadClients(); // Load client list first
     for (var client in clients) {
@@ -190,7 +189,6 @@ class _QuotationsState extends State<Quotations> {
                 : _filteredQuotations.isEmpty
                 ? const Center(child: Text("No quotations found"))
                 : ListView.builder(
-              // key: _listKey,
               itemCount: _filteredQuotations.length,
               itemBuilder: (context, index) {
                 final quotation = _filteredQuotations[index];
@@ -204,8 +202,8 @@ class _QuotationsState extends State<Quotations> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: ExpansionTile(
-                    key: PageStorageKey(quotation.id),
+                  child: CustomExpansionTile(
+                    // key: PageStorageKey(quotation.id),
                     initiallyExpanded: _currentExpandedIndex == index,
                     onExpansionChanged: (isExpanded) {
                       setState(() {
@@ -354,7 +352,6 @@ class _QuotationsState extends State<Quotations> {
                                                       fontSize: 16,
                                                     ),
                                                   ),
-                                                  // if(item.unit != "R. Foot")
                                                   Text(
                                                     item.unit == "N/A"
                                                         ? "Area: N/A"
@@ -366,7 +363,6 @@ class _QuotationsState extends State<Quotations> {
                                                       color: Colors.grey.shade600,
                                                     ),
                                                   )
-
                                                 ],
                                               ),
                                               const SizedBox(height: 4),
@@ -420,6 +416,121 @@ class _QuotationsState extends State<Quotations> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// Custom ExpansionTile to manage single expansion
+class CustomExpansionTile extends StatefulWidget {
+  final Widget title;
+  final Widget? subtitle;
+  final List<Widget> children;
+  final bool initiallyExpanded;
+  final ValueChanged<bool>? onExpansionChanged;
+  final Key? key;
+
+  const CustomExpansionTile({
+    this.key,
+    required this.title,
+    this.subtitle,
+    this.children = const [],
+    this.initiallyExpanded = false,
+    this.onExpansionChanged,
+  }) : super(key: key);
+
+  @override
+  _CustomExpansionTileState createState() => _CustomExpansionTileState();
+}
+
+class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _heightFactor;
+  bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _isExpanded = widget.initiallyExpanded;
+    _heightFactor = _controller.drive(CurveTween(curve: Curves.easeInOut));
+    _updateAnimation();
+  }
+
+  @override
+  void didUpdateWidget(CustomExpansionTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initiallyExpanded != _isExpanded) {
+      _isExpanded = widget.initiallyExpanded;
+      _updateAnimation();
+    }
+  }
+
+  void _updateAnimation() {
+    if (_isExpanded) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+      if (_isExpanded) {
+        _controller.forward();
+      } else {
+        _controller.reverse().then<void>((void value) {
+          if (!mounted) return;
+        });
+      }
+      widget.onExpansionChanged?.call(_isExpanded);
+    });
+  }
+
+  Widget _buildChildren(BuildContext context, Widget? child) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ListTile(
+          title: widget.title,
+          subtitle: widget.subtitle,
+          onTap: _handleTap,
+          trailing: RotationTransition(
+            turns: Tween<double>(begin: 0.0, end: 0.5).animate(_controller),
+            child: const Icon(Icons.expand_more),
+          ),
+        ),
+        ClipRect(
+          child: Align(
+            alignment: Alignment.center,
+            heightFactor: _heightFactor.value,
+            child: child,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller.view,
+      builder: _buildChildren,
+      child: widget.children.isNotEmpty
+          ? Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: widget.children,
+      )
+          : null,
     );
   }
 }
