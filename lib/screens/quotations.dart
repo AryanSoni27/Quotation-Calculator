@@ -42,6 +42,7 @@ class _QuotationsState extends State<Quotations> {
   final TextEditingController _searchController = TextEditingController();
 
   int? _currentExpandedIndex;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   
   Future<ClientDetails?> getClientDetailsByName(String customerName) async {
     List<ClientDetails> clients = await loadClients(); // Load client list first
@@ -189,6 +190,7 @@ class _QuotationsState extends State<Quotations> {
                 : _filteredQuotations.isEmpty
                 ? const Center(child: Text("No quotations found"))
                 : ListView.builder(
+              // key: _listKey,
               itemCount: _filteredQuotations.length,
               itemBuilder: (context, index) {
                 final quotation = _filteredQuotations[index];
@@ -203,7 +205,7 @@ class _QuotationsState extends State<Quotations> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ExpansionTile(
-                    key: ValueKey('$index-${_currentExpandedIndex}'),
+                    key: PageStorageKey(quotation.id),
                     initiallyExpanded: _currentExpandedIndex == index,
                     onExpansionChanged: (isExpanded) {
                       setState(() {
