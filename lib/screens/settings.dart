@@ -87,6 +87,10 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
+    Color getBorderColor(bool isEditing) {
+      return isEditing ? Colors.blue : Colors.grey;
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text("Settings")),
       body: isLoading
@@ -144,20 +148,19 @@ class _SettingsState extends State<Settings> {
                     controller: firstNameController,
                     readOnly: !isEditing,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person, color: Colors.blue),
+                      prefixIcon: Icon(Icons.person, color: getBorderColor(isEditing)),
                       labelText: "First Name",
-                      labelStyle: TextStyle(color: firstNameColor),
+                      labelStyle: TextStyle(color: getBorderColor(isEditing)),
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: firstNameColor),
+                        borderSide: BorderSide(color: getBorderColor(isEditing)),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: firstNameColor, width: 2),
+                        borderSide: BorderSide(color: getBorderColor(isEditing), width: 2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: firstNameColor),
+                        borderSide: BorderSide(color: getBorderColor(isEditing)),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -175,21 +178,19 @@ class _SettingsState extends State<Settings> {
                     controller: lastNameController,
                     readOnly: !isEditing,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person_outline,
-                          color: Colors.blue),
+                      prefixIcon: Icon(Icons.person_outline, color: getBorderColor(isEditing)),
                       labelText: "Last Name",
-                      labelStyle: TextStyle(color: lastNameColor),
+                      labelStyle: TextStyle(color: getBorderColor(isEditing)),
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: lastNameColor),
+                        borderSide: BorderSide(color: getBorderColor(isEditing)),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: lastNameColor, width: 2),
+                        borderSide: BorderSide(color: getBorderColor(isEditing), width: 2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: lastNameColor),
+                        borderSide: BorderSide(color: getBorderColor(isEditing)),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -210,31 +211,32 @@ class _SettingsState extends State<Settings> {
             IntlPhoneField(
               controller: mobileNumberController,
               initialCountryCode: countryCodeToIso[selectedCountryCode]?.first ?? 'IN',
-              enabled: isEditing,  // Disable editing when not in edit mode
+              enabled: isEditing,
               decoration: InputDecoration(
                 labelText: "Mobile Number",
-                labelStyle: TextStyle(color: mobileColor),  //Label remains same
+                labelStyle: TextStyle(color: getBorderColor(isEditing)),
                 border: OutlineInputBorder(
+                  borderSide: BorderSide(color: getBorderColor(isEditing)),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),  //Border color unchanged
+                  borderSide: BorderSide(color: getBorderColor(isEditing)),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),  //No color change after submit
+                  borderSide: BorderSide(color: getBorderColor(isEditing)),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 disabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: mobileColor),  //Keeps border color same when disabled
+                  borderSide: BorderSide(color: getBorderColor(isEditing)),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               style: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  //Dynamic text color
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,
               ),
               dropdownTextStyle: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white : Colors.black,  //Country code color adapts
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,
               ),
               onChanged: (phone) {
                 if (isEditing) {
@@ -252,27 +254,7 @@ class _SettingsState extends State<Settings> {
                 }
               },
             ),
-
-
-
             SizedBox(height: 20),
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   children: [
-            //     ElevatedButton(
-            //       onPressed: toggleEditMode,
-            //       style: ElevatedButton.styleFrom(
-            //         backgroundColor: iconColor,
-            //         foregroundColor: Colors.white,
-            //         padding:
-            //         EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            //       ),
-            //       child: Text(isEditing ? "Submit" : "Edit",
-            //           style: TextStyle(color: Colors.white)),
-            //     ),
-            //   ],
-            // ),
           ],
         ),
       ),
