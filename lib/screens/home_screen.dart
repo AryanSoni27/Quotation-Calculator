@@ -786,7 +786,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      margin: EdgeInsets.symmetric(vertical: 8),
+                      margin: EdgeInsets.symmetric(vertical: 5),
                       child: ExpansionTile(
                         title: Text(
                           item.itemName,
@@ -797,23 +797,22 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? "Area: N/A"
                               : 'Area: ${item.squareFeet.toStringAsFixed(2)} sq ft'
                               '${item.unit == "R. Foot" ? "" : " (${item.length} × ${item.width}${item.height != null ? ' × ${item.height}' : ''} ${item.unit})"}',
-                          style: TextStyle(fontSize: 11.5),
+                          style: TextStyle(fontSize: 12),
                         ),
-
-
                         children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              // vertical: 3,
+                            padding: EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              // bottom: 2,
+                              // vertical: 1,
                             ),
                             child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // SizedBox(height: 0), // Reduced spacing
                                 Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Quantity: ${item.quantity}'),
                                     Row(
@@ -858,27 +857,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                             );
                                           },
                                           padding: EdgeInsets.all(4),
-                                          constraints: BoxConstraints(),
+                                          // constraints: BoxConstraints(),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
-
                                 // Rate info
-                                Text(
-                                  'Rate: ${item.rate.toStringAsFixed(2)}',
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Rate: ${item.rate.toStringAsFixed(2)}',
+                                    ),
+                                    Text(
+                                      'Total: ${NumberFormat("#,##0.00").format(item.totalCost)}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-
-                                SizedBox(height: 11),
-
-                                Text(
-                                  'Total: ${NumberFormat("#,##0.00").format(item.totalCost)}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 11),
+                                SizedBox(height: 8), // Reduced bottom spacing
                               ],
                             ),
                           ),
