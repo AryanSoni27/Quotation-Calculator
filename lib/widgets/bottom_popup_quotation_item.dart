@@ -182,7 +182,7 @@ Future<QuotationItem?> showBottomPopup(
                       value: selectedUnit,
                       borderRadius: BorderRadius.circular(15),
                       dropdownColor: Colors.white,
-                      menuMaxHeight: 200,
+                      menuMaxHeight: 300,
                       icon: Icon(Icons.arrow_drop_down),
                       iconSize: 24,
                       itemHeight: 50,
@@ -195,7 +195,9 @@ Future<QuotationItem?> showBottomPopup(
                         return ["Inch", "Feet", "Meter", "R. Foot", "N/A"].map<Widget>((String unit) {
                           return Text(
                             unit,
-                            style: TextStyle(color: Colors.black87, fontSize: 16),
+                            style: isDarkMode ?
+                              TextStyle(color: Colors.grey, fontSize: 16) :
+                              TextStyle(color: Colors.black87, fontSize: 16),
                           );
                         }).toList();
                       },
@@ -260,7 +262,11 @@ Future<QuotationItem?> showBottomPopup(
                             items: ["Area", "Cubic"].map((String shape) {
                               return DropdownMenuItem<String>(
                                 value: shape,
-                                child: Text(shape),
+                                child: Text(
+                                    shape,
+                                    style: isDarkMode?
+                                    TextStyle(color: Colors.grey, fontSize: 16) :
+                                    TextStyle(color: Colors.black87, fontSize: 16),),
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
