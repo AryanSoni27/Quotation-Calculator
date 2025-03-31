@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quotation/data/db_helper_quotation.dart';
@@ -14,7 +13,6 @@ import '../models/quotation_screen.dart';
 import '../util/date_picker.dart';
 import '../services/pdf_generator.dart';
 import '../widgets/bottom_popup_quotation_item.dart';
-import 'package:uuid/uuid.dart';
 
 Future<List<ClientDetails>> loadClientsAddress() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();

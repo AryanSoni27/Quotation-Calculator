@@ -10,10 +10,7 @@ import '../models/quotation_screen.dart';
 import '../models/quotation_item.dart';
 import '../data/db_helper_quotation_screen.dart';
 import '../services/pdf_generator.dart';
-import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'package:auto_size_text/auto_size_text.dart';
 
 Future<List<ClientDetails>> loadClients() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
